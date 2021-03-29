@@ -1,0 +1,45 @@
+AsyncTelegram2	KEYWORD1
+InlineKeyboard	KEYWORD1
+ReplyKeyboard	KEYWORD1
+
+setTelegramToken	KEYWORD2
+setUpdateTime		KEYWORD2
+testConnection		KEYWORD2
+getNewMessage		KEYWORD2
+sendMessage			KEYWORD2
+removeReplyKeyboard	KEYWORD2
+endQuery			KEYWORD2
+sendPhotoByFile		KEYWORD2
+sendToChannel		KEYWORD2
+sendTo				KEYWORD2
+sendPhotoByUrl		KEYWORD2
+getBotName			KEYWORD2
+
+addRow	    KEYWORD2
+addButton	KEYWORD2
+getJson	    KEYWORD2
+getPretty	KEYWORD2
+getFile		KEYWORD2
+getMe		KEYWORD2
+
+TBUser		KEYWORD3
+TBMessage	KEYWORD3
+TBLocation	KEYWORD3
+TBGroup		KEYWORD3
+TBContact	KEYWORD3
+TBDocument	KEYWORD3
+MessageType	KEYWORD3
+
+InlineKeyboardButtonType	KEYWORD3
+ReplyKeyboardButtonType	    KEYWORD3
+
+MessageNoData		LITERAL1
+MessageText			LITERAL1
+MessageQuery		LITERAL1
+MessageLocation		LITERAL1
+MessageContact		LITERAL1
+MessageDocument		LITERAL1
+MessageReply		LITERAL1
+
+KeyboardButtonURL	LITERAL1
+KeyboardButtonQuery	LITERAL1
