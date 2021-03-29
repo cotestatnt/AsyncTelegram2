@@ -70,11 +70,11 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
         request += "\nContent-Length: ";
         request += measureJson(doc);
         request += "\n\n";
-        request += doc.as<String>();
+        //request += doc.as<String>();
 
         telegramClient->print(request);
         // Serializing to stream don't work well as expected.
-        // telegramClient->write((uint8_t*) doc.as<String>().c_str(), measureJson(doc));
+        telegramClient->write((uint8_t*) doc.as<String>().c_str(), measureJson(doc));
         m_waitingReply = true;
 
         // Blocking mode
@@ -92,7 +92,6 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
                 payload  += (char) telegramClient->read();
             }
             m_waitingReply = false;
-            doc.clear();
             deserializeJson(doc, payload);
             return true;
         }
@@ -114,14 +113,13 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
 
         // If previuos reply from server was received (and parsed)
         if( m_waitingReply == false ) {
-            StaticJsonDocument<BUFFER_SMALL> smallDoc;
-            smallDoc["limit"] = 1;
-            smallDoc["timeout"] = 0;    // polling timeout: add &timeout=<seconds. zero for short polling.
-            smallDoc["allowed_updates"] = "message,callback_query,inline_query";
+            StaticJsonDocument<BUFFER_SMALL> updateDoc;
+            updateDoc["limit"] = 1;
+            updateDoc["timeout"] = 0;    // polling timeout: add &timeout=<seconds. zero for short polling.
             if (m_lastUpdateId != 0) {
-                smallDoc["offset"] = m_lastUpdateId;
+                updateDoc["offset"] = m_lastUpdateId;
             }
-            sendCommand("getUpdates", smallDoc);
+            sendCommand("getUpdates", updateDoc);
         }
     }
 
@@ -148,10 +146,11 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
 MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 {
     message.messageType = MessageNoData;
-    DynamicJsonDocument root(BUFFER_MEDIUM);
+    DynamicJsonDocument root(BUFFER_BIG);
     // We have a message, parse data received
     if (getUpdates(root)) {
         root.shrinkToFit();
+
         if (!root.containsKey("ok")) {
             log_error("deserializeJson() failed with code");
             return MessageNoData;
@@ -227,7 +226,6 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 message.messageType = MessageText;
             }
         }
-        root.clear();
         return message.messageType;
     }
     return MessageNoData;   // waiting for reply from server
@@ -352,6 +350,7 @@ void AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool al
         else
             smallDoc["show_alert"] = false;
     }
+    serializeJsonPretty(smallDoc, Serial);
     sendCommand("answerCallbackQuery", smallDoc);
 }
 

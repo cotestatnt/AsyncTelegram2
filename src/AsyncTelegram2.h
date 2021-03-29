@@ -8,7 +8,7 @@
 #include "Client.h"
 #include "time.h"
 
-#define DEBUG_ENABLE        0
+#define DEBUG_ENABLE        1
 #ifndef DEBUG_ENABLE
     #define DEBUG_ENABLE    0
 #endif
