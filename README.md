@@ -36,11 +36,6 @@ With Ethernet adapter, but not only, i wold strongly suggest to use this library
 ### Supported boards
 The library works virtually with any kind of baord capable of SSL connection.
 
-```
- myBot.setClock("CET-1CEST,M3.5.0,M10.5.0/3");
-```
-with corresponding city time zone string.
-
 ### Simple and responsive usage
 Take a look at the examples provided in the [examples folder](https://github.com/cotestatnt/AsyncTelegram2/tree/master/examples).
 
