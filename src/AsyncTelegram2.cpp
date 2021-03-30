@@ -60,7 +60,7 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
     if(checkConnection()) {
         // JsonDocument doc is used as input for request preparation and then reused as output result
         String request((char *)0);
-        request.reserve(BUFFER_BIG);
+        request.reserve(BUFFER_SMALL);
         request = "POST https://" TELEGRAM_HOST "/bot";
         request += m_token;
         request += "/";
@@ -71,10 +71,10 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
         request += measureJson(doc);
         request += "\n\n";
         //request += doc.as<String>();
-
         telegramClient->print(request);
+        telegramClient->print(doc.as<String>());
         // Serializing to stream don't work well as expected.
-        telegramClient->write((uint8_t*) doc.as<String>().c_str(), measureJson(doc));
+        //telegramClient->write((uint8_t*) doc.as<String>().c_str(), measureJson(doc));
         m_waitingReply = true;
 
         // Blocking mode
@@ -92,7 +92,9 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
                 payload  += (char) telegramClient->read();
             }
             m_waitingReply = false;
+            doc.clear();
             deserializeJson(doc, payload);
+            //serializeJson(doc, Serial);
             return true;
         }
     }
@@ -271,7 +273,6 @@ bool AsyncTelegram2::getFile(TBDocument &doc)
 
 bool AsyncTelegram2::noNewMessage() {
     StaticJsonDocument<BUFFER_SMALL> smallDoc;
-    smallDoc["allowed_updates"] = "message,callback_query,inline_query";
     smallDoc["offset"] = m_lastUpdateId;
     return sendCommand("getUpdates", smallDoc, true);
 }
@@ -350,7 +351,7 @@ void AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool al
         else
             smallDoc["show_alert"] = false;
     }
-    serializeJsonPretty(smallDoc, Serial);
+    smallDoc["cache_time"] = 10;
     sendCommand("answerCallbackQuery", smallDoc);
 }
 
