@@ -70,6 +70,13 @@ void setup() {
   // give the Ethernet shield a second to initialize:
   delay(1000);
 
+  /* 
+    According to library documentation, if system time was not set (for example with a NTP or RTC module),
+    certificate date validation process will take compilation time as default and therefore 
+    this could be not more valid after days without updating time. 
+    Due this is very specific of your hardware, be sure to keep updated system time to avoid issues.
+  */
+  
   // Set the Telegram bot properies
   myBot.setUpdateTime(2000);
   myBot.setTelegramToken(token);
