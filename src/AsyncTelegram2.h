@@ -23,10 +23,11 @@
 #define SERVER_TIMEOUT      10000
 #define MIN_UPDATE_TIME     500
 
-#if defined(ESP8266)
-#define BLOCK_SIZE          2048
+#if defined(RAMEND) && defined(RAMSTART) && ((RAMEND - RAMSTART) <= 2048)
+    #define LOW_SRAM   true
+    #define BLOCK_SIZE 2048
 #else
-#define BLOCK_SIZE          4096
+    #define BLOCK_SIZE 4096
 #endif
 
 #include "DataStructures.h"
@@ -143,6 +144,7 @@ public:
         return sendMessage(msg, message, keyboard.getJSON());
     }
 
+    void forwardMessage(const TBMessage &msg, const int32_t to_chatid);
 
     // Send message to a specific user. In order to work properly two conditions is needed:
     //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)

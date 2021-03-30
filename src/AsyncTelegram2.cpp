@@ -148,10 +148,16 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
 MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 {
     message.messageType = MessageNoData;
+    #ifdef LOW_SRAM
     DynamicJsonDocument root(BUFFER_BIG);
+    #else
+    StaticJsonDocument<BUFFER_BIG> root;
+    #endif
     // We have a message, parse data received
     if (getUpdates(root)) {
+        #ifdef LOW_SRAM
         root.shrinkToFit();
+        #endif
 
         if (!root.containsKey("ok")) {
             log_error("deserializeJson() failed with code");
@@ -309,6 +315,18 @@ void AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, Stri
     root.shrinkToFit();
     debugJson(root, Serial);
     sendCommand("sendMessage", root);
+}
+
+
+void AsyncTelegram2::forwardMessage(const TBMessage &msg, const int32_t to_chatid)
+{
+    StaticJsonDocument<BUFFER_SMALL> doc;
+    doc["chat_id"] = to_chatid;
+    doc["from_chat_id"] = msg.chatId;
+    doc["message_id"] = msg.messageID;
+    sendCommand("forwardMessage", doc);
+    debugJson(doc, Serial);
+
 }
 
 
