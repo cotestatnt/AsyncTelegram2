@@ -31,6 +31,7 @@ With Ethernet adapter, but not only, i wold strongly suggest to use this library
 + Receive localization messages
 + Receive contacts messages 
 + Remote OTA updates (examples only for Espressif's MCU)
++ Forward any kind of message to user or group
 
 ### To do
 + Send documents (partially done with pictures)
