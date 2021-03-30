@@ -24,7 +24,7 @@ With Ethernet adapter, but not only, i wold strongly suggest to use this library
 + **this library work with ArduinoJson library V6.x _**
 
 ### Features
-+ Send and receive non-blocking messages to Telegram bot (formatting HTML or Markdown V2 supported, silent mode supported)
++ Send and receive non-blocking messages to Telegram bot ([formatting HTML or Markdown V2 supported](https://core.telegram.org/bots/api#formatting-options), disable notification mode supported)
 + Send picture both from url and from any kind of filesystem (SPIFFS, LittleFS, FFAT, SD etc etc )
 + Inline keyboards (with support for callback function)
 + Reply keyboards 
