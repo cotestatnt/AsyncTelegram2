@@ -1,11 +1,11 @@
 # Reference
 Here you can find an explanation of the functionalities provided and how to use the library. 
-Check the [examples folder](https://github.com/cotestatnt/AsyncTelegram/tree/master/examples) for demos and examples.
+Check the [examples folder](https://github.com/cotestatnt/AsyncTelegram2/tree/master/examples) for demos and examples.
 ___
 ## Table of contents
 + [Introduction and quick start](#introduction-and-quick-start)
 + [Inline Keyboards](#inline-keyboards)
-  + [Using Inline Keyboards into AsyncTelegram class](#using-inline-keyboards-into--class)
+  + [Using Inline Keyboards into AsyncTelegram2 class](#using-inline-keyboards-into--class)
   + [Handling callback messages](#handling-callback-messages)
 + [Data types](#data-types)
   + [TBUser](#tbuser)
@@ -17,30 +17,29 @@ ___
   + [MessageType](#messagetype)
   + [InlineKeyboardButtonType](#inlinekeyboardbuttontype)
 + [Basic methods](#basic-methods)
-  + [AsyncTelegram::setTelegramToken()](#settelegramtoken)
-  + [AsyncTelegram::testConnection()](#testconnection)
-  + [AsyncTelegram::getNewMessage()](#getnewmessage)
-  + [AsyncTelegram::sendMessage()](#sendmessage)
-  + [AsyncTelegram::endQuery()](#endquery)
-  + [AsyncTelegram::removeReplyKeyboard()](#removereplykeyboard)
+  + [AsyncTelegram2::setTelegramToken()](#settelegramtoken)
+  + [AsyncTelegram2::testConnection()](#testconnection)
+  + [AsyncTelegram2::getNewMessage()](#getnewmessage)
+  + [AsyncTelegram2::sendMessage()](#sendmessage)
+  + [AsyncTelegram2::endQuery()](#endquery)
+  + [AsyncTelegram2::removeReplyKeyboard()](#removereplykeyboard)
   + [InlineKeyboard::addButton()](#inlinekeyboardaddbutton)
   + [InlineKeyboard::addRow()](#inlinekeyboardaddrow)
   + [InlineKeyboard::flushData()](#inlinekeyboardflushdata)
   + [InlineKeyboard::getJSON()](#inlinekeyboardgetjson)
-+ [Configuration methods](#configuration-methods)
-  + [AsyncTelegram::useDNS()](#usedns)
-  + [AsyncTelegram::enableUTF8Encoding()](#enableutf8encoding)
-  + [AsyncTelegram::setFingerprint()](#setfingerprint)
-  + [AsyncTelegram::updateFingerprint()](#updatefingerprint)
 ___
 ## Introduction and quick start
-Once installed the library, you have to load it in your sketch...
+Once installed the library, you have to load it in your sketch and define wich type of HTTP client will be used for connection
 ```c++
-#include "AsyncTelegram.h"
+#include "AsyncTelegram2.h"
+BearSSL::WiFiClientSecure client;
+BearSSL::Session   session;
+BearSSL::X509List  certificate(telegram_cert);  // telegram_cert is a const char array define in AsyncTelegram2
+ 
 ```
-...and instantiate a `AsyncTelegram` object
+...at this point you can instantiate a `AsyncTelegram2` object, passing the client as parameter
 ```c++
-AsyncTelegram myBot;
+AsyncTelegram2 myBot(client);
 ```
 ...Use the `setTelegramToken()` member function to set your Telegram Bot token in order establish connections with the bot
 ```c++
@@ -59,19 +58,19 @@ To send a simple message to a Telegram user, use the `sendMessage(TBMessage msg,
 ```c++
 myBot.sendMessage(msg, "message");
 ```
-See the [echoBot example](https://github.com/cotestatnt/AsyncTelegram/blob/master/examples/echoBot/echoBot.ino) for further details.
+See the [echoBot example](https://github.com/cotestatnt/AsyncTelegram2/blob/master/examples/echoBot/echoBot.ino) for further details.
 
 [back to TOC](#table-of-contents)
 ___
 ## Inline Keyboards
 The Inline Keyboards are special keyboards integrated directly into the messages they belong to: pressing buttons on inline keyboards doesn't result in messages sent to the chat. Instead, inline keyboards support buttons that work behind the scenes.
-AsyncTelegram class implements the following buttons:
+AsyncTelegram2 class implements the following buttons:
 + URL buttons: these buttons have a small arrow icon to help the user understand that tapping on a URL button will open an external link. A confirmation alert message is shown before opening the link in the browser.
 + Callback buttons: when a user presses a callback button, no messages are sent to the chat. Instead, the bot simply receives the relevant query. Upon receiving the query, the bot can display some result in a notification at the top of the chat screen or in an alert. It's also possible associate a callback function that will be executed when user press the inline keyboard button.
 
 [back to TOC](#table-of-contents)
 
-### Using Inline Keyboards into AsyncTelegram class
+### Using Inline Keyboards into AsyncTelegram2 class
 In order to show an inline keyboard, use the method [sendMessage()](#sendmessage) specifing the parameter `keyboard`.
 The `keyboard` parameter is a string that contains a JSON structure that define the inline keyboard. See [Telegram docs](https://core.telegram.org/bots/api#sendmessage).<br>
 To simplify the creation of an inline keyboard, there is an helper class called `InlineKeyboard`.
@@ -96,6 +95,11 @@ kbd.addRow();
 kbd.addButton("New Row Button label", "URL for the new row button", KeyboardButtonURL); // URL button
 ...
 ```
+If you plan to use callback functions associated to inlineQuery buttons, add the pointer to just defined InlineKeyboard object to the AsyncTelegram2 instance
+```c++
+myBot.addInlineKeyboard(&kbd);
+...
+```
 Once finished, send the inline keyboard using the `sendMessage` method:
 ```c++
 myBot.sendMessage(<msg>, "message", kbd);
@@ -108,16 +112,17 @@ Everytime an inline keyboard button is pressed, a special message is sent to the
 When query button is pressed, is mandatory to notify the Telegram Server the end of the query process by calling the `endQuery()` method.
 Here an example:
 ```c++
-#include "AsyncTelegram.h"
+.....
+
+AsyncTelegram2 myBot(client);
 #define CALLBACK_QUERY_DATA  "QueryData"  // callback data sent when the button is pressed
-AsyncTelegram myBot;
 InlineKeyboard myKbd;  // custom inline keyboard object helper
 
 void setup() {
-   Serial.begin(115200); // initialize the serial
-   WiFi.mode(WIFI_STA); 	
-   WiFi.begin(ssid, pass);
-   myBot.setTelegramToken("myTelegramBotToken"); // set the telegram bot token
+  Serial.begin(115200); // initialize the serial
+  WiFi.mode(WIFI_STA); 	
+  WiFi.begin(ssid, pass);
+  myBot.setTelegramToken("myTelegramBotToken"); // set the telegram bot token
 
 	// inline keyboard - only a button called "My button"
 	myKbd.addButton("My button", CALLBACK_QUERY_DATA, KeyboardButtonQuery);
@@ -145,7 +150,7 @@ void loop() {
 	delay(500); // wait 500 milliseconds
 }
 ```
-See the [keyboards example](https://github.com/shurillu/AsyncTelegram/blob/master/examples/keyboards/keyboards.ino) for further details. <br>
+See the [keyboards example](https://github.com/shurillu/AsyncTelegram2/blob/master/examples/keyboards/keyboards.ino) for further details. <br>
 
 [back to TOC](#table-of-contents)
 ___
@@ -154,16 +159,16 @@ There are several usefully data structures used to store data typically sent by 
 ### `TBUser`
 `TBUser` data type is used to store user data like Telegram userID. The data structure contains:
 ```c++
-uint32_t     id;
-bool         isBot;
-const char*  firstName;
-const char*  lastName;
-const char*  username;
-const char*  languageCode;
+  bool          isBot;
+  int32_t       id = 0;
+  const char*   firstName;
+  const char*   lastName;
+  const char*   username;
+  const char*   languageCode;
 ```
 where:
-+ `id` is the unique Telegram user ID
 + `isBot` tells if the user ID `id` refers to a bot (`true` value) or not (`false ` value)
++ `id` is the unique Telegram user ID
 + `firstName` contains the first name (if provided) of the user ID `id`
 + `lastName` contains the last name (if provided) of the user ID `id`
 + `username` contains the username of the user ID `id`
@@ -201,17 +206,17 @@ where:
 ### `TBContact`
 `TBContact` data type is used to store the contact data. The data structure contains:
 ```c++
-const char*   phoneNumber;
-const char*   firstName;
-const char*   lastName;
-int32_t       id;
-const char*   vCard;
+  int32_t 	   id;
+  const char*  phoneNumber;
+  const char*  firstName;
+  const char*  lastName;
+  const char*  vCard;
 ```
 where:
++ `id` contains the ID of the contact
 + `phoneNumber` contains the phone number of the contact
 + `firstName` contains the first name of the contact
 + `lastName` contains the last name of the contact
-+ `id` contains the ID of the contact
 + `vCard` contains the vCard of the contact
 
 [back to TOC](#table-of-contents)
@@ -220,30 +225,40 @@ where:
 ### `TBMessage`
 `TBMessage` data type is used to store new messages. The data structure contains:
 ```c++
-uint32_t         messageID;
-TBUser           sender;
-TBGroup          group;
-uint32_t         date;
-const char*      text;
-const char*      chatInstance;
-const char*      callbackQueryData;
-const char*      callbackQueryID;
-TBLocation       location;
-TBcontact        contact;
-MessageType      messageType;
+  MessageType 	  messageType;
+  bool			      isHTMLenabled = false;
+  bool       		  isMarkdownEnabled = false;
+  bool 	     	    disable_notification = false;
+  bool			      force_reply = false;
+  int32_t         date;
+  int32_t         chatInstance;
+  int64_t         chatId;
+  int32_t         messageID;
+  TBUser          sender;
+  TBGroup         group;
+  TBLocation      location;
+  TBContact       contact;
+  TBDocument      document;
+  const char*     callbackQueryData;
+  const char*   	callbackQueryID;
+  String      	  text;
 ```
 where:
++ `isHTMLenabled` enable HTML-style messages [https://core.telegram.org/bots/api#formatting-options](formatting options)
++ `isMarkdownEnabled` enable markdown-style v2 messages [https://core.telegram.org/bots/api#formatting-options](formatting options)
++ `disable_notification` send a message in "silent mode"
++ `force_reply` send a message as reply to a message
++ `messageType` contains the message type. See [CTBotMessageType](#messagetype)
 + `messageID` contains the unique message identifier associated to the received message
 + `sender` contains the sender data in a [TBUser](#tbuser) structure
 + `group` contains the group chat data in a [TBGroup](#tbgroup) structure
 + `date` contains the date when the message was sent, in Unix time
-+ `text` contains the received message (if a text message is received - see [AsyncTelegram::getNewMessage()](#getnewmessage))
++ `text` contains the received message (if a text message is received - see [AsyncTelegram2::getNewMessage()](#getnewmessage))
 + `chatInstance` contains the unique ID corresponding to the chat to which the message with the callback button was sent
 + `callbackQueryData` contains the data associated with the callback button
 + `callbackQueryID` contains the unique ID for the query
-+ `location` contains the location's longitude and latitude (if a location message is received - see [AsyncTelegram::getNewMessage()](#getnewmessage))
++ `location` contains the location's longitude and latitude (if a location message is received - see [AsyncTelegram2::getNewMessage()](#getnewmessage))
 + `contact` contains the contact information a [TBContact](#tbcontact) structure
-+ `messageType` contains the message type. See [CTBotMessageType](#messagetype)
 
 [back to TOC](#table-of-contents)
 ___
@@ -255,10 +270,12 @@ Enumerator used to define the possible message types received by [getNewMessage(
 ```c++
 enum MessageType {
 	MessageNoData   = 0,
-	MessageText     = 1,
-	MessageQuery    = 2,
-	MessageLocation = 3,
-	MessageContact  = 4
+  MessageText     = 1,
+  MessageQuery    = 2,
+  MessageLocation = 3,
+  MessageContact  = 4,
+  MessageDocument = 5,
+  MessageReply 	= 6
 };
 ```
 where:
@@ -267,6 +284,8 @@ where:
 + `MessageQuery`: the [TBMessage](#tbmessage) structure contains a calback query message (see [Inline Keyboards](#inline-keyboards))
 + `MessageLocation`: the [TBMessage](#tbmessage) structure contains a localization message
 + `MessageContact`: the [TBMessage](#tbmessage) structure contains a contact message
++ `MessageDocument`: the [TBMessage](#tbmessage) structure contains a document message
++ `MessageReply`: the [TBMessage](#tbmessage) structure contains a forced reply message
 
 [back to TOC](#table-of-contents)
 
@@ -288,11 +307,11 @@ where:
 
 ___
 ## Basic methods
-Here you can find the basic member function. First you have to instantiate a AsyncTelegram object, like ` myBot`, then call the desired member function as `myBot.myDesiredFunction()`
+Here you can find the basic member function. First you have to instantiate a AsyncTelegram2 object, like ` myBot`, then call the desired member function as `myBot.myDesiredFunction()`
 
 [back to TOC](#table-of-contents)
-### `AsyncTelegram::setTelegramToken()`
-`void AsyncTelegram::setTelegramToken(String token)` <br><br>
+### `AsyncTelegram2::setTelegramToken()`
+`void AsyncTelegram2::setTelegramToken(String token)` <br><br>
 Set the Telegram Bot token. If you need infos about Telegram Bot and how to obtain a token, take a look  [here](https://core.telegram.org/bots#6-botfather). <br>
 Parameters:
 + `token`: the token that identify the Telegram Bot
@@ -303,15 +322,13 @@ Example:
 
 
 [back to TOC](#table-of-contents)
-### `AsyncTelegram::begin()`
-`bool AsyncTelegram::begin(void)` <br><br>
-Check the connection between ESP8266 board and the Telegram server. <br>
+### `AsyncTelegram2::begin()`
+`bool AsyncTelegram2::begin(void)` <br><br>
+Check the connection between board and the Telegram server. <br>
 Parameters: none <br>
-Returns: `true` if the ESP8266 is able to send/receive data to/from the Telegram server. <br>
+Returns: `true` if the board is able to send/receive data to/from the Telegram server. <br>
 Example:
 ```c++
-#include "AsyncTelegram.h"
-AsyncTelegram myBot;
 void setup() {
    Serial.begin(115200); // initialize the serial
    myBot.wifiConnect("mySSID", "myPassword"); // connect to the WiFi Network
@@ -326,23 +343,19 @@ void loop() {
 ```
 
 [back to TOC](#table-of-contents)
-### `AsyncTelegram::getNewMessage()`
+### `AsyncTelegram2::getNewMessage()`
 
-`AsyncTelegramMessageType AsyncTelegram::getNewMessage(TBMessage &message)` <br><br>
+`MessageType AsyncTelegram2::getNewMessage(TBMessage &message)` <br><br>
 Get the first unread message from the message queue. Fetch text message and callback query message (for callback query messages, see [Inline Keyboards](#inline-keyboards)). This is a destructive operation: once read, the message will be marked as read so a new `getNewMessage` will fetch the next message (if any). <br>
 Parameters:
 + `message`: a `TBMessage` data structure that will contains the message data retrieved
 
 Returns:
-+ `MessageNoData` if an error occurred
-+ `MessageText` if the message received is a text message 
-+ `MessageQuery` if the message received is a callback query message (see [Handling callback messages](#handling-callback-messages))
-+ `MessageLocation` if the message received is a location message
-+ `MessageContact` if the message received is a contact message
++ `MessageType` if no error occurs
 
 
 [back to TOC](#table-of-contents)
-### `AsyncTelegram::sendMessage()`
+### `AsyncTelegram2::sendMessage()`
 `void sendMessage(const TBMessage &msg, const char* message, String keyboard = "");` <br>
 `void sendMessage(const TBMessage &msg, String &message, String keyboard = "");` <br>
 `void sendMessage(const TBMessage &msg, const char* message, ReplyKeyboard  &keyboard);` <br>
@@ -363,10 +376,7 @@ Parameters:
 [back to TOC](#table-of-contents)
 
 
-
-
-
-### `AsyncTelegram::removeReplyKeyboard()`
+### `AsyncTelegram2::removeReplyKeyboard()`
 `bool removeReplyKeyboard(int64_t id, String message, bool selective = false)` <br><br>
 Remove an active replyKeyboard for a specified user by sending a message. <br>
 Parameters:
@@ -377,8 +387,6 @@ Parameters:
 Returns: `true` if no error occurred. <br>
 
 [back to TOC](#table-of-contents)
-
-
 
 
 ### `InlineKeyboard::addButton()`
@@ -413,86 +421,3 @@ Parameters: none <br>
 Returns: the JSON of the inline keyboard <br>
 
 [back to TOC](#table-of-contents)
-
-___
-## Configuration methods
-With the following methods, is possible to change the behavior of the AsyncTelegram instantiated object.
-
-[back to TOC](#table-of-contents)
-### `AsyncTelegram::useDNS()`
-`void AsyncTelegram::useDNS(bool value)` <br><br>
-Define which kind of address (symbolic address or fixed IP) will be used to establish connections with the Telegram server. <br>
-Default value is `false` (use fixed IP) <br>
-Is better to use fixed IP when no DNS server are provided. <br>
-Parameters:
-+ `value`: set `true` if you want to use the URL style address "api.telegram.org" or set `false` if you want to use the fixed IP address "149.154.167.198".
-
-Returns: none. <br>
-Examples:
-+ `useDNS(true)`: for every connection with the Telegram server, will be used the URL style address "api.telegram.org"
-+ `useDNS(false)`: for every connection with the Telegram server, will be used the fixed IP address "149.154.167.198"
-
-[back to TOC](#table-of-contents)
-### `AsyncTelegram::enableUTF8Encoding()`
-`void AsyncTelegram::enableUTF8Encoding(bool value)` <br><br>
-Tipically, Telegram server encodes messages with an UNICODE like format. This mean for example that a '€' character is sent by Telegram server encoded in this form \u20AC (UNICODE). For some weird reasons, the backslash character disappears and the message you get is u20AC thus is impossible to correctly decode an incoming message.
-Encoding the received message with UTF8 encoding format will solve the problem.
-Encoding messages in UTF8 format will consume a bit of CPU time. <br>
-Default value is `false` (no UTF8 conversion). <br>
-Parameters:
-+ `value`: set `true`to enable the UTF8 encoding for all incoming messages; set `false`to disable this feature.
-
-Returns: none. <br>
-Examples:
-+ `enableUTF8Encoding(true)`: every incoming message will be encoded in UTF8
-+ `enableUTF8Encoding(false)`: every incoming message is encoded as Telegram server do
-
-[back to TOC](#table-of-contents)
-### `AsyncTelegram::setFingerprint()`
-`void AsyncTelegram::setFingerprint(const uint8_t *newFingerprint)` <br><br>
-Set the new Telegram API server fingerprint overwriting the default one.
-The fingerprint can be obtained by [this service](https://www.grc.com/fingerprints.htm) provided by Gibson Research Corporation. To obtain the new fingerprint, just query for `api.telegram.org`
-
-Default value is `BB:DC:45:2A:07:E3:4A:71:33:40:32:DA:BE:81:F7:72:6F:4A:2B:6B`.<br>
-Parameters:
-+ `newFingerprint`: the 20 bytes array that contains the new fingerprint.
-
-Returns: none. <br>
-Example:
-```c++
-void setup() {
-   ...
-   uint8_t telegramFingerprint [20] = { 0xBB, 0xDC, 0x45, 0x2A, 0x07, 0xE3, 0x4A, 0x71, 0x33, 0x40, 0x32, 0xDA, 0xBE, 0x81, 0xF7, 0x72, 0x6F, 0x4A, 0x2B, 0x6B };
-   myBot.setFingerprint(telegramFingerprint);
-   ...
-}
-
-void loop(){
-   ...
-}
-```
-[back to TOC](#table-of-contents)
-
-
-
-[back to TOC](#table-of-contents)
-### `AsyncTelegram::updateFingerprint()`
-`bool AsyncTelegram::updateFingerPrint(void);` <br><br>
-Parse the reply obtained from online service [this service](https://www.grc.com/fingerprints.htm?chain=api.telegram.org) and set the new Telegram API server fingerprint overwriting the default one.
-
-Returns: none. <br>
-Example:
-```c++
-void setup() {
-   ...
-   myBot.updateFingerprint();
-   ...
-}
-
-void loop(){
-   ...
-}
-```
-[back to TOC](#table-of-contents)
-
-
