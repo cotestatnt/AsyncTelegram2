@@ -4,16 +4,15 @@
 #include "certificates.h"
 #include <AsyncTelegram2.h>
 
-const char* token =  "1687740791:AAHcz-sinj0A8fP9U1mjt2X0g8Ym_akjBI8";
+const char* token =  "xxxxxxxxx:xxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 
 // Set the static IP address to use if the DHCP fails to assign
-IPAddress ip(192, 168, 2, 177);
-IPAddress myDns(192, 168, 2, 1);
-
+IPAddress ip(192, 168, 1, 177);
+IPAddress myDns(192, 168, 1, 1);
 
 EthernetClient base_client;
 SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR );
@@ -102,6 +101,7 @@ void setup() {
   myInlineKbd.addButton("OFF", LIGHT_OFF_CALLBACK, KeyboardButtonQuery);
   myInlineKbd.addRow();
   myInlineKbd.addButton("GitHub", "https://github.com/cotestatnt/AsyncTelegram2/", KeyboardButtonURL);
+  myBot.addInlineKeyboard(&myInlineKbd);
 
   // Add another inline keyboard
   myInlineKbd2.addButton("Button 1", BUTTON1_CALLBACK, KeyboardButtonQuery, button1Pressed);
@@ -126,7 +126,7 @@ void loop() {
     digitalWrite(BLINK_LED, !digitalRead(BLINK_LED));
   }
 
-// a variable to store telegram message data
+  // a variable to store telegram message data
   TBMessage msg;
 
   // if there is an incoming message...
