@@ -9,10 +9,11 @@
 //// Select camera model in camera.h ////
 /////////////////////////////////////////
 
-
 #include "camera.h"
 #include "soc/soc.h"           // Brownout error fix
 #include "soc/rtc_cntl_reg.h"  // Brownout error fix
+#include "soc/timer_group_struct.h"  // Feed the task watchdog
+#include "soc/timer_group_reg.h"     // Feed the task watchdog
 
 // Define where store images (on board SD card reader or internal flash memory)
 #include <FS.h>
@@ -138,6 +139,7 @@ bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
     }
     else
         Serial.println("Not enough space avalaible");
+    // free(out_buf);
     // esp_camera_fb_return(fb);
 
     // Open again in reading mode and send stream to AyncTelegram
@@ -156,6 +158,10 @@ bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
 static void checkTelegram(void * args) {
   Serial.print("\nStart task 'checkTelegram'\n");
   while (true) {
+    // feed dog 1
+    TIMERG1.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
+    TIMERG1.wdt_feed=1;                       // feed dog
+    TIMERG1.wdt_wprotect=0;                   // write protect
     // A variable to store telegram message data
     TBMessage msg;
     MessageType msgType = myBot.getNewMessage(msg);
@@ -183,7 +189,7 @@ static void checkTelegram(void * args) {
 
         }
     }
-    vTaskDelay(10);
+    vTaskDelay(100);
   }
   Serial.print("\nDelete task 'checkTelegram'\n");
   // Delete this task on exit (should never occurs)
@@ -270,3 +276,4 @@ void setup() {
 void loop() {
     printHeapStats();
 }
+
