@@ -23,7 +23,8 @@
 #define SERVER_TIMEOUT      10000
 #define MIN_UPDATE_TIME     500
 
-#if defined(RAMEND) && defined(RAMSTART) && ((RAMEND - RAMSTART) <= 2048)
+// TODO! Find a best way to figure out avalaible SRAM size
+#if defined(ESP8266)
     #define LOW_SRAM   true
     #define BLOCK_SIZE 2048
 #else
@@ -127,47 +128,47 @@ public:
     //   message : the message to send
     //   keyboard: the inline/reply keyboard (optional)
     //             (in json format or using the inlineKeyboard/ReplyKeyboard class helper)
-    void sendMessage(const TBMessage &msg, const char* message, String keyboard = "");
+    bool sendMessage(const TBMessage &msg, const char* message, String keyboard = "");
 
     // sendMessage function overloads
-    inline void sendMessage(const TBMessage &msg, const String &message, String keyboard = "")
+    inline bool sendMessage(const TBMessage &msg, const String &message, String keyboard = "")
     {
         return sendMessage(msg, message.c_str(), keyboard);
     }
 
-    inline void sendMessage(const TBMessage &msg, const char* message, InlineKeyboard &keyboard)
+    inline bool sendMessage(const TBMessage &msg, const char* message, InlineKeyboard &keyboard)
     {
         return sendMessage(msg, message, keyboard.getJSON());
     }
 
-    inline void sendMessage(const TBMessage &msg, const char* message, ReplyKeyboard &keyboard) {
+    inline bool sendMessage(const TBMessage &msg, const char* message, ReplyKeyboard &keyboard) {
         return sendMessage(msg, message, keyboard.getJSON());
     }
 
-    void forwardMessage(const TBMessage &msg, const int32_t to_chatid);
+    bool forwardMessage(const TBMessage &msg, const int32_t to_chatid);
 
     // Send message to a specific user. In order to work properly two conditions is needed:
     //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)
     //  - User has to start your bot in it's own client. For example send a message with @<your bot name>
-    void sendTo(const int32_t userid, const char* message, String keyboard = "") {
+    bool sendTo(const int32_t userid, const char* message, String keyboard = "") {
         TBMessage msg;
         msg.chatId = userid;
         return sendMessage(msg, message, keyboard);
     }
 
     // sendTo function overloads
-    inline void sendTo(const int32_t userid, const String &message, String keyboard = "") {
-        sendTo(userid, message, keyboard );
+    inline bool sendTo(const int32_t userid, const String &message, String keyboard = "") {
+        return sendTo(userid, message, keyboard );
     }
 
     // Send message to a channel. This bot must be in the admin group
-    void sendToChannel(const char*  &channel, const String &message, bool silent) ;
+    bool sendToChannel(const char*  &channel, const String &message, bool silent) ;
 
     // Send a picture passing the url
-    void sendPhotoByUrl(const uint32_t& chat_id,  const String& url, const String& caption);
+    bool sendPhotoByUrl(const uint32_t& chat_id,  const String& url, const String& caption);
 
-    inline void sendPhotoByUrl(const TBMessage &msg,  const String& url, const String& caption){
-        sendPhotoByUrl(msg.sender.id, url, caption);
+    inline bool sendPhotoByUrl(const TBMessage &msg,  const String& url, const String& caption){
+        return sendPhotoByUrl(msg.sender.id, url, caption);
     }
 
     // Send a picture stored in local memory
@@ -184,7 +185,7 @@ public:
     //   message  : an optional message
     //   alertMode: false -> a simply popup message
     //              true --> an alert message with ok button
-    void endQuery(const TBMessage &msg, const char* message, bool alertMode = false);
+    bool endQuery(const TBMessage &msg, const char* message, bool alertMode = false);
 
     // remove an active reply keyboard for a selected user, sending a message
     // params:
@@ -195,7 +196,7 @@ public:
     //                       2) if the bot's message is a reply (has reply_to_message_id), sender of the original message
     // return:
     //   true if no error occurred
-    void removeReplyKeyboard(const TBMessage &msg, const char* message, bool selective = false);
+    bool removeReplyKeyboard(const TBMessage &msg, const char* message, bool selective = false);
 
     // Get the current bot name
     // return:

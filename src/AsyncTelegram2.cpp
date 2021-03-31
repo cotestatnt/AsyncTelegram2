@@ -59,43 +59,36 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
 {
     if(checkConnection()) {
         // JsonDocument doc is used as input for request preparation and then reused as output result
-        String request((char *)0);
-        request.reserve(BUFFER_SMALL);
-        request = "POST https://" TELEGRAM_HOST "/bot";
-        request += m_token;
-        request += "/";
-        request += command;
+        String httpBuffer((char *)0);
+        httpBuffer.reserve(BUFFER_BIG);
+        httpBuffer = "POST https://" TELEGRAM_HOST "/bot";
+        httpBuffer += m_token;
+        httpBuffer += "/";
+        httpBuffer += command;
         // Let's use 1.0 protocol in order to avoid chunked transfer encoding
-        request += " HTTP/1.0" "\nHost: api.telegram.org" "\nConnection: keep-alive" "\nContent-Type: application/json";
-        request += "\nContent-Length: ";
-        request += measureJson(doc);
-        request += "\n\n";
-        //request += doc.as<String>();
-        telegramClient->print(request);
-        telegramClient->print(doc.as<String>());
-        // Serializing to stream don't work well as expected.
-        //telegramClient->write((uint8_t*) doc.as<String>().c_str(), measureJson(doc));
+        httpBuffer += " HTTP/1.0" "\nHost: api.telegram.org" "\nConnection: keep-alive" "\nContent-Type: application/json";
+        httpBuffer += "\nContent-Length: ";
+        httpBuffer += measureJson(doc);
+        httpBuffer += "\n\n";
+        httpBuffer += doc.as<String>();
+        telegramClient->print(httpBuffer);
         m_waitingReply = true;
 
         // Blocking mode
         if (blocking) {
-            String payload((char *)0);
-            payload.reserve(BUFFER_BIG);
+            httpBuffer.clear();
             if (telegramClient->connected()) {
-                yield();
                 // skip headers
                 telegramClient->find("\r\n\r\n");
             }
             // If there are incoming bytes available from the server, read them and print them:
             while (telegramClient->available()) {
                 yield();
-                payload  += (char) telegramClient->read();
+                httpBuffer  += (char) telegramClient->read();
             }
             m_waitingReply = false;
-            doc.clear();
-            deserializeJson(doc, payload);
-            //serializeJson(doc, Serial);
-            return true;
+            DeserializationError err = deserializeJson(doc, httpBuffer);
+            return (err == 0 && doc.containsKey("ok"));
         }
     }
     return false;
@@ -125,21 +118,25 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
         }
     }
 
-    String payload((char *)0);
+    DeserializationError err;
     if(telegramClient->connected() && telegramClient->available()) {
+        // We have a message, parse data received
+        //uint32_t t1 = millis();
+        String payload((char *)0);
         payload.reserve(BUFFER_BIG);
         // Skip headers
         telegramClient->find("\r\n\r\n");
         // If there are incoming bytes available from the server, read them and store:
-        while (telegramClient->available() ){
+        while (telegramClient->available()){
             yield();
             payload += (char) telegramClient->read();
         }
+        doc.clear();
+        err = deserializeJson(doc, payload);
+        m_lastmsg_timestamp = millis();
+        m_waitingReply = false;
+        //Serial.println(millis() - t1);
     }
-    m_lastmsg_timestamp = millis();
-    m_waitingReply = false;
-    // We have a message, parse data received
-    DeserializationError err = deserializeJson(doc, payload);
     return (err == 0 && doc.containsKey("ok"));
 }
 
@@ -172,7 +169,6 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 
         if (root["result"][0]["callback_query"]["id"]) {
             // this is a callback query
-            message.callbackQueryID   = root["result"][0]["callback_query"]["id"];
             message.chatId            = root["result"][0]["callback_query"]["message"]["chat"]["id"];
             message.sender.id         = root["result"][0]["callback_query"]["from"]["id"];
             message.sender.username   = root["result"][0]["callback_query"]["from"]["username"];
@@ -181,7 +177,8 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             message.messageID         = root["result"][0]["callback_query"]["message"]["message_id"];
             message.date              = root["result"][0]["callback_query"]["message"]["date"];
             message.chatInstance      = root["result"][0]["callback_query"]["chat_instance"];
-            message.callbackQueryData = root["result"][0]["callback_query"]["data"];
+            message.callbackQueryID   = root["result"][0]["callback_query"]["id"].as<String>();
+            message.callbackQueryData = root["result"][0]["callback_query"]["data"].as<String>();
             message.text              = root["result"][0]["callback_query"]["message"]["text"].as<String>();
             message.messageType       = MessageQuery;
 
@@ -284,9 +281,9 @@ bool AsyncTelegram2::noNewMessage() {
 }
 
 
-void AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, String keyboard)
+bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, String keyboard)
 {
-    if (!strlen(message)) return;
+    if (!strlen(message)) return false;
 
     DynamicJsonDocument root(BUFFER_BIG);
     // Backward compatibility
@@ -314,67 +311,71 @@ void AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, Stri
     }
     root.shrinkToFit();
     debugJson(root, Serial);
-    sendCommand("sendMessage", root);
+    const bool result = sendCommand("sendMessage", root);
+    return result;
 }
 
 
-void AsyncTelegram2::forwardMessage(const TBMessage &msg, const int32_t to_chatid)
+bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int32_t to_chatid)
 {
     StaticJsonDocument<BUFFER_SMALL> doc;
     doc["chat_id"] = to_chatid;
     doc["from_chat_id"] = msg.chatId;
     doc["message_id"] = msg.messageID;
-    sendCommand("forwardMessage", doc);
+    const bool result = sendCommand("forwardMessage", doc);
     debugJson(doc, Serial);
-
+    return result;
 }
 
 
-void AsyncTelegram2::sendPhotoByUrl(const uint32_t& chat_id,  const String &url, const String &caption)
+bool AsyncTelegram2::sendPhotoByUrl(const uint32_t& chat_id,  const String &url, const String &caption)
 {
-    if (!url.length()) return;
+    if (!url.length()) return false;
 
     StaticJsonDocument<BUFFER_SMALL> smallDoc;
     smallDoc["chat_id"] = chat_id;
     smallDoc["photo"] = url;
     smallDoc["caption"] = caption;
-    sendCommand("sendPhoto", smallDoc);
+    const bool result = sendCommand("sendPhoto", smallDoc);
     debugJson(smallDoc, Serial);
+    return result;
 }
 
 
-void AsyncTelegram2::sendToChannel(const char* &channel, const String &message, bool silent) {
-    if (!message.length()) return;
+bool AsyncTelegram2::sendToChannel(const char* &channel, const String &message, bool silent) {
+    if (!message.length()) return false;
 
     StaticJsonDocument<BUFFER_MEDIUM> doc;
     doc["chat_id"] = channel;
     doc["text"] = message;
     if(silent)
         doc["silent"] = true;
-    sendCommand("sendMessage", doc);
+    const bool result = sendCommand("sendMessage", doc);
     debugJson(doc, Serial);
+    return result;
 }
 
 
-void AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool alertMode)
+bool AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool alertMode)
 {
-    if (!strlen(msg.callbackQueryID)) return;
+    if (!msg.callbackQueryID.length()) return false;
 
-    StaticJsonDocument<BUFFER_SMALL> smallDoc;
-    smallDoc["callback_query_id"] =  msg.callbackQueryID;
+    StaticJsonDocument<BUFFER_SMALL> queryDoc;
+    queryDoc["callback_query_id"] =  msg.callbackQueryID;
     if (strlen(message) != 0) {
-        smallDoc["text"] = message;
+        queryDoc["text"] = message;
         if (alertMode)
-            smallDoc["show_alert"] = true;
+            queryDoc["show_alert"] = true;
         else
-            smallDoc["show_alert"] = false;
+            queryDoc["show_alert"] = false;
     }
-    smallDoc["cache_time"] = 10;
-    sendCommand("answerCallbackQuery", smallDoc);
+    queryDoc["cache_time"] = 10;
+    const bool result = sendCommand("answerCallbackQuery", queryDoc);
+    return result;
 }
 
 
-void AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char* message, bool selective)
+bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char* message, bool selective)
 {
     StaticJsonDocument<BUFFER_SMALL> smallDoc;
     smallDoc["remove_keyboard"] = true;
@@ -383,7 +384,8 @@ void AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char* messa
     }
     char command[128];
     serializeJson(smallDoc, command, 128);
-    sendMessage(msg, message, command);
+    const bool result = sendMessage(msg, message, command);
+    return result;
 }
 
 

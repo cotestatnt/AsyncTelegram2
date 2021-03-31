@@ -66,8 +66,8 @@ struct TBMessage {
   TBLocation      location;
   TBContact       contact;
   TBDocument      document;
-  const char*     callbackQueryData;
-  const char*   	callbackQueryID;
+  String          callbackQueryData;
+  String   	      callbackQueryID;
   String      	  text;
 };
 
