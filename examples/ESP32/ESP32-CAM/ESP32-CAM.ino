@@ -39,10 +39,11 @@
 #include <WiFiClient.h>
 #include <SSLClient.h>
 #include <AsyncTelegram2.h>
+#include "certificates.h"
 
-const char* ssid  =  "PuccosNET";     // SSID WiFi network
-const char* pass  =  "Tole76tnt";     // Password  WiFi network
-const char* token =  "1693205624:AAFuMQ1E2smMNQfMcPikuokzwxgpvNBzJwg";
+const char* ssid  =  "xxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxxx:xxxx-x-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 // Timezone definition to get properly time from NTP server
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
@@ -101,7 +102,7 @@ void listDir(const char * dirname, uint8_t levels){
 camera_fb_t * fb = NULL;
 
 // Send a picture taken from CAM to Telegram
-bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
+bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
     esp_camera_deinit();
     cameraSetup(frameSize, jpeg_quality);
 
@@ -142,12 +143,11 @@ bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
     }
     else
         Serial.println("Not enough space avalaible");
-    // free(out_buf);
     // esp_camera_fb_return(fb);
 
     // Open again in reading mode and send stream to AyncTelegram
     file = filesystem.open(picturePath, "r");
-    myBot.sendPhotoByFile(msg->sender.id, &file, file.size());
+    myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
     file.close();
     //If you don't need to keep image, delete from filesystem
     #if DELETE_IMAGE
@@ -159,11 +159,12 @@ bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
 
 // This is the task for checking new messages from Telegram
 static void checkTelegram(void * args) {
+  Serial.print("\nStart task 'checkTelegram'\n");
   while (true) {
     // A variable to store telegram message data
     TBMessage msg;
-    // if there is an incoming message...
-    if (myBot.getNewMessage(msg)) {
+    MessageType msgType = myBot.getNewMessage(msg);
+    if (msgType) {
         Serial.print("New message from chat_id: ");
         Serial.println(msg.sender.id);
         MessageType msgType = msg.messageType;
@@ -172,7 +173,9 @@ static void checkTelegram(void * args) {
             // Received a text message
             if (msg.text.equalsIgnoreCase("/takePhoto")) {
                 Serial.println("\nSending Photo from CAM");
-                sendPicture(&msg, FRAMESIZE_UXGA, 25);
+                if (!sendPicture(msg, FRAMESIZE_UXGA, 25)) {
+                    myBot.sendMessage(msg, "Error on taking picture");
+                }
             }
             else {
                 Serial.print("\nText message received: ");
@@ -187,6 +190,7 @@ static void checkTelegram(void * args) {
     }
     vTaskDelay(10);
   }
+  Serial.print("\nDelete task 'checkTelegram'\n");
   // Delete this task on exit (should never occurs)
   vTaskDelete(NULL);
 }
@@ -246,21 +250,24 @@ void setup() {
     listDir("/", 0);
 
     // Set the Telegram bot properies
-    myBot.setUpdateTime(1000);
+    myBot.setUpdateTime(2000);
     myBot.setTelegramToken(token);
 
     // Check if all things are ok
     Serial.print("\nTest Telegram connection... ");
     myBot.begin() ? Serial.println("OK") : Serial.println("NOK");
 
-    // Start telegram message checking in a separate task on core 0 (the loop() function run on core 1)
+    const char *botName = myBot.getBotName();
+    Serial.printf("Nome del bot: @%s", botName);
+
+    //Start telegram message checking in a separate task
     xTaskCreate(
         checkTelegram,    // Function to implement the task
         "checkTelegram",  // Name of the task
         8192,             // Stack size in words
         NULL,             // Task input parameter
         1,                // Priority of the task
-        NULL             // Task handle.
+        NULL              // Task handle.
     );
 
 }
