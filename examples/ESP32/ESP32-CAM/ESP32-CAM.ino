@@ -1,19 +1,14 @@
 /*
- Name:          echoBot.ino
- Created:     20/06/2020
+ Name:        echoBot.ino
+ Created:     31/03/2021
  Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
  Description: an example that show how is possible send an image captured from a ESP32-CAM board
 */
 
-//                                             WARNING!!!
-// Make sure that you have selected ESP32 Wrover Module, or another board which has PSRAM enabled
+/////////////////////////////////////////
+//// Select camera model in camera.h ////
+/////////////////////////////////////////
 
-
-// Select camera model
-//#define CAMERA_MODEL_WROVER_KIT
-//#define CAMERA_MODEL_ESP_EYE
-//#define CAMERA_MODEL_M5STACK_PSRAM
-//#define CAMERA_MODEL_M5STACK_WIDE
 
 #include "camera.h"
 #include "soc/soc.h"           // Brownout error fix
