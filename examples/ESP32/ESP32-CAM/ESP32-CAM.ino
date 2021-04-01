@@ -259,7 +259,7 @@ void setup() {
     xTaskCreate(
         checkTelegram,    // Function to implement the task
         "checkTelegram",  // Name of the task
-        16384,            // Stack size in words
+        10000,            // Stack size in words
         NULL,             // Task input parameter
         1,                // Priority of the task
         NULL              // Task handle.
