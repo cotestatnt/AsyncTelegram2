@@ -117,10 +117,12 @@ bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
 
     if (autoLamp && (lampVal != -1)) setLamp(100);
     // Take Picture with Camera;
-    camera_fb_t * fb = esp_camera_fb_get();
+    fb  = esp_camera_fb_get();
     if (!fb) {
         Serial.println("Camera capture failed");
         if (autoLamp && (lampVal != -1)) setLamp(0);
+        file.close();
+        filesystem.remove(picturePath);
         return false;
     }
     if (autoLamp && (lampVal != -1)) setLamp(0);
@@ -139,9 +141,7 @@ bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
     }
     else
         Serial.println("Not enough space avalaible");
-    // free(out_buf);
-    // esp_camera_fb_return(fb);
-
+    //esp_camera_fb_return(fb);
     // Open again in reading mode and send stream to AyncTelegram
     file = filesystem.open(picturePath, "r");
     myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
@@ -150,7 +150,6 @@ bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
     #if DELETE_IMAGE
         filesystem.remove(picturePath);
     #endif
-
     return true;
 }
 
@@ -186,10 +185,9 @@ static void checkTelegram(void * args) {
                 replyStr +=  "\nTry with /takePhoto";
                 myBot.sendMessage(msg, replyStr);
             }
-
         }
     }
-    vTaskDelay(100);
+    vTaskDelay(10);
   }
   Serial.print("\nDelete task 'checkTelegram'\n");
   // Delete this task on exit (should never occurs)
@@ -199,7 +197,6 @@ static void checkTelegram(void * args) {
 void setup() {
     //disable brownout detector
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-
     Serial.begin(115200);
     Serial.setDebugOutput(true);
     Serial.println();
@@ -224,9 +221,6 @@ void setup() {
     Serial.print("\nWiFi connected: ");
     Serial.print(WiFi.localIP());
 
-    // Sync time with NTP. Blocking, but with timeout (0 == no timeout)
-    configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
-
     // Init filesystem
 #ifdef USE_MMC
     if(!SD_MMC.begin( "/sd", false))
@@ -241,14 +235,14 @@ void setup() {
         Serial.println("\nFS Mount Failed.\nFilesystem will be formatted, please wait.");
         FFat.format();
     }
-
     FFat.format(true, (char*)"ffat");
-
     Serial.printf("\nTotal space: %10d\n", FFat.totalBytes());
     Serial.printf("Free space: %10d\n", FFat.freeBytes());
 #endif
-
     listDir("/", 0);
+
+    // Sync time with NTP. Blocking, but with timeout (0 == no timeout)
+    configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
 
     // Set the Telegram bot properies
     myBot.setUpdateTime(2000);
@@ -265,7 +259,7 @@ void setup() {
     xTaskCreate(
         checkTelegram,    // Function to implement the task
         "checkTelegram",  // Name of the task
-        8192,             // Stack size in words
+        16384,            // Stack size in words
         NULL,             // Task input parameter
         1,                // Priority of the task
         NULL              // Task handle.
@@ -276,4 +270,3 @@ void setup() {
 void loop() {
     printHeapStats();
 }
-
