@@ -38,14 +38,15 @@
     WiFiClient base_client;
     SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
   #else
+	#include <WiFiClientSecure.h>
     WiFiClientSecure client;  
   #endif
 #endif
 
 AsyncTelegram2 myBot(client);
-//const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
-//const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
-//const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
+const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
 
 // Name of public channel (your bot must be in admin group)
 const char* channel = "@tolentino_cotesta";

@@ -39,7 +39,8 @@
     WiFiClient base_client;
     SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
   #else
-    WiFiClientSecure client;  
+    #include <WiFiClientSecure.h>
+    WiFiClientSecure client;    
   #endif
 #endif
 

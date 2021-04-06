@@ -1,19 +1,23 @@
 /*
- Name:        echoBot.ino
- Created:     31/03/2021
+ Name:          echoBot.ino
+ Created:     20/06/2020
  Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
  Description: an example that show how is possible send an image captured from a ESP32-CAM board
 */
 
-/////////////////////////////////////////
-//// Select camera model in camera.h ////
-/////////////////////////////////////////
+//                                             WARNING!!!
+// Make sure that you have selected ESP32 Wrover Module, or another board which has PSRAM enabled
+
+
+// Select camera model
+//#define CAMERA_MODEL_WROVER_KIT
+//#define CAMERA_MODEL_ESP_EYE
+//#define CAMERA_MODEL_M5STACK_PSRAM
+//#define CAMERA_MODEL_M5STACK_WIDE
 
 #include "camera.h"
 #include "soc/soc.h"           // Brownout error fix
 #include "soc/rtc_cntl_reg.h"  // Brownout error fix
-#include "soc/timer_group_struct.h"  // Feed the task watchdog
-#include "soc/timer_group_reg.h"     // Feed the task watchdog
 
 // Define where store images (on board SD card reader or internal flash memory)
 #include <FS.h>
@@ -35,11 +39,10 @@
 #include <WiFiClient.h>
 #include <SSLClient.h>
 #include <AsyncTelegram2.h>
-#include "certificates.h"
 
-const char* ssid  =  "xxxxxxxx";     // SSID WiFi network
-const char* pass  =  "xxxxxxxx";     // Password  WiFi network
-const char* token =  "xxxxxxxxx:xxxx-x-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const char* ssid  =  "PuccosNET";     // SSID WiFi network
+const char* pass  =  "Tole76tnt";     // Password  WiFi network
+const char* token =  "1693205624:AAFuMQ1E2smMNQfMcPikuokzwxgpvNBzJwg";
 
 // Timezone definition to get properly time from NTP server
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
@@ -98,7 +101,7 @@ void listDir(const char * dirname, uint8_t levels){
 camera_fb_t * fb = NULL;
 
 // Send a picture taken from CAM to Telegram
-bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
+bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
     esp_camera_deinit();
     cameraSetup(frameSize, jpeg_quality);
 
@@ -117,12 +120,10 @@ bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
 
     if (autoLamp && (lampVal != -1)) setLamp(100);
     // Take Picture with Camera;
-    fb  = esp_camera_fb_get();
+    camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
         Serial.println("Camera capture failed");
         if (autoLamp && (lampVal != -1)) setLamp(0);
-        file.close();
-        filesystem.remove(picturePath);
         return false;
     }
     if (autoLamp && (lampVal != -1)) setLamp(0);
@@ -141,30 +142,28 @@ bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
     }
     else
         Serial.println("Not enough space avalaible");
-    //esp_camera_fb_return(fb);
+    // free(out_buf);
+    // esp_camera_fb_return(fb);
+
     // Open again in reading mode and send stream to AyncTelegram
     file = filesystem.open(picturePath, "r");
-    myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
+    myBot.sendPhotoByFile(msg->sender.id, &file, file.size());
     file.close();
     //If you don't need to keep image, delete from filesystem
     #if DELETE_IMAGE
         filesystem.remove(picturePath);
     #endif
+
     return true;
 }
 
 // This is the task for checking new messages from Telegram
 static void checkTelegram(void * args) {
-  Serial.print("\nStart task 'checkTelegram'\n");
   while (true) {
-    // feed dog 1
-    TIMERG1.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
-    TIMERG1.wdt_feed=1;                       // feed dog
-    TIMERG1.wdt_wprotect=0;                   // write protect
     // A variable to store telegram message data
     TBMessage msg;
-    MessageType msgType = myBot.getNewMessage(msg);
-    if (msgType) {
+    // if there is an incoming message...
+    if (myBot.getNewMessage(msg)) {
         Serial.print("New message from chat_id: ");
         Serial.println(msg.sender.id);
         MessageType msgType = msg.messageType;
@@ -173,9 +172,7 @@ static void checkTelegram(void * args) {
             // Received a text message
             if (msg.text.equalsIgnoreCase("/takePhoto")) {
                 Serial.println("\nSending Photo from CAM");
-                if (!sendPicture(msg, FRAMESIZE_UXGA, 25)) {
-                    myBot.sendMessage(msg, "Error on taking picture");
-                }
+                sendPicture(&msg, FRAMESIZE_UXGA, 25);
             }
             else {
                 Serial.print("\nText message received: ");
@@ -185,11 +182,11 @@ static void checkTelegram(void * args) {
                 replyStr +=  "\nTry with /takePhoto";
                 myBot.sendMessage(msg, replyStr);
             }
+
         }
     }
     vTaskDelay(10);
   }
-  Serial.print("\nDelete task 'checkTelegram'\n");
   // Delete this task on exit (should never occurs)
   vTaskDelete(NULL);
 }
@@ -197,6 +194,7 @@ static void checkTelegram(void * args) {
 void setup() {
     //disable brownout detector
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
     Serial.begin(115200);
     Serial.setDebugOutput(true);
     Serial.println();
@@ -221,6 +219,9 @@ void setup() {
     Serial.print("\nWiFi connected: ");
     Serial.print(WiFi.localIP());
 
+    // Sync time with NTP. Blocking, but with timeout (0 == no timeout)
+    configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
+
     // Init filesystem
 #ifdef USE_MMC
     if(!SD_MMC.begin( "/sd", false))
@@ -235,34 +236,31 @@ void setup() {
         Serial.println("\nFS Mount Failed.\nFilesystem will be formatted, please wait.");
         FFat.format();
     }
+
     FFat.format(true, (char*)"ffat");
+
     Serial.printf("\nTotal space: %10d\n", FFat.totalBytes());
     Serial.printf("Free space: %10d\n", FFat.freeBytes());
 #endif
+
     listDir("/", 0);
 
-    // Sync time with NTP. Blocking, but with timeout (0 == no timeout)
-    configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
-
     // Set the Telegram bot properies
-    myBot.setUpdateTime(2000);
+    myBot.setUpdateTime(1000);
     myBot.setTelegramToken(token);
 
     // Check if all things are ok
     Serial.print("\nTest Telegram connection... ");
     myBot.begin() ? Serial.println("OK") : Serial.println("NOK");
 
-    const char *botName = myBot.getBotName();
-    Serial.printf("Nome del bot: @%s", botName);
-
-    //Start telegram message checking in a separate task
+    // Start telegram message checking in a separate task on core 0 (the loop() function run on core 1)
     xTaskCreate(
         checkTelegram,    // Function to implement the task
         "checkTelegram",  // Name of the task
-        10000,            // Stack size in words
+        8192,             // Stack size in words
         NULL,             // Task input parameter
         1,                // Priority of the task
-        NULL              // Task handle.
+        NULL             // Task handle.
     );
 
 }

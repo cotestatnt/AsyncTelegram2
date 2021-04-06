@@ -69,7 +69,7 @@ void setup() {
   }
   // give the Ethernet shield a second to initialize:
   delay(1000);
-
+  
   // Set the Telegram bot properies
   myBot.setUpdateTime(2000);
   myBot.setTelegramToken(token);
