@@ -40,9 +40,9 @@
 #include <SSLClient.h>
 #include <AsyncTelegram2.h>
 
-const char* ssid  =  "PuccosNET";     // SSID WiFi network
-const char* pass  =  "Tole76tnt";     // Password  WiFi network
-const char* token =  "1693205624:AAFuMQ1E2smMNQfMcPikuokzwxgpvNBzJwg";
+const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
+const char* token =  "1234567890:xxxxxxxxsmMNQfMcPikuokzwxgpvNBzJwg";
 
 // Timezone definition to get properly time from NTP server
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
