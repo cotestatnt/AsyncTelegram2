@@ -8,7 +8,7 @@
 #include "Client.h"
 #include "time.h"
 
-#define DEBUG_ENABLE        1
+#define DEBUG_ENABLE        0
 #ifndef DEBUG_ENABLE
     #define DEBUG_ENABLE    0
 #endif
@@ -25,7 +25,7 @@
 
 // TODO! Find a best way to figure out avalaible SRAM size
 #if defined(ESP8266)
-    #define LOW_SRAM   true
+    //#define LOW_SRAM   true
     #define BLOCK_SIZE 2048
 #else
     #define BLOCK_SIZE 4096
@@ -71,7 +71,6 @@ GIo/ikGQI31bS/6kA1ibRrLDYGCD+H1QQc7CoZDDu+8CL9IVVO5EFdkKrqeKM+2x
 LXY2JtwE65/3YR8V3Idv7kaWKK2hJn0KCacuBKONvPi8BDAB
 -----END CERTIFICATE-----
 )EOF";
-
 
 
 class AsyncTelegram2

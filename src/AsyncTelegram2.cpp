@@ -12,6 +12,7 @@ AsyncTelegram2::AsyncTelegram2(Client &client)
 {
     m_botusername.reserve(32); // Telegram username is 5-32 chars lenght
     telegramClient = &client;
+    telegramClient->setTimeout(10);
     m_minUpdateTime = MIN_UPDATE_TIME;
 }
 
@@ -21,13 +22,24 @@ AsyncTelegram2::~AsyncTelegram2() {};
 bool AsyncTelegram2::checkConnection()
 {
     static uint32_t lastCTime = millis();
+
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected()) {
-        if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
-            Serial.printf("\n\nUnable to connect to Telegram server\n");
+        telegramClient->clearWriteError();
+        m_lastmsg_timestamp = millis();
+        log_debug("Start handshaking...");
+        telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT);
+        if (!telegramClient->connected()) {
+            telegramClient->connect(TELEGRAM_IP, TELEGRAM_PORT);
+            if (!telegramClient->connected()) {
+                Serial.printf("Unable to connect to server\n");
+            }
+            else {
+                log_debug("Connected using IP address\n");
+            }
         }
         else {
-            log_debug("Connected using Telegram hostname\n"
+            log_debug("Connected using hostname\n"
                       "Last connection was %d seconds ago\n",
                       (int)(millis() - lastCTime)/1000);
             lastCTime = millis();
@@ -47,7 +59,6 @@ bool AsyncTelegram2::begin()
 bool AsyncTelegram2::reset(void)
 {
     log_debug("Restart Telegram connection\n");
-    telegramClient->stop();
     m_lastmsg_timestamp = millis();
     m_waitingReply = false;
     return checkConnection();
@@ -72,22 +83,29 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
         httpBuffer += "\n\n";
         httpBuffer += doc.as<String>();
         telegramClient->print(httpBuffer);
+        // Serial.println(httpBuffer);
         m_waitingReply = true;
 
         // Blocking mode
         if (blocking) {
-            httpBuffer.clear();
+            httpBuffer = "";
+            // skip headers
             if (telegramClient->connected()) {
-                // skip headers
-                telegramClient->find("\r\n\r\n");
+                httpBuffer = telegramClient->readStringUntil('\n');
+                while (httpBuffer != "\r") {
+                    httpBuffer = telegramClient->readStringUntil('\n');
+                }
             }
             // If there are incoming bytes available from the server, read them and print them:
+            httpBuffer = "";
             while (telegramClient->available()) {
                 yield();
                 httpBuffer  += (char) telegramClient->read();
             }
             m_waitingReply = false;
             DeserializationError err = deserializeJson(doc, httpBuffer);
+
+            debugJson(doc, Serial);
             return (err == 0 && doc.containsKey("ok"));
         }
     }
@@ -111,6 +129,7 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
             StaticJsonDocument<BUFFER_SMALL> updateDoc;
             updateDoc["limit"] = 1;
             updateDoc["timeout"] = 0;    // polling timeout: add &timeout=<seconds. zero for short polling.
+            updateDoc["allowed_updates"] = "message,callback_query";
             if (m_lastUpdateId != 0) {
                 updateDoc["offset"] = m_lastUpdateId;
             }
@@ -122,19 +141,33 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
     if(telegramClient->connected() && telegramClient->available()) {
         // We have a message, parse data received
         //uint32_t t1 = millis();
+        bool close_connection = false;
         String payload((char *)0);
         payload.reserve(BUFFER_BIG);
         // Skip headers
-        telegramClient->find("\r\n\r\n");
+        payload = telegramClient->readStringUntil('\n');
+        while (payload != "\r") {
+            yield();
+            payload = telegramClient->readStringUntil('\n');
+            if (payload.indexOf("close") > -1) {
+                close_connection = true;
+                log_debug("%s\n", payload.c_str());
+            }
+        }
+
         // If there are incoming bytes available from the server, read them and store:
+        payload = "";
         while (telegramClient->available()){
             yield();
             payload += (char) telegramClient->read();
         }
         doc.clear();
         err = deserializeJson(doc, payload);
+
         m_lastmsg_timestamp = millis();
         m_waitingReply = false;
+        if(close_connection)
+            telegramClient->stop();
         //Serial.println(millis() - t1);
     }
     return (err == 0 && doc.containsKey("ok"));
@@ -145,16 +178,11 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
 MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 {
     message.messageType = MessageNoData;
-    #ifdef LOW_SRAM
     DynamicJsonDocument root(BUFFER_BIG);
-    #else
-    StaticJsonDocument<BUFFER_BIG> root;
-    #endif
+
     // We have a message, parse data received
     if (getUpdates(root)) {
-        #ifdef LOW_SRAM
         root.shrinkToFit();
-        #endif
 
         if (!root.containsKey("ok")) {
             log_error("deserializeJson() failed with code");
@@ -165,7 +193,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
         if (!updateID) return MessageNoData;
 
         m_lastUpdateId = updateID + 1;
-        debugJson(root, Serial);
+        //debugJson(root, Serial);
 
         if (root["result"][0]["callback_query"]["id"]) {
             // this is a callback query
@@ -243,7 +271,7 @@ bool AsyncTelegram2::getMe()
     // getMe has to be blocking (wait server reply)
     StaticJsonDocument<BUFFER_SMALL> smallDoc;
     if (! sendCommand("getMe", smallDoc, true)) {
-        log_error("getMe error");
+        log_error("getMe error ");
         return false;
     }
     debugJson(smallDoc, Serial);
@@ -369,8 +397,10 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool al
         else
             queryDoc["show_alert"] = false;
     }
-    queryDoc["cache_time"] = 10;
-    const bool result = sendCommand("answerCallbackQuery", queryDoc);
+    queryDoc["cache_time"] = 30;
+
+    debugJson(queryDoc, Serial);
+    const bool result = sendCommand("answerCallbackQuery", queryDoc, true);
     return result;
 }
 
