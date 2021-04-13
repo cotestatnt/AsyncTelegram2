@@ -59,8 +59,8 @@ bool AsyncTelegram2::begin()
 	telegramClient->stop();
 	// ////////////////////
 	
-    checkConnection();
-    return getMe();
+   checkConnection();
+   return getMe();
 }
 
 
