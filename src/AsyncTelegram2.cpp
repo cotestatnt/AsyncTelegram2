@@ -21,11 +21,14 @@ AsyncTelegram2::~AsyncTelegram2() {};
 
 bool AsyncTelegram2::checkConnection()
 {
+#if DEBUG_ENABLE
     static uint32_t lastCTime = millis();
+#endif
 
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected()) {
         telegramClient->clearWriteError();
+
         m_lastmsg_timestamp = millis();
         log_debug("Start handshaking...");
         telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT);
@@ -38,7 +41,7 @@ bool AsyncTelegram2::checkConnection()
                 log_debug("Connected using IP address\n");
             }
         }
-        else {
+        else {		
             log_debug("Connected using hostname\n"
                       "Last connection was %d seconds ago\n",
                       (int)(millis() - lastCTime)/1000);
@@ -51,6 +54,11 @@ bool AsyncTelegram2::checkConnection()
 
 bool AsyncTelegram2::begin()
 {
+	// ESP8266 workaround
+	telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT);
+	telegramClient->stop();
+	// ////////////////////
+	
     checkConnection();
     return getMe();
 }
