@@ -39,6 +39,7 @@
 #include <WiFiClient.h>
 #include <SSLClient.h>
 #include <AsyncTelegram2.h>
+#include "certificates.h"
 
 const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
