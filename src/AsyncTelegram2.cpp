@@ -21,9 +21,7 @@ AsyncTelegram2::~AsyncTelegram2() {};
 
 bool AsyncTelegram2::checkConnection()
 {
-#if DEBUG_ENABLE
     static uint32_t lastCTime = millis();
-#endif
 
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected()) {
