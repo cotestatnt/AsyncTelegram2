@@ -1,23 +1,19 @@
 /*
- Name:          echoBot.ino
- Created:     20/06/2020
+ Name:        echoBot.ino
+ Created:     31/03/2021
  Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
  Description: an example that show how is possible send an image captured from a ESP32-CAM board
 */
 
-//                                             WARNING!!!
-// Make sure that you have selected ESP32 Wrover Module, or another board which has PSRAM enabled
-
-
-// Select camera model
-//#define CAMERA_MODEL_WROVER_KIT
-//#define CAMERA_MODEL_ESP_EYE
-//#define CAMERA_MODEL_M5STACK_PSRAM
-//#define CAMERA_MODEL_M5STACK_WIDE
+/////////////////////////////////////////
+//// Select camera model in camera.h ////
+/////////////////////////////////////////
 
 #include "camera.h"
 #include "soc/soc.h"           // Brownout error fix
 #include "soc/rtc_cntl_reg.h"  // Brownout error fix
+#include "soc/timer_group_struct.h"  // Feed the task watchdog
+#include "soc/timer_group_reg.h"     // Feed the task watchdog
 
 // Define where store images (on board SD card reader or internal flash memory)
 #include <FS.h>
@@ -26,8 +22,8 @@
     #include <SD_MMC.h>           // Use onboard SD Card reader
     fs::FS &filesystem = SD_MMC;
 #else
-    #include <FFat.h>              // Use internal flash memory
-    fs::FS &filesystem = FFat;     // Is necessary select the proper partition scheme (ex. "Default 4MB with ffta..")
+    #include <SPIFFS.h>              // Use internal flash memory
+    fs::FS &filesystem = SPIFFS;     // Is necessary select the proper partition scheme
 #endif
 
 // You only need to format FFat when error on mount (don't work with MMC SD card)
@@ -41,9 +37,9 @@
 #include <AsyncTelegram2.h>
 #include "certificates.h"
 
-const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
-const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
-const char* token =  "1234567890:xxxxxxxxsmMNQfMcPikuokzwxgpvNBzJwg";
+const char* ssid  =  "xxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxxx:xxxx-x-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 // Timezone definition to get properly time from NTP server
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
@@ -102,7 +98,7 @@ void listDir(const char * dirname, uint8_t levels){
 camera_fb_t * fb = NULL;
 
 // Send a picture taken from CAM to Telegram
-bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
+bool sendPicture( TBMessage &msg, framesize_t frameSize, int jpeg_quality){
     esp_camera_deinit();
     cameraSetup(frameSize, jpeg_quality);
 
@@ -121,10 +117,12 @@ bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
 
     if (autoLamp && (lampVal != -1)) setLamp(100);
     // Take Picture with Camera;
-    camera_fb_t * fb = esp_camera_fb_get();
+    fb  = esp_camera_fb_get();
     if (!fb) {
         Serial.println("Camera capture failed");
         if (autoLamp && (lampVal != -1)) setLamp(0);
+        file.close();
+        filesystem.remove(picturePath);
         return false;
     }
     if (autoLamp && (lampVal != -1)) setLamp(0);
@@ -133,7 +131,7 @@ bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
 #ifdef USE_MMC
     uint64_t freeBytes =  SD_MMC.totalBytes() - SD_MMC.usedBytes();
 #else
-    uint64_t freeBytes =  FFat.freeBytes();
+    uint64_t freeBytes =  SPIFFS.totalBytes() - SPIFFS.usedBytes();
 #endif
 
     if (freeBytes > fb->len ) {
@@ -143,28 +141,31 @@ bool sendPicture( TBMessage *msg, framesize_t frameSize, int jpeg_quality){
     }
     else
         Serial.println("Not enough space avalaible");
-    // free(out_buf);
-    // esp_camera_fb_return(fb);
-
+    //esp_camera_fb_return(fb);
     // Open again in reading mode and send stream to AyncTelegram
     file = filesystem.open(picturePath, "r");
-    myBot.sendPhotoByFile(msg->sender.id, &file, file.size());
+    myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
     file.close();
     //If you don't need to keep image, delete from filesystem
     #if DELETE_IMAGE
         filesystem.remove(picturePath);
     #endif
-
     return true;
 }
 
 // This is the task for checking new messages from Telegram
 static void checkTelegram(void * args) {
+  Serial.print("\nStart task 'checkTelegram'\n");
   while (true) {
+    // feed dog 1
+    yield();
+    TIMERG1.wdt_wprotect=TIMG_WDT_WKEY_VALUE; // write enable
+    TIMERG1.wdt_feed=1;                       // feed dog
+    TIMERG1.wdt_wprotect=0;                   // write protect
     // A variable to store telegram message data
     TBMessage msg;
-    // if there is an incoming message...
-    if (myBot.getNewMessage(msg)) {
+    MessageType msgType = myBot.getNewMessage(msg);
+    if (msgType) {
         Serial.print("New message from chat_id: ");
         Serial.println(msg.sender.id);
         MessageType msgType = msg.messageType;
@@ -173,7 +174,9 @@ static void checkTelegram(void * args) {
             // Received a text message
             if (msg.text.equalsIgnoreCase("/takePhoto")) {
                 Serial.println("\nSending Photo from CAM");
-                sendPicture(&msg, FRAMESIZE_UXGA, 25);
+                if (!sendPicture(msg, FRAMESIZE_UXGA, 25)) {
+                    myBot.sendMessage(msg, "Error on taking picture");
+                }
             }
             else {
                 Serial.print("\nText message received: ");
@@ -183,11 +186,11 @@ static void checkTelegram(void * args) {
                 replyStr +=  "\nTry with /takePhoto";
                 myBot.sendMessage(msg, replyStr);
             }
-
         }
     }
-    vTaskDelay(10);
+
   }
+  Serial.print("\nDelete task 'checkTelegram'\n");
   // Delete this task on exit (should never occurs)
   vTaskDelete(NULL);
 }
@@ -195,21 +198,8 @@ static void checkTelegram(void * args) {
 void setup() {
     //disable brownout detector
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-
     Serial.begin(115200);
-    Serial.setDebugOutput(true);
     Serial.println();
-
-    // Initialise and set the lamp
-    if (lampVal != -1) {
-        ledcSetup(lampChannel, pwmfreq, pwmresolution);  // configure LED PWM channel
-        if (autoLamp) setLamp(0);                        // set default value
-        else setLamp(lampVal);
-        ledcAttachPin(LAMP_PIN, lampChannel);            // attach the GPIO pin to the channel
-    } else {
-        Serial.println("No lamp, or lamp disabled in config");
-    }
-    cameraSetup(FRAMESIZE_SXGA, 15);
 
     // Init WiFi connections
     WiFi.begin(ssid, pass);
@@ -220,8 +210,15 @@ void setup() {
     Serial.print("\nWiFi connected: ");
     Serial.print(WiFi.localIP());
 
-    // Sync time with NTP. Blocking, but with timeout (0 == no timeout)
-    configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
+    // Initialise and set the lamp
+    if (lampVal != -1) {
+        ledcSetup(lampChannel, pwmfreq, pwmresolution);  // configure LED PWM channel
+        if (autoLamp) setLamp(0);                        // set default value
+        else setLamp(lampVal);
+        ledcAttachPin(LAMP_PIN, lampChannel);            // attach the GPIO pin to the channel
+    } else {
+        Serial.println("No lamp, or lamp disabled in config");
+    }
 
     // Init filesystem
 #ifdef USE_MMC
@@ -233,35 +230,38 @@ void setup() {
     Serial.printf("Free space: %10llu\n", SD_MMC.totalBytes() - SD_MMC.usedBytes());
 #else
     // Init filesystem (format if necessary)
-    if(!FFat.begin(FORMAT_FS_IF_FAILED)){
+    if(!SPIFFS.begin(FORMAT_FS_IF_FAILED)){
         Serial.println("\nFS Mount Failed.\nFilesystem will be formatted, please wait.");
-        FFat.format();
+        SPIFFS.format();
+        delay(1000);
     }
-
-    FFat.format(true, (char*)"ffat");
-
-    Serial.printf("\nTotal space: %10d\n", FFat.totalBytes());
-    Serial.printf("Free space: %10d\n", FFat.freeBytes());
+    Serial.printf("\nTotal space: %10d\n", SPIFFS.totalBytes());
+    Serial.printf("Free space: %10d\n", SPIFFS.totalBytes() - SPIFFS.usedBytes());
 #endif
-
     listDir("/", 0);
 
+    // Sync time with NTP. Blocking, but with timeout (0 == no timeout)
+    configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
+
     // Set the Telegram bot properies
-    myBot.setUpdateTime(1000);
+    myBot.setUpdateTime(2000);
     myBot.setTelegramToken(token);
 
     // Check if all things are ok
     Serial.print("\nTest Telegram connection... ");
     myBot.begin() ? Serial.println("OK") : Serial.println("NOK");
 
-    // Start telegram message checking in a separate task on core 0 (the loop() function run on core 1)
+    const char *botName = myBot.getBotName();
+    Serial.printf("Nome del bot: @%s", botName);
+
+    //Start telegram message checking in a separate task
     xTaskCreate(
         checkTelegram,    // Function to implement the task
         "checkTelegram",  // Name of the task
-        8192,             // Stack size in words
+        16384,            // Stack size in words
         NULL,             // Task input parameter
         1,                // Priority of the task
-        NULL             // Task handle.
+        NULL              // Task handle.
     );
 
 }
