@@ -23,12 +23,10 @@
 #define SERVER_TIMEOUT      10000
 #define MIN_UPDATE_TIME     500
 
-// TODO! Find a best way to figure out avalaible SRAM size
 #if defined(ESP8266)
-    //#define LOW_SRAM   true
-    #define BLOCK_SIZE 2048
+#define BLOCK_SIZE          2048
 #else
-    #define BLOCK_SIZE 4096
+#define BLOCK_SIZE          4096
 #endif
 
 #include "DataStructures.h"
@@ -71,6 +69,7 @@ GIo/ikGQI31bS/6kA1ibRrLDYGCD+H1QQc7CoZDDu+8CL9IVVO5EFdkKrqeKM+2x
 LXY2JtwE65/3YR8V3Idv7kaWKK2hJn0KCacuBKONvPi8BDAB
 -----END CERTIFICATE-----
 )EOF";
+
 
 
 class AsyncTelegram2
@@ -145,6 +144,7 @@ public:
     }
 
     bool forwardMessage(const TBMessage &msg, const int32_t to_chatid);
+
 
     // Send message to a specific user. In order to work properly two conditions is needed:
     //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)
