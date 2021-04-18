@@ -153,16 +153,15 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
             yield();
             payload += (char) telegramClient->read();
         }
-        doc.clear();
         err = deserializeJson(doc, payload);
 
         m_lastmsg_timestamp = millis();
         m_waitingReply = false;
-        if(close_connection)
+        if (close_connection)
             telegramClient->stop();
         //Serial.println(millis() - t1);
     }
-    return (err == 0 && doc.containsKey("ok"));
+    return (!err && doc.containsKey("ok"));
 }
 
 
@@ -170,84 +169,84 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
 MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 {
     message.messageType = MessageNoData;
-    DynamicJsonDocument root(BUFFER_BIG);
+    DynamicJsonDocument updateDoc(BUFFER_MEDIUM);
 
     // We have a message, parse data received
-    if (getUpdates(root)) {
-        root.shrinkToFit();
+    if (getUpdates(updateDoc)) {
+        updateDoc.shrinkToFit();
 
-        if (!root.containsKey("ok")) {
+        if (!updateDoc.containsKey("ok")) {
             log_error("deserializeJson() failed with code");
             return MessageNoData;
         }
 
-        uint32_t updateID = root["result"][0]["update_id"];
+        uint32_t updateID = updateDoc["result"][0]["update_id"];
         if (!updateID) return MessageNoData;
 
         m_lastUpdateId = updateID + 1;
-        //debugJson(root, Serial);
+        //debugJson(updateDoc, Serial);
 
-        if (root["result"][0]["callback_query"]["id"]) {
+        if (updateDoc["result"][0]["callback_query"]["id"]) {
             // this is a callback query
-            message.chatId            = root["result"][0]["callback_query"]["message"]["chat"]["id"];
-            message.sender.id         = root["result"][0]["callback_query"]["from"]["id"];
-            message.sender.username   = root["result"][0]["callback_query"]["from"]["username"];
-            message.sender.firstName  = root["result"][0]["callback_query"]["from"]["first_name"];
-            message.sender.lastName   = root["result"][0]["callback_query"]["from"]["last_name"];
-            message.messageID         = root["result"][0]["callback_query"]["message"]["message_id"];
-            message.date              = root["result"][0]["callback_query"]["message"]["date"];
-            message.chatInstance      = root["result"][0]["callback_query"]["chat_instance"];
-            message.callbackQueryID   = root["result"][0]["callback_query"]["id"];
-            message.callbackQueryData = root["result"][0]["callback_query"]["data"];
-            //message.text              = root["result"][0]["callback_query"]["message"]["text"].as<String>();
+            message.chatId            = updateDoc["result"][0]["callback_query"]["message"]["chat"]["id"];
+            message.sender.id         = updateDoc["result"][0]["callback_query"]["from"]["id"];
+            message.sender.username   = updateDoc["result"][0]["callback_query"]["from"]["username"];
+            message.sender.firstName  = updateDoc["result"][0]["callback_query"]["from"]["first_name"];
+            message.sender.lastName   = updateDoc["result"][0]["callback_query"]["from"]["last_name"];
+            message.messageID         = updateDoc["result"][0]["callback_query"]["message"]["message_id"];
+            message.date              = updateDoc["result"][0]["callback_query"]["message"]["date"];
+            message.chatInstance      = updateDoc["result"][0]["callback_query"]["chat_instance"];
+            message.callbackQueryID   = updateDoc["result"][0]["callback_query"]["id"];
+            message.callbackQueryData = updateDoc["result"][0]["callback_query"]["data"];
+            message.text              = updateDoc["result"][0]["callback_query"]["message"]["text"].as<String>();
             message.messageType       = MessageQuery;
 
             // Check if callback function is defined for this button query
             for(uint8_t i=0; i<m_keyboardCount; i++)
                 m_keyboards[i]->checkCallback(message);
         }
-        else if (root["result"][0]["message"]["message_id"]) {
+        else if (updateDoc["result"][0]["message"]["message_id"]) {
             // this is a message
-            message.messageID        = root["result"][0]["message"]["message_id"];
-            message.chatId           = root["result"][0]["message"]["chat"]["id"];
-            message.sender.id        = root["result"][0]["message"]["from"]["id"];
-            message.sender.username  = root["result"][0]["message"]["from"]["username"];
-            message.sender.firstName = root["result"][0]["message"]["from"]["first_name"];
-            message.sender.lastName  = root["result"][0]["message"]["from"]["last_name"];
-            message.group.title      = root["result"][0]["message"]["chat"]["title"];
-            message.date             = root["result"][0]["message"]["date"];
+            message.messageID        = updateDoc["result"][0]["message"]["message_id"];
+            message.chatId           = updateDoc["result"][0]["message"]["chat"]["id"];
+            message.sender.id        = updateDoc["result"][0]["message"]["from"]["id"];
+            message.sender.username  = updateDoc["result"][0]["message"]["from"]["username"];
+            message.sender.firstName = updateDoc["result"][0]["message"]["from"]["first_name"];
+            message.sender.lastName  = updateDoc["result"][0]["message"]["from"]["last_name"];
+            message.group.title      = updateDoc["result"][0]["message"]["chat"]["title"];
+            message.date             = updateDoc["result"][0]["message"]["date"];
 
-            if (root["result"][0]["message"]["location"]) {
+            if (updateDoc["result"][0]["message"]["location"]) {
                 // this is a location message
-                message.location.longitude = root["result"][0]["message"]["location"]["longitude"];
-                message.location.latitude = root["result"][0]["message"]["location"]["latitude"];
+                message.location.longitude = updateDoc["result"][0]["message"]["location"]["longitude"];
+                message.location.latitude = updateDoc["result"][0]["message"]["location"]["latitude"];
                 message.messageType = MessageLocation;
             }
-            else if (root["result"][0]["message"]["contact"]) {
+            else if (updateDoc["result"][0]["message"]["contact"]) {
                 // this is a contact message
-                message.contact.id          = root["result"][0]["message"]["contact"]["user_id"];
-                message.contact.firstName   = root["result"][0]["message"]["contact"]["first_name"];
-                message.contact.lastName    = root["result"][0]["message"]["contact"]["last_name"];
-                message.contact.phoneNumber = root["result"][0]["message"]["contact"]["phone_number"];
-                message.contact.vCard       = root["result"][0]["message"]["contact"]["vcard"];
+                message.contact.id          = updateDoc["result"][0]["message"]["contact"]["user_id"];
+                message.contact.firstName   = updateDoc["result"][0]["message"]["contact"]["first_name"];
+                message.contact.lastName    = updateDoc["result"][0]["message"]["contact"]["last_name"];
+                message.contact.phoneNumber = updateDoc["result"][0]["message"]["contact"]["phone_number"];
+                message.contact.vCard       = updateDoc["result"][0]["message"]["contact"]["vcard"];
                 message.messageType = MessageContact;
             }
-            else if (root["result"][0]["message"]["document"]) {
+            else if (updateDoc["result"][0]["message"]["document"]) {
                 // this is a document message
-                message.document.file_id      = root["result"][0]["message"]["document"]["file_id"];
-                message.document.file_name    = root["result"][0]["message"]["document"]["file_name"];
-                //message.text                  = root["result"][0]["message"]["caption"].as<String>();
+                message.document.file_id      = updateDoc["result"][0]["message"]["document"]["file_id"];
+                message.document.file_name    = updateDoc["result"][0]["message"]["document"]["file_name"];
+                //message.text                  = updateDoc["result"][0]["message"]["caption"].as<String>();
                 message.document.file_exists  = getFile(message.document);
                 message.messageType           = MessageDocument;
             }
-            else if (root["result"][0]["message"]["reply_to_message"]) {
+            else if (updateDoc["result"][0]["message"]["reply_to_message"]) {
                 // this is a reply to message
-                message.text        = root["result"][0]["message"]["text"].as<String>();
+                message.text        = updateDoc["result"][0]["message"]["text"].as<String>();
                 message.messageType = MessageReply;
             }
-            else if (root["result"][0]["message"]["text"]) {
+            else if (updateDoc["result"][0]["message"]["text"]) {
                 // this is a text message
-                message.text        = root["result"][0]["message"]["text"].as<String>();
+                message.text        = updateDoc["result"][0]["message"]["text"].as<String>();
                 message.messageType = MessageText;
             }
         }
