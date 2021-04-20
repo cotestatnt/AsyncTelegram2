@@ -11,7 +11,8 @@
 AsyncTelegram2::AsyncTelegram2(Client &client)
 {
     m_botusername.reserve(32); // Telegram username is 5-32 chars lenght
-    telegramClient = &client;
+    m_rxbuffer.reserve(BUFFER_BIG);
+    this->telegramClient = &client;
     m_minUpdateTime = MIN_UPDATE_TIME;
 }
 
@@ -57,6 +58,7 @@ bool AsyncTelegram2::reset(void)
 
 
 // Blocking https POST to server (used with ESP8266)
+/*
 bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, bool blocking )
 {
     if(checkConnection()) {
@@ -102,8 +104,6 @@ bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, 
     }
     return false;
 }
-
-
 
 
 bool AsyncTelegram2::getUpdates(JsonDocument &doc){
@@ -164,19 +164,118 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
     return (!err && doc.containsKey("ok"));
 }
 
+*/
+
+
+bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload, bool blocking )
+{
+    if(checkConnection()) {
+        // JsonDocument doc is used as input for request preparation and then reused as output result
+        String httpBuffer((char *)0);
+        httpBuffer.reserve(BUFFER_BIG);
+        httpBuffer = "POST https://" TELEGRAM_HOST "/bot";
+        httpBuffer += m_token;
+        httpBuffer += "/";
+        httpBuffer += command;
+        // Let's use 1.0 protocol in order to avoid chunked transfer encoding
+        httpBuffer += " HTTP/1.0" "\nHost: api.telegram.org" "\nConnection: keep-alive" "\nContent-Type: application/json";
+        httpBuffer += "\nContent-Length: ";
+        httpBuffer += strlen(payload);
+        httpBuffer += "\n\n";
+        httpBuffer += payload;
+        telegramClient->print(httpBuffer);
+        //Serial.println(httpBuffer);
+
+        m_waitingReply = true;
+        // Blocking mode
+        if (blocking) {
+            char endOfHeaders[] = "\r\n\r\n";
+            if (!telegramClient->find(endOfHeaders)) {
+                log_error("Invalid HTTP response");
+                telegramClient->stop();
+                return false;
+            }
+            // If there are incoming bytes available from the server, read them and print them:
+            m_rxbuffer = "";
+            while (telegramClient->available()) {
+                yield();
+                m_rxbuffer  += (char) telegramClient->read();
+            }
+            m_waitingReply = false;
+            if(m_rxbuffer.indexOf("ok") > -1) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+bool AsyncTelegram2::getUpdates(){
+    // No response from Telegram server for a long time
+    if(millis() - m_lastmsg_timestamp > 10*m_minUpdateTime) {
+        reset();
+    }
+
+    // Send message to Telegram server only if enough time has passed since last
+    if(millis() - m_lastUpdateTime > m_minUpdateTime){
+        m_lastUpdateTime = millis();
+
+        // If previuos reply from server was received (and parsed)
+        if( m_waitingReply == false ) {
+            char payload[BUFFER_SMALL];
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
+            sendCommand("getUpdates", payload);
+        }
+    }
+
+    if(telegramClient->connected() && telegramClient->available()) {
+        // We have a message, parse data received
+        bool close_connection = false;
+
+        // Skip headers
+        while (telegramClient->connected()) {
+            String line = telegramClient->readStringUntil('\n');
+            if (line == "\r") { break; }
+            if (line.indexOf("close") > -1) { close_connection = true; }
+        }
+
+        // If there are incoming bytes available from the server, read them and store:
+        m_rxbuffer = "";
+        while (telegramClient->available()) {
+            yield();
+            m_rxbuffer  += (char) telegramClient->read();
+        }
+        m_waitingReply = false;
+        m_lastmsg_timestamp = millis();
+
+        if (close_connection)
+            telegramClient->stop();
+
+        if(m_rxbuffer.indexOf("ok") < 0) {
+            log_error("%s", m_rxbuffer.c_str());
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 
 // Parse message received from Telegram server
 MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 {
     message.messageType = MessageNoData;
-    DynamicJsonDocument updateDoc(BUFFER_MEDIUM);
 
     // We have a message, parse data received
-    if (getUpdates(updateDoc)) {
-        updateDoc.shrinkToFit();
+    if (getUpdates()) {
+        DynamicJsonDocument updateDoc(BUFFER_BIG);
+        deserializeJson(updateDoc, m_rxbuffer);
+        m_rxbuffer = "";
 
-        if (!updateDoc.containsKey("ok")) {
+        if (!updateDoc.containsKey("result")) {
             log_error("deserializeJson() failed with code");
+            serializeJsonPretty(updateDoc, Serial);
             return MessageNoData;
         }
 
@@ -184,7 +283,9 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
         if (!updateID) return MessageNoData;
 
         m_lastUpdateId = updateID + 1;
-        //debugJson(updateDoc, Serial);
+        debugJson(updateDoc, Serial);
+
+
 
         if (updateDoc["result"][0]["callback_query"]["id"]) {
             // this is a callback query
@@ -213,6 +314,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             message.sender.username  = updateDoc["result"][0]["message"]["from"]["username"];
             message.sender.firstName = updateDoc["result"][0]["message"]["from"]["first_name"];
             message.sender.lastName  = updateDoc["result"][0]["message"]["from"]["last_name"];
+            message.group.id         = updateDoc["result"][0]["message"]["chat"]["id"];
             message.group.title      = updateDoc["result"][0]["message"]["chat"]["title"];
             message.date             = updateDoc["result"][0]["message"]["date"];
 
@@ -260,11 +362,12 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 bool AsyncTelegram2::getMe()
 {
     // getMe has to be blocking (wait server reply)
-    StaticJsonDocument<BUFFER_SMALL> smallDoc;
-    if (! sendCommand("getMe", smallDoc, true)) {
+    if (!sendCommand("getMe", "", true)) {
         log_error("getMe error ");
         return false;
     }
+    StaticJsonDocument<BUFFER_SMALL> smallDoc;
+    deserializeJson(smallDoc, m_rxbuffer);
     debugJson(smallDoc, Serial);
     m_botusername = smallDoc["result"]["username"].as<String>();
     return true;
@@ -273,16 +376,16 @@ bool AsyncTelegram2::getMe()
 
 bool AsyncTelegram2::getFile(TBDocument &doc)
 {
-    String cmd((char *)0);
-    cmd = "getFile?file_id=";
-    cmd += doc.file_id;
+    char cmd[BUFFER_SMALL];
+    snprintf(cmd, BUFFER_SMALL, "getFile?file_id=%s", doc.file_id);
 
-    // getFile has to be blocking (wait server reply)
-    StaticJsonDocument<BUFFER_MEDIUM> fileDoc;
-    if (!sendCommand(cmd.c_str(), fileDoc, true)) {
+    // getFile has to be blocking (wait server reply
+    if (!sendCommand(cmd, "", true)) {
         log_error("getFile error");
         return false;
     }
+    StaticJsonDocument<BUFFER_MEDIUM> fileDoc;
+    deserializeJson(fileDoc, m_rxbuffer);
     debugJson(fileDoc, Serial);
     doc.file_path = "https://api.telegram.org/file/bot" ;
     doc.file_path += m_token;
@@ -294,9 +397,7 @@ bool AsyncTelegram2::getFile(TBDocument &doc)
 
 
 bool AsyncTelegram2::noNewMessage() {
-    StaticJsonDocument<BUFFER_SMALL> smallDoc;
-    smallDoc["offset"] = m_lastUpdateId;
-    return sendCommand("getUpdates", smallDoc, true);
+    return sendCommand("getUpdates", "", true);
 }
 
 
@@ -329,48 +430,55 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, Stri
         }
     }
     root.shrinkToFit();
+
+    size_t len = measureJson(root);
+    char payload[len];
+    serializeJson(root, payload, len);
+
     debugJson(root, Serial);
-    const bool result = sendCommand("sendMessage", root);
+    const bool result = sendCommand("sendMessage", payload, NULL);
     return result;
 }
 
 
 bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int32_t to_chatid)
 {
-    StaticJsonDocument<BUFFER_SMALL> doc;
-    doc["chat_id"] = to_chatid;
-    doc["from_chat_id"] = msg.chatId;
-    doc["message_id"] = msg.messageID;
-    const bool result = sendCommand("forwardMessage", doc);
-    debugJson(doc, Serial);
+    char payload[BUFFER_SMALL];
+    snprintf(payload, BUFFER_SMALL,
+        "{\"chat_id\":%d,\"from_chat_id\":%lld,\"message_id\":%d}",
+        to_chatid, msg.chatId, msg.messageID);
+
+    const bool result = sendCommand("forwardMessage", payload);
+    log_debug("%s", payload);
     return result;
 }
 
 
-bool AsyncTelegram2::sendPhotoByUrl(const uint32_t& chat_id,  const String &url, const String &caption)
+bool AsyncTelegram2::sendPhotoByUrl(const uint32_t& chat_id,  const char* url, const char* caption)
 {
-    if (!url.length()) return false;
+    if (!strlen(url)) return false;
 
-    StaticJsonDocument<BUFFER_SMALL> smallDoc;
-    smallDoc["chat_id"] = chat_id;
-    smallDoc["photo"] = url;
-    smallDoc["caption"] = caption;
-    const bool result = sendCommand("sendPhoto", smallDoc);
-    debugJson(smallDoc, Serial);
+    char payload[BUFFER_SMALL];
+    snprintf(payload, BUFFER_SMALL,
+        "{\"chat_id\":%d,\"photo\":\"%s\",\"caption\":\"%s\"}",
+        chat_id, url, caption);
+
+    const bool result = sendCommand("sendPhoto", payload);
+    log_debug("%s", payload);
     return result;
 }
 
 
-bool AsyncTelegram2::sendToChannel(const char* &channel, const String &message, bool silent) {
-    if (!message.length()) return false;
+bool AsyncTelegram2::sendToChannel(const char* channel, const char* message, bool silent) {
+    if (!strlen(message)) return false;
 
-    StaticJsonDocument<BUFFER_MEDIUM> doc;
-    doc["chat_id"] = channel;
-    doc["text"] = message;
-    if(silent)
-        doc["silent"] = true;
-    const bool result = sendCommand("sendMessage", doc);
-    debugJson(doc, Serial);
+    char payload[BUFFER_MEDIUM];
+    snprintf(payload, BUFFER_MEDIUM,
+        "{\"chat_id\":%s,\"text\":\"%s\",\"silent\":%s}",
+        channel, message, silent ? "true" : "false");
+
+    const bool result = sendCommand("sendMessage", payload);
+    log_debug("%s", payload);
     return result;
 }
 
@@ -378,30 +486,21 @@ bool AsyncTelegram2::sendToChannel(const char* &channel, const String &message, 
 bool AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool alertMode)
 {
     if (! msg.callbackQueryID) return false;
-    DynamicJsonDocument queryDoc(BUFFER_SMALL);
-    queryDoc["callback_query_id"] =  msg.callbackQueryID;
-    if (strlen(message) != 0)
-        queryDoc["text"] = message;
-    if (alertMode)
-        queryDoc["show_alert"] = true;
-
-    //queryDoc["cache_time"] = 30;
-	debugJson(queryDoc, Serial);
-    const bool result = sendCommand("answerCallbackQuery", queryDoc, true);
+    char payload[BUFFER_SMALL];
+    snprintf(payload, BUFFER_SMALL,
+        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":30,\"show_alert\":%s}",
+        msg.callbackQueryID, message, alertMode ? "true" : "false");
+    const bool result = sendCommand("answerCallbackQuery", payload, true);
     return result;
 }
 
 
 bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char* message, bool selective)
 {
-    DynamicJsonDocument smallDoc(BUFFER_SMALL);
-    smallDoc["remove_keyboard"] = true;
-    if (selective) {
-        smallDoc["selective"] = true;
-    }
-    char command[128];
-    serializeJson(smallDoc, command, 128);
-    const bool result = sendMessage(msg, message, command);
+    char payload[BUFFER_SMALL];
+    snprintf(payload, BUFFER_SMALL,
+        "{\"remove_keyboard\":true,\"selective\":%s}", selective ? "true" : "false");
+    const bool result = sendMessage(msg, message, payload);
     return result;
 }
 
@@ -445,10 +544,6 @@ bool AsyncTelegram2::sendDocument(uint32_t chat_id, const char* command, const c
         telegramClient->print(formData);
 
         // uint32_t t1 = millis();
-        // while (stream->available()) {
-        //     telegramClient->write((uint8_t)stream->read());
-        // }
-
         uint8_t buff[BLOCK_SIZE];
         uint16_t count = 0;
         while (stream->available()) {
