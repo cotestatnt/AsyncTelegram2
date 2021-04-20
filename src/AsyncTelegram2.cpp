@@ -10,7 +10,7 @@
 
 AsyncTelegram2::AsyncTelegram2(Client &client)
 {
-    m_botusername.reserve(32); // Telegram username is 5-32 chars lenght
+    m_botusername.reserve(32);          // Telegram username must be 5-32 chars lenght
     m_rxbuffer.reserve(BUFFER_BIG);
     this->telegramClient = &client;
     m_minUpdateTime = MIN_UPDATE_TIME;
@@ -170,7 +170,6 @@ bool AsyncTelegram2::getUpdates(JsonDocument &doc){
 bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload, bool blocking )
 {
     if(checkConnection()) {
-        // JsonDocument doc is used as input for request preparation and then reused as output result
         String httpBuffer((char *)0);
         httpBuffer.reserve(BUFFER_BIG);
         httpBuffer = "POST https://" TELEGRAM_HOST "/bot";
@@ -183,6 +182,7 @@ bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload
         httpBuffer += strlen(payload);
         httpBuffer += "\n\n";
         httpBuffer += payload;
+        // Send the whole request in one go is much faster
         telegramClient->print(httpBuffer);
         //Serial.println(httpBuffer);
 
@@ -284,8 +284,6 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 
         m_lastUpdateId = updateID + 1;
         debugJson(updateDoc, Serial);
-
-
 
         if (updateDoc["result"][0]["callback_query"]["id"]) {
             // this is a callback query
