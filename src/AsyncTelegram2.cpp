@@ -10,7 +10,7 @@
 
 AsyncTelegram2::AsyncTelegram2(Client &client)
 {
-    m_botusername.reserve(32);          // Telegram username must be 5-32 chars lenght
+    m_botusername.reserve(32); // Telegram username is 5-32 chars lenght
     m_rxbuffer.reserve(BUFFER_BIG);
     this->telegramClient = &client;
     m_minUpdateTime = MIN_UPDATE_TIME;
@@ -23,7 +23,10 @@ bool AsyncTelegram2::checkConnection()
 {
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected()) {
+
         static uint32_t lastCTime;
+        telegramClient->flush();
+        telegramClient->clearWriteError();
         m_lastmsg_timestamp = millis();
         log_debug("Start handshaking...");
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
@@ -55,116 +58,6 @@ bool AsyncTelegram2::reset(void)
     m_waitingReply = false;
     return checkConnection();
 }
-
-
-// Blocking https POST to server (used with ESP8266)
-/*
-bool AsyncTelegram2::sendCommand(const char* const &command, JsonDocument &doc, bool blocking )
-{
-    if(checkConnection()) {
-        // JsonDocument doc is used as input for request preparation and then reused as output result
-        String httpBuffer((char *)0);
-        httpBuffer.reserve(BUFFER_BIG);
-        httpBuffer = "POST https://" TELEGRAM_HOST "/bot";
-        httpBuffer += m_token;
-        httpBuffer += "/";
-        httpBuffer += command;
-        // Let's use 1.0 protocol in order to avoid chunked transfer encoding
-        httpBuffer += " HTTP/1.0" "\nHost: api.telegram.org" "\nConnection: keep-alive" "\nContent-Type: application/json";
-        httpBuffer += "\nContent-Length: ";
-        httpBuffer += measureJson(doc);
-        httpBuffer += "\n\n";
-        httpBuffer += doc.as<String>();
-         telegramClient->print(httpBuffer);
-        // Serial.println(httpBuffer);
-
-        m_waitingReply = true;
-        // Blocking mode
-        if (blocking) {
-            httpBuffer = "";
-            // skip headers
-            if (telegramClient->connected()) {
-                httpBuffer = telegramClient->readStringUntil('\n');
-                while (httpBuffer != "\r") {
-                    httpBuffer = telegramClient->readStringUntil('\n');
-                }
-            }
-            // If there are incoming bytes available from the server, read them and print them:
-            httpBuffer = "";
-            while (telegramClient->available()) {
-                yield();
-                httpBuffer  += (char) telegramClient->read();
-            }
-            m_waitingReply = false;
-
-            DeserializationError err = deserializeJson(doc, httpBuffer);
-            debugJson(doc, Serial);
-            return (err == 0 && doc.containsKey("ok"));
-        }
-    }
-    return false;
-}
-
-
-bool AsyncTelegram2::getUpdates(JsonDocument &doc){
-    // No response from Telegram server for a long time
-    if(millis() - m_lastmsg_timestamp > 10*m_minUpdateTime) {
-        reset();
-    }
-
-    // Send message to Telegram server only if enough time has passed since last
-    if(millis() - m_lastUpdateTime > m_minUpdateTime){
-        m_lastUpdateTime = millis();
-
-        // If previuos reply from server was received (and parsed)
-        if( m_waitingReply == false ) {
-            StaticJsonDocument<BUFFER_SMALL> updateDoc;
-            updateDoc["limit"] = 1;
-            updateDoc["timeout"] = 0;    // zero for short polling.
-            //updateDoc["allowed_updates"] = "message,callback_query";
-            if (m_lastUpdateId != 0) {
-                updateDoc["offset"] = m_lastUpdateId;
-            }
-            sendCommand("getUpdates", updateDoc);
-        }
-    }
-
-    DeserializationError err;
-    if(telegramClient->connected() && telegramClient->available()) {
-        // We have a message, parse data received
-        //uint32_t t1 = millis();
-        bool close_connection = false;
-        String payload((char *)0);
-        payload.reserve(BUFFER_BIG);
-        // Skip headers
-        payload = telegramClient->readStringUntil('\n');
-        while (payload != "\r") {
-            yield();
-            payload = telegramClient->readStringUntil('\n');
-            if (payload.indexOf("close") > -1) {
-                close_connection = true;
-                log_debug("%s\n", payload.c_str());
-            }
-        }
-
-        // If there are incoming bytes available from the server, read them and store:
-        payload = "";
-        while (telegramClient->available()){
-            yield();
-            payload += (char) telegramClient->read();
-        }
-        err = deserializeJson(doc, payload);
-
-        m_lastmsg_timestamp = millis();
-        m_waitingReply = false;
-        if (close_connection)
-            telegramClient->stop();
-        //Serial.println(millis() - t1);
-    }
-    return (!err && doc.containsKey("ok"));
-}
-
-*/
 
 
 bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload, bool blocking )
@@ -202,9 +95,7 @@ bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload
                 m_rxbuffer  += (char) telegramClient->read();
             }
             m_waitingReply = false;
-            if(m_rxbuffer.indexOf("ok") > -1) {
-                return true;
-            }
+            if(m_rxbuffer.indexOf("ok") > -1) return true;
         }
     }
     return false;
@@ -236,8 +127,8 @@ bool AsyncTelegram2::getUpdates(){
         // Skip headers
         while (telegramClient->connected()) {
             String line = telegramClient->readStringUntil('\n');
-            if (line == "\r") { break; }
-            if (line.indexOf("close") > -1) { close_connection = true; }
+            if (line == "\r")  break;
+            if (line.indexOf("close") > -1)  close_connection = true;
         }
 
         // If there are incoming bytes available from the server, read them and store:
@@ -249,8 +140,7 @@ bool AsyncTelegram2::getUpdates(){
         m_waitingReply = false;
         m_lastmsg_timestamp = millis();
 
-        if (close_connection)
-            telegramClient->stop();
+        if (close_connection) telegramClient->stop(), log_debug("Connection closed from server");
 
         if(m_rxbuffer.indexOf("ok") < 0) {
             log_error("%s", m_rxbuffer.c_str());
@@ -335,7 +225,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 // this is a document message
                 message.document.file_id      = updateDoc["result"][0]["message"]["document"]["file_id"];
                 message.document.file_name    = updateDoc["result"][0]["message"]["document"]["file_name"];
-                //message.text                  = updateDoc["result"][0]["message"]["caption"].as<String>();
+                message.text                  = updateDoc["result"][0]["message"]["caption"].as<String>();
                 message.document.file_exists  = getFile(message.document);
                 message.messageType           = MessageDocument;
             }
@@ -395,7 +285,12 @@ bool AsyncTelegram2::getFile(TBDocument &doc)
 
 
 bool AsyncTelegram2::noNewMessage() {
-    return sendCommand("getUpdates", "", true);
+    TBMessage msg;
+    this->m_waitingReply = 0;
+    this->getNewMessage(msg);
+    while (m_rxbuffer.indexOf("ok") < 0) {
+        delay(1);
+    }
 }
 
 
