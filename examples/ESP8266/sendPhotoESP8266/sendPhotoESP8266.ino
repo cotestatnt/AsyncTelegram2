@@ -39,10 +39,10 @@ BearSSL::Session   session;
 BearSSL::X509List  certificate(telegram_cert);
   
 AsyncTelegram2 myBot(client);
-const char* ssid = "XXXXXXXXX";     // REPLACE mySSID WITH YOUR WIFI SSID
-const char* pass = "XXXXXXXXX";     // REPLACE myPassword YOUR WIFI PASSWORD, IF ANY
-const char* token = "XXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXX";   // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
 
+const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
 
 // Send picture to telegram
 void sendPicture(TBMessage *msg, const char* filename) {
@@ -127,7 +127,7 @@ void setup() {
   //Set certficate, session and some other base client properies
   client.setSession(&session);
   client.setTrustAnchors(&certificate);
-  client.setBufferSizes(TCP_MSS, TCP_MSS);
+  client.setBufferSizes(1024, 1024);
   
   // Set the Telegram bot properies
   myBot.setUpdateTime(2000);

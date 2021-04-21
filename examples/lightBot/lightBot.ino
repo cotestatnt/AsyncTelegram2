@@ -35,7 +35,7 @@
   #include <WiFiClient.h>
   #if USE_CLIENTSSL
     #include <SSLClient.h>  
-    #include "certificates.h"
+    #include "tg_certificate.h"
     WiFiClient base_client;
     SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
   #else
@@ -75,7 +75,7 @@ void setup() {
   //Set certficate, session and some other base client properies
   client.setSession(&session);
   client.setTrustAnchors(&certificate);
-  client.setBufferSizes(TCP_MSS, TCP_MSS);
+  client.setBufferSizes(1024, 1024);
 #elif defined(ESP32)
   // Sync time with NTP
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");

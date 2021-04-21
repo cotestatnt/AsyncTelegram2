@@ -46,6 +46,7 @@
 #endif
 
 AsyncTelegram2 myBot(client);
+
 const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
 const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
@@ -98,7 +99,7 @@ void setup() {
   // Set certficate, session and some other base client properies
   client.setSession(&session);
   client.setTrustAnchors(&certificate);
-  client.setBufferSizes(TCP_MSS, TCP_MSS);
+  client.setBufferSizes(1024, 1024);
 #elif defined(ESP32)
   httpUpdate.rebootOnUpdate(false);
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
@@ -171,11 +172,11 @@ void loop() {
   TBMessage msg;
   if (myBot.getNewMessage(msg)) {
     // Is this message intended for firmware update handler?
-    bool msgParsed =  updateHandler(&msg, &myBot);
+    bool msgParsed =  updateHandler(msg, myBot);
 
     // maybe is for events scheduler handler?
     if(! msgParsed)
-      msgParsed = schedulerHandler(&msg, &myBot);
+      msgParsed = schedulerHandler(msg, myBot);
 
     // none of the above, process the message received for remaining cases
     if (! msgParsed){

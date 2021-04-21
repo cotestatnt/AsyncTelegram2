@@ -1,7 +1,7 @@
 /*
-  Name:           OTA_password.ino
+  Name:        OTA_password.ino
   Created:     29/03/2021
-  Author:       Tolentino Cotesta <cotestatnt@yahoo.com>
+  Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
   Description: an example that check for incoming messages
               and install rom update remotely.
 */
@@ -20,6 +20,7 @@ BearSSL::Session   session;
 BearSSL::X509List  certificate(telegram_cert);
   
 AsyncTelegram2 myBot(client);
+
 const char* ssid = "XXXXXXXXX";     // REPLACE mySSID WITH YOUR WIFI SSID
 const char* pass = "XXXXXXXXX";     // REPLACE myPassword YOUR WIFI PASSWORD, IF ANY
 const char* token = "XXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXX";   // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
@@ -49,7 +50,7 @@ void setup() {
   //Set certficate, session and some other base client properies
   client.setSession(&session);
   client.setTrustAnchors(&certificate);
-  client.setBufferSizes(TCP_MSS, TCP_MSS);
+  client.setBufferSizes(1024, 1024);
   
   // Set the Telegram bot properies
   myBot.setUpdateTime(2000);
@@ -145,7 +146,7 @@ void loop() {
 
 
 // Install firmware update
-void handleUpdate(TBMessage msg, String file_path) {
+void handleUpdate(TBMessage &msg, String file_path) {
 
   // Create client for rom download
   WiFiClientSecure client;
@@ -183,7 +184,8 @@ void handleUpdate(TBMessage msg, String file_path) {
       break;
 
     case HTTP_UPDATE_OK:
-      myBot.sendMessage(msg, "UPDATE OK.\nRestarting...");
+      myBot.begin();
+      myBot.sendMessage(msg, "UPDATE OK.\nRestarting in few seconds...");
 
       // Wait until bot synced with telegram to prevent cyclic reboot
       while (!myBot.noNewMessage()) {

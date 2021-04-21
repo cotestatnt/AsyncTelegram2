@@ -1,11 +1,11 @@
 /*
-  Name:	       echoBot.ino
+  Name:        echoBot.ino
   Created:     26/03/2021
   Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
   Description: a simple example that check for incoming messages
                and reply the sender with the received message.
-	             The message will be forwarded also in a public channel
-	             and to a specific userid.
+                 The message will be forwarded also in a public channel
+                 anad to a specific userid.
 */
 
 
@@ -34,19 +34,21 @@
   #include <WiFiClient.h>
   #if USE_CLIENTSSL
     #include <SSLClient.h>  
-    #include "certificates.h"
+    #include "tg_certificate.h"
     WiFiClient base_client;
     SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
   #else
-	#include <WiFiClientSecure.h>
+    #include <WiFiClientSecure.h>
     WiFiClientSecure client;  
   #endif
 #endif
 
 AsyncTelegram2 myBot(client);
+
 const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
 const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
+
 
 // Name of public channel (your bot must be in admin group)
 const char* channel = "@tolentino_cotesta";
@@ -71,7 +73,7 @@ void setup() {
   //Set certficate, session and some other base client properies
   client.setSession(&session);
   client.setTrustAnchors(&certificate);
-  client.setBufferSizes(TCP_MSS, TCP_MSS);
+  client.setBufferSizes(1024, 1024);
 #elif defined(ESP32)
   // Sync time with NTP
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
@@ -91,7 +93,10 @@ void setup() {
   char welcome_msg[128];
   snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
 
-  int32_t chat_id = 436865110; // You can discover your own chat id, with "Json Dump Bot"
+  // Send a message to specific user who has started your bot
+  // Target user can find it's own userid with the bot @JsonDumpBot
+  // https://t.me/JsonDumpBot
+  int32_t userid = 123456789;  
   myBot.sendTo(chat_id, welcome_msg);
 }
 
@@ -116,12 +121,6 @@ void loop() {
     message += msg.text;
     Serial.println(message);
     myBot.sendToChannel(channel, message, true);
-
-    // Send a message to specific user who has started your bot
-    // Target user can find it's own userid with the bot @JsonDumpBot
-    // https://t.me/JsonDumpBot
-    int32_t userid = 1234567890;
-    myBot.sendTo(userid, msg.text);
 
     // echo the received message
     myBot.sendMessage(msg, msg.text);

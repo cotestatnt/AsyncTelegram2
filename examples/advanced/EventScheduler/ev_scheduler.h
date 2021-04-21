@@ -77,12 +77,12 @@ void getWeekdayKeyboard(ReplyKeyboard *kbd) {
   kbd->addButton("CANCEL");
 }
 
-void listScheduledEvents(TBMessage* msg, AsyncTelegram2* myBot) {
+void listScheduledEvents(TBMessage &theMsg, AsyncTelegram2 &theBot) {
 
     for(uint8_t i=0; i<lastEvent; i++){
         Event_t event = events[i];
-        snprintf(replyBuffer, MAX_MSG_LEN, "Setpoint %d.%d °C\nStart: %02d:%02d\nEnd: %02d:%02d\n",
-            (int)event.setpoint, (int)(event.setpoint * 10.0)%10,
+        snprintf(replyBuffer, MAX_MSG_LEN, "Event n.%d\nSetpoint %d.%d °C\nStart: %02d:%02d\nEnd: %02d:%02d\n",
+            i+1, (int)event.setpoint, (int)(event.setpoint * 10.0)%10,
             (int)event.start / 3600, (int) (event.start % 3600)/60,
             (int)event.stop / 3600, (int) (event.stop % 3600)/60
         );
@@ -94,13 +94,13 @@ void listScheduledEvents(TBMessage* msg, AsyncTelegram2* myBot) {
             }
         }
         strcat(replyBuffer, "]");
-        myBot->sendMessage(*msg, replyBuffer);
+        theBot.sendMessage(theMsg, replyBuffer);
         delay(100);
     }
 }
 
 
-bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
+bool schedulerHandler(TBMessage &theMsg, AsyncTelegram2 &theBot) {
     static uint8_t waitState = IDLE;
     static uint32_t waitTime;
 
@@ -109,64 +109,64 @@ bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
     int hour = 0, min = 0;
 
     // This handler only parses messages of type MessageQuery and MessageText
-    if (msg->messageType == MessageQuery ) {
+    if (theMsg.messageType == MessageQuery ) {
         waitTime = millis();
         waitState = WAIT_START;
 
         // received a callback query message
-        if (!strcmp (msg->callbackQueryData.c_str(), SINGLE_DAY)) {
+        if (!strcmp (theMsg.callbackQueryData, SINGLE_DAY)) {
             waitState = WAIT_DAY;
-            myBot->endQuery(*msg, SINGLE_DAY);
-            myBot->sendMessage(*msg, "Wich days?", weekdaysKbd);
+            theBot.endQuery(theMsg, SINGLE_DAY);
+            theBot.sendMessage(theMsg, "Wich days?", weekdaysKbd);
             return true;
         }
-        else if (!strcmp (msg->callbackQueryData.c_str(), ALL_DAYS)) {
+        else if (!strcmp (theMsg.callbackQueryData, ALL_DAYS)) {
             Serial.println(ALL_DAYS);
             for(uint8_t i=0; i<7; i++){
                 bitSet(newEvent.days, i);
             }
-            myBot->endQuery(*msg, ALL_DAYS);
-            myBot->sendMessage(*msg, "Start time? (ex. 15:30)");
+            theBot.endQuery(theMsg, ALL_DAYS);
+            theBot.sendMessage(theMsg, "Start time? (ex. 15:30)");
             return true;
         }
-        else if (!strcmp (msg->callbackQueryData.c_str(), WORK_DAYS)) {
+        else if (!strcmp (theMsg.callbackQueryData, WORK_DAYS)) {
             Serial.println(WORK_DAYS);
             for(uint8_t i=0; i<5; i++){
                 bitSet(newEvent.days, i);
             }
-            myBot->endQuery(*msg, WORK_DAYS);
-            myBot->sendMessage(*msg, "Start time? (ex. 15:30)");
+            theBot.endQuery(theMsg, WORK_DAYS);
+            theBot.sendMessage(theMsg, "Start time? (ex. 15:30)");
             return true;
         }
-        else if (!strcmp (msg->callbackQueryData.c_str(), WEEKEND)) {
+        else if (!strcmp (theMsg.callbackQueryData, WEEKEND)) {
             Serial.println(WEEKEND);
             for(uint8_t i=5; i<7; i++){
                 bitSet(newEvent.days, i);
             }
-            myBot->endQuery(*msg, WEEKEND);
-            myBot->sendMessage(*msg, "Start time? (ex. 15:30)");
+            theBot.endQuery(theMsg, WEEKEND);
+            theBot.sendMessage(theMsg, "Start time? (ex. 15:30)");
             return true;
         }
         else {
-            myBot->endQuery(*msg, "");
+            theBot.endQuery(theMsg, "");
             return true;
         }
     }
     // (messgeText)
     else {
-        String msgText = msg->text;
+        String msgText = theMsg.text;
         // Is a supported scheduler command?
         if( msgText.equalsIgnoreCase("/edit")) {
             waitState = EDIT_EVENT;
-            myBot->sendMessage(*msg, "Number of event to be edited:");
+            theBot.sendMessage(theMsg, "Number of event to be edited:");
             return true;
         }
         else if( msgText.equalsIgnoreCase("/list") ){
-            listScheduledEvents(msg, myBot);
+            listScheduledEvents(theMsg, theBot);
             return true;
         }
         else if (msgText.equalsIgnoreCase("/add")) {
-            myBot->sendMessage(*msg, "Andd new scheduled event:", scheduleKbd);
+            theBot.sendMessage(theMsg, "Andd new scheduled event:", scheduleKbd);
             return true;
         }
         else if (msgText.equalsIgnoreCase("/clear")) {
@@ -182,7 +182,7 @@ bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
                 for(uint8_t i=0; i<7; i++){
                     if (msgText.equalsIgnoreCase(dayNames[i])) {
                         bitSet(newEvent.days, i);
-                        myBot->sendMessage(*msg, "Start time? (ex. 15:30)");
+                        theBot.sendMessage(theMsg, "Start time? (ex. 15:30)");
                         waitState = WAIT_START;
                         return true;
                     }
@@ -193,7 +193,7 @@ bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
                 sscanf (msgText.c_str(), "%hhu", &eventIndex);
                 eventIndex--;       // array starts from 0, but humans don't like usually
                 snprintf(replyBuffer, MAX_MSG_LEN, "Editing event n° %d", eventIndex + 1 );
-                myBot->sendMessage(*msg, replyBuffer, scheduleKbd);
+                theBot.sendMessage(theMsg, replyBuffer, scheduleKbd);
                 return true;
 
             case WAIT_START:
@@ -202,7 +202,7 @@ bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
                 hour = 0; min = 0;
                 sscanf (msgText.c_str(), "%d:%d", &hour, &min);
                 newEvent.start = hour*3600 + min*60;
-                myBot->sendMessage(*msg, "Stop time? (ex. 16:30)");
+                theBot.sendMessage(theMsg, "Stop time? (ex. 16:30)");
                 return true;
 
             case WAIT_STOP:
@@ -210,7 +210,7 @@ bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
                 hour = 0; min = 0;
                 sscanf (msgText.c_str(), "%d:%d", &hour, &min);
                 newEvent.stop = hour*3600 + min*60;
-                myBot->sendMessage(*msg, "Temperature setpoint? (es. 25.0)");
+                theBot.sendMessage(theMsg, "Temperature setpoint? (es. 25.0)");
                 return true;
 
             case SETPOINT:
@@ -232,7 +232,7 @@ bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
                     }
                 }
                 strcat(replyBuffer, "]");
-                myBot->sendMessage(*msg, replyBuffer);
+                theBot.sendMessage(theMsg, replyBuffer);
 
                 // Now we have collected all required data, add event to list
                 addEvent(newEvent, eventIndex);
@@ -246,10 +246,9 @@ bool schedulerHandler(TBMessage* msg, AsyncTelegram2* myBot) {
     if(millis() - waitTime > 15000 && waitState != IDLE){
         waitState = IDLE;
         eventIndex = MAX_EVENTS;
-        myBot->sendMessage(*msg, "You did not respond in time", "");
+        theBot.sendMessage(theMsg, "You did not respond in time", "");
     }
 
     // This message was'nt for this handler
     return false;
 }
-
