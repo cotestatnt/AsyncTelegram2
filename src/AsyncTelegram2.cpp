@@ -285,16 +285,22 @@ bool AsyncTelegram2::getFile(TBDocument &doc)
 
 
 bool AsyncTelegram2::noNewMessage() {
+
     TBMessage msg;
-    this->m_waitingReply = 0;
+    this->reset();
     this->getNewMessage(msg);
-    while (m_rxbuffer.indexOf("ok") < 0) {
-        delay(1);
+    while (!this->getUpdates()) {
+        delay(100);
+        Serial.print(".");
+        // if(millis() - startTime > 10000UL)
+        //     break;
     }
+    Serial.println(".");
+    return true;
 }
 
 
-bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, String keyboard)
+bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, const char* keyboard)
 {
     if (!strlen(message)) return false;
 
@@ -311,15 +317,16 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, Stri
 
     if(msg.disable_notification)
         root["disable_notification"] = true;
-
-    if (keyboard.length() || msg.force_reply) {
-        StaticJsonDocument<BUFFER_MEDIUM> doc;
-        deserializeJson(doc, keyboard);
-        JsonObject myKeyb = doc.as<JsonObject>();
-        root["reply_markup"] = myKeyb;
-        if(msg.force_reply) {
-            root["reply_markup"]["selective"] = true,
-            root["reply_markup"]["force_reply"] = true;
+    if(keyboard != nullptr) {
+        if (strlen(keyboard) || msg.force_reply) {
+            StaticJsonDocument<BUFFER_MEDIUM> doc;
+            deserializeJson(doc, keyboard);
+            JsonObject myKeyb = doc.as<JsonObject>();
+            root["reply_markup"] = myKeyb;
+            if(msg.force_reply) {
+                root["reply_markup"]["selective"] = true,
+                root["reply_markup"]["force_reply"] = true;
+            }
         }
     }
     root.shrinkToFit();
@@ -367,7 +374,7 @@ bool AsyncTelegram2::sendToChannel(const char* channel, const char* message, boo
 
     char payload[BUFFER_MEDIUM];
     snprintf(payload, BUFFER_MEDIUM,
-        "{\"chat_id\":%s,\"text\":\"%s\",\"silent\":%s}",
+        "{\"chat_id\":\"%s\",\"text\":\"%s\",\"silent\":%s}",
         channel, message, silent ? "true" : "false");
 
     const bool result = sendCommand("sendMessage", payload);

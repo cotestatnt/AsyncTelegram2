@@ -8,7 +8,6 @@
 #include "Client.h"
 #include "time.h"
 
-
 #define DEBUG_ENABLE        1
 #ifndef DEBUG_ENABLE
     #define DEBUG_ENABLE    0
@@ -126,21 +125,21 @@ public:
     //   message : the message to send
     //   keyboard: the inline/reply keyboard (optional)
     //             (in json format or using the inlineKeyboard/ReplyKeyboard class helper)
-    bool sendMessage(const TBMessage &msg, const char* message, String keyboard = "");
+    bool sendMessage(const TBMessage &msg, const char* message, const char* keyboard = nullptr);
 
     // sendMessage function overloads
     inline bool sendMessage(const TBMessage &msg, const String &message, String keyboard = "")
     {
-        return sendMessage(msg, message.c_str(), keyboard);
+        return sendMessage(msg, message.c_str(), keyboard.c_str());
     }
 
     inline bool sendMessage(const TBMessage &msg, const char* message, InlineKeyboard &keyboard)
     {
-        return sendMessage(msg, message, keyboard.getJSON());
+        return sendMessage(msg, message, keyboard.getJSON().c_str());
     }
 
     inline bool sendMessage(const TBMessage &msg, const char* message, ReplyKeyboard &keyboard) {
-        return sendMessage(msg, message, keyboard.getJSON());
+        return sendMessage(msg, message, keyboard.getJSON().c_str());
     }
 
     bool forwardMessage(const TBMessage &msg, const int32_t to_chatid);
@@ -149,7 +148,7 @@ public:
     // Send message to a specific user. In order to work properly two conditions is needed:
     //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)
     //  - User has to start your bot in it's own client. For example send a message with @<your bot name>
-    bool sendTo(const int32_t userid, const char* message, String keyboard = "") {
+    bool sendTo(const int32_t userid, const char* message, const char*  keyboard = nullptr) {
         TBMessage msg;
         msg.chatId = userid;
         return sendMessage(msg, message, keyboard);
@@ -157,14 +156,14 @@ public:
 
     // sendTo function overloads
     inline bool sendTo(const int32_t userid, const String &message, String keyboard = "") {
-        return sendTo(userid, message, keyboard );
+        return sendTo(userid, message.c_str(), keyboard.c_str() );
     }
 
     // Send message to a channel. This bot must be in the admin group
     bool sendToChannel(const char* channel, const char* message, bool silent) ;
 
-    inline bool sendToChannel(const char* channel, const String& message, bool silent) {
-        return sendToChannel(channel, message.c_str(), silent) ;
+    inline bool sendToChannel(const String& channel, const String& message, bool silent) {
+        return sendToChannel(channel.c_str(), message.c_str(), silent) ;
     }
 
     // Send a picture passing the url
