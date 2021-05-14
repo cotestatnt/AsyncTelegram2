@@ -13,8 +13,15 @@
 #include <esp_task_wdt.h>
 
 #include <Arduino.h>
+//#define CAMERA_MODEL_WROVER_KIT // Has PSRAM
+//#define CAMERA_MODEL_ESP_EYE // Has PSRAM
+//#define CAMERA_MODEL_M5STACK_PSRAM // Has PSRAM
+//#define CAMERA_MODEL_M5STACK_V2_PSRAM // M5Camera version B Has PSRAM
+//#define CAMERA_MODEL_M5STACK_WIDE // Has PSRAM
+//#define CAMERA_MODEL_M5STACK_ESP32CAM // No PSRAM
+#define CAMERA_MODEL_AI_THINKER // Has PSRAM
+//#define CAMERA_MODEL_TTGO_T_JOURNAL // No PSRAM
 
-#define CAMERA_MODEL_AI_THINKER
 
 #if defined(CAMERA_MODEL_WROVER_KIT)
   //
@@ -40,7 +47,7 @@
   #define LED_PIN           2 // A status led on the RGB; could also use pin 0 or 4
   #define LED_ON         HIGH //
   #define LED_OFF         LOW //
-  // #define LAMP_PIN          x // No LED FloodLamp.
+  #define LAMP_PIN          4 // LED FloodLamp.
 
 #elif defined(CAMERA_MODEL_ESP_EYE)
   //
@@ -358,20 +365,20 @@ void cameraSetup(framesize_t frameSize, int jpeg_quality){
       s->set_brightness(s, 0);      // -2 to 2
       s->set_contrast(s, 0);        // -2 to 2
       s->set_saturation(s, 0);      // -2 to 2
-      // s->set_special_effect(s, 0);  // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
-      // s->set_whitebal(s, 1);        // aka 'awb' in the UI; 0 = disable , 1 = enable
-      // s->set_awb_gain(s, 1);        // 0 = disable , 1 = enable
-      // s->set_wb_mode(s, 1);         // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
-      // s->set_exposure_ctrl(s, 1);   // 0 = disable , 1 = enable
-      // s->set_aec2(s, 1);            // 0 = disable , 1 = enable
-      // s->set_ae_level(s, 1);        // -2 to 2
+      //s->set_special_effect(s, 0);  // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
+      s->set_whitebal(s, 1);        // aka 'awb' in the UI; 0 = disable , 1 = enable
+      s->set_awb_gain(s, 1);        // 0 = disable , 1 = enable
+      s->set_wb_mode(s, 1);         // 0 to 4 - if awb_gain enabled (0 - Auto, 1 - Sunny, 2 - Cloudy, 3 - Office, 4 - Home)
+      //s->set_exposure_ctrl(s, 1);   // 0 = disable , 1 = enable
+      //s->set_aec2(s, 1);            // 0 = disable , 1 = enable
+      //s->set_ae_level(s, 1);        // -2 to 2
       //s->set_aec_value(s, 300);     // 0 to 1200
       //s->set_gain_ctrl(s, 1);       // 0 = disable , 1 = enable
       //s->set_agc_gain(s, 0);        // 0 to 30
       //s->set_gainceiling(s, (gainceiling_t)0);  // 0 to 6
       //s->set_bpc(s, 0);             // 0 = disable , 1 = enable
       //s->set_wpc(s, 1);             // 0 = disable , 1 = enable
-      // s->set_raw_gma(s, 1);         // 0 = disable , 1 = enable
+      s->set_raw_gma(s, 1);         // 0 = disable , 1 = enable
       //s->set_lenc(s, 1);            // 0 = disable , 1 = enable
       //s->set_hmirror(s, 0);         // 0 = disable , 1 = enable
       //s->set_vflip(s, 0);           // 0 = disable , 1 = enable
