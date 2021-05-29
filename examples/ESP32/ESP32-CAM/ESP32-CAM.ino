@@ -17,9 +17,9 @@
   WiFiClientSecure client;
 #endif
 
-//const char* ssid = "xxxxxxxxxxxx";  // SSID WiFi network
-//const char* pass = "xxxxxxxxxxxx";  // Password  WiFi network
-//const char* token = "xxxxxxxx:xxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";
+const char* ssid = "xxxxxxxxxxxx";  // SSID WiFi network
+const char* pass = "xxxxxxxxxxxx";  // Password  WiFi network
+const char* token = "xxxxxxxx:xxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";
 
 // Timezone definition to get properly time from NTP server
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
