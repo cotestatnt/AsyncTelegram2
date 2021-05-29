@@ -1,6 +1,5 @@
 #include <WiFi.h>
 #include <FS.h>
-#include <SPIFFS.h>
 #include <AsyncTelegram2.h>
 #include "esp_camera.h"
 #include "soc/soc.h"           // Brownout error fix
