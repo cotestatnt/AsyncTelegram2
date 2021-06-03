@@ -23,12 +23,8 @@
 #define SERVER_TIMEOUT      10000
 #define MIN_UPDATE_TIME     500
 
-#if defined(ESP8266)
-    #include <ESP8266WiFi.h>
-    #define BLOCK_SIZE          2048
-#else
-    #define BLOCK_SIZE          4096
-#endif
+#define BLOCK_SIZE          1460
+
 
 #include "DataStructures.h"
 #include "InlineKeyboard.h"
@@ -148,14 +144,14 @@ public:
     // Send message to a specific user. In order to work properly two conditions is needed:
     //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)
     //  - User has to start your bot in it's own client. For example send a message with @<your bot name>
-    bool sendTo(const int32_t userid, const char* message, const char*  keyboard = nullptr) {
+    bool sendTo(const int64_t userid, const char* message, const char*  keyboard = nullptr) {
         TBMessage msg;
         msg.chatId = userid;
         return sendMessage(msg, message, keyboard);
     }
 
     // sendTo function overloads
-    inline bool sendTo(const int32_t userid, const String &message, String keyboard = "") {
+    inline bool sendTo(const int64_t userid, const String &message, String keyboard = "") {
         return sendTo(userid, message.c_str(), keyboard.c_str() );
     }
 
@@ -167,9 +163,9 @@ public:
     }
 
     // Send a picture passing the url
-    bool sendPhotoByUrl(const uint32_t& chat_id,  const char* url, const char* caption);
+    bool sendPhotoByUrl(const int64_t& chat_id,  const char* url, const char* caption);
 
-    inline bool sendPhotoByUrl(const uint32_t& chat_id,  const String& url, const String& caption){
+    inline bool sendPhotoByUrl(const int64_t& chat_id,  const String& url, const String& caption){
         return sendPhotoByUrl(chat_id, url.c_str(), caption.c_str());
     }
 
@@ -178,7 +174,7 @@ public:
     }
 
     // Send a picture stored in local memory
-    inline bool sendPhotoByFile(uint32_t chat_id, Stream* stream, size_t size) {
+    inline bool sendPhotoByFile(int64_t chat_id, Stream* stream, size_t size) {
         return sendDocument(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size);
     }
 
@@ -276,7 +272,7 @@ private:
     bool getMe();
 
     //  example: sendDocument("sendPhoto", chat_id, "image/jpeg", "photo", File );
-    bool sendDocument( uint32_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream* stream, size_t size);
+    bool sendDocument( int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream* stream, size_t size);
 
     // check if connection with server is active
     // returns

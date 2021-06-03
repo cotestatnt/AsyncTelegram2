@@ -18,7 +18,7 @@ enum MessageType {
 
 struct TBUser {
   bool          isBot;
-  int32_t       id = 0;
+  int64_t       id = 0;
   const char*   firstName;
   const char*   lastName;
   const char*   username;
@@ -36,7 +36,7 @@ struct TBLocation{
 };
 
 struct TBContact {
-  int32_t 	   id;
+  int64_t 	   id;
   const char*  phoneNumber;
   const char*  firstName;
   const char*  lastName;
@@ -48,15 +48,15 @@ struct TBDocument {
   int32_t      file_size;
   const char*  file_id;
   const char*  file_name;
-  String		   file_path;
+  String	   file_path;
 };
 
 struct TBMessage {
   MessageType 	  messageType;
-  bool			      isHTMLenabled = false;
-  bool       		  isMarkdownEnabled = false;
-  bool 	     	    disable_notification = false;
-  bool			      force_reply = false;
+  bool			  isHTMLenabled = false;
+  bool       	  isMarkdownEnabled = false;
+  bool 	     	  disable_notification = false;
+  bool			  force_reply = false;
   int32_t         date;
   int32_t         chatInstance;
   int64_t         chatId;
@@ -66,7 +66,7 @@ struct TBMessage {
   TBLocation      location;
   TBContact       contact;
   TBDocument      document;
-  const char*   	callbackQueryID;
+  const char*     callbackQueryID;
   const char*     callbackQueryData;
   String      	  text;
 };

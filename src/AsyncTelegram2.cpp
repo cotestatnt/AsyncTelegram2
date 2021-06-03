@@ -354,13 +354,13 @@ bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int32_t to_chati
 }
 
 
-bool AsyncTelegram2::sendPhotoByUrl(const uint32_t& chat_id,  const char* url, const char* caption)
+bool AsyncTelegram2::sendPhotoByUrl(const int64_t& chat_id,  const char* url, const char* caption)
 {
     if (!strlen(url)) return false;
 
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-        "{\"chat_id\":%d,\"photo\":\"%s\",\"caption\":\"%s\"}",
+        "{\"chat_id\":%lld,\"photo\":\"%s\",\"caption\":\"%s\"}",
         chat_id, url, caption);
 
     const bool result = sendCommand("sendPhoto", payload);
@@ -405,7 +405,29 @@ bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char* messa
 }
 
 
-bool AsyncTelegram2::sendDocument(uint32_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream* stream, size_t size)
+char *int64_to_string(int64_t input)
+{
+    static char result[21] = "";
+    // Clear result from any leftover digits from previous function call.
+    memset(&result[0], 0, sizeof(result));
+    // temp is used as a temporary result storage to prevent sprintf bugs.
+    char temp[21] = "";
+    char c;
+    uint8_t base = 10;
+
+    while (input) 
+    {
+        int num = input % base;
+        input /= base;
+        c = '0' + num;
+        sprintf(temp, "%c%s", c, result);
+        strcpy(result, temp);
+    } 
+    return result;
+}
+
+
+bool AsyncTelegram2::sendDocument(int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream* stream, size_t size)
 {
     #define BOUNDARY            "----WebKitFormBoundary7MA4YWxkTrZu0gW"
     #define END_BOUNDARY        "\r\n--" BOUNDARY "--\r\n"
@@ -416,7 +438,7 @@ bool AsyncTelegram2::sendDocument(uint32_t chat_id, const char* command, const c
         String formData((char *)0);
         formData = "--" BOUNDARY;
         formData += "\r\nContent-disposition: form-data; name=\"chat_id\"\r\n\r\n";
-        formData += chat_id;
+        formData += int64_to_string(chat_id);
         formData += "\r\n--" BOUNDARY;
         formData += "\r\nContent-disposition: form-data; name=\"";
         formData += binaryPropertyName;
@@ -442,7 +464,7 @@ bool AsyncTelegram2::sendDocument(uint32_t chat_id, const char* command, const c
 
         // Body of request
         telegramClient->print(formData);
-
+		
         // uint32_t t1 = millis();
         uint8_t buff[BLOCK_SIZE];
         uint16_t count = 0;
@@ -459,7 +481,7 @@ bool AsyncTelegram2::sendDocument(uint32_t chat_id, const char* command, const c
         if (count > 0) {
             //log_debug("\nSending binary photo remaining buffer");
             telegramClient->write((const uint8_t *)buff, count);
-        }
+        }		
 
         telegramClient->print(END_BOUNDARY);
 
