@@ -120,36 +120,53 @@ static esp_err_t init_camera() {
 }
 
 
-// Send a picture taken from CAM to Telegram
-bool sendPicture(TBMessage* msg) {
-  File file = SPIFFS.open("/frame.jpg", "w");
+// Save a picture taken from CAM to filesystem
+bool savePicture(char* filename) {
+
+  // Take Picture with Camera;
+  setLamp(100);
+  camera_fb_t *fb = esp_camera_fb_get();
+  setLamp(0);
+  if (!fb) {
+    Serial.println("Camera capture failed");
+    esp_camera_fb_return(fb);
+    return false;
+  }
+  // Save frame to file
+  File file = SPIFFS.open(filename, "w");
   if (!file) {
     Serial.println("Failed to open file in writing mode");
     return false;
   }
-  Serial.println("Capture Requested");
+  file.write(fb->buf, fb->len);  
+  // Check if file was written with success
+  if (file.size() == 0) {
+    file.write(fb->buf, fb->len);   // Previuos write fails, try again
+    Serial.print("*");
+  }
+  Serial.printf("Saved file to path: %s - %zu bytes\n", filename, file.size());
+  file.close();
+  
+  esp_camera_fb_return(fb);
+  return true;
+}
 
-  // Take Picture with Camera;
-  setLamp(100);
-  camera_fb_t* fb = esp_camera_fb_get();
-  setLamp(0);
-  if (!fb) {
-    Serial.println("Camera capture failed");
-	file.close();
-	SPIFFS.remove("/frame.jpg");
+bool sendPicture(TBMessage& msg, const char* filename) {
+  
+  File file = SPIFFS.open(filename, "r");
+  if (file.size() > 0) {
+    Serial.printf("Sending file %s - %zu bytes\n", filename, file.size());
+    myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
+    file.close();
+    SPIFFS.remove(filename);
+    return true;
+  } 
+  else {
+    Serial.println("File has not valid size");
+    file.close();
+    SPIFFS.remove("/frame.jpg");
     return false;
   }
-
-  file.write(fb->buf, fb->len);  // payload (image), payload length
-  file.close();
-  Serial.printf("Saved file to path: %s - %zu bytes\n", "/frame.jpg", fb->len);
-
-  // Open again in reading mode and send stream to AyncTelegram
-  file = SPIFFS.open("/frame.jpg", "r");
-  myBot.sendPhotoByFile(msg->sender.id, &file, file.size());
-  file.close();
-  SPIFFS.remove("/frame.jpg");
-  return true;
 }
 
 void setup() {  
@@ -168,6 +185,8 @@ void setup() {
   if (!SPIFFS.begin(true)) {
     Serial.println("\nFS Mount Failed.\nFilesystem will be formatted, please wait.");
     SPIFFS.format();
+    delay(1000);
+    ESP.restart();
   }
 
   // Start WiFi connection
@@ -200,7 +219,7 @@ void setup() {
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-  int32_t userid = 123456974;  
+  int32_t userid = 1234567890;  
   myBot.sendTo(userid, welcome_msg);
 
   // Init the camera module (accordind the camera_config_t defined)
@@ -220,9 +239,13 @@ void loop() {
       // Received a text message
       if (msg.text.equalsIgnoreCase("/takePhoto")) {
         Serial.println("\nSending Photo from CAM");
-        if (sendPicture(&msg))
-            Serial.println("Message sent");
-      } else {
+        char* filename = "/frame.jpg";
+        if (savePicture(filename)) {
+          if (sendPicture(msg, filename))
+            Serial.println("Picture sent successfull");
+        }
+      } 
+      else {
         Serial.print("\nText message received: ");
         Serial.println(msg.text);
         String replyStr = "Message received:\n";
