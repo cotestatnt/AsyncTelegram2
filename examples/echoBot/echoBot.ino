@@ -97,7 +97,7 @@ void setup() {
   // Target user can find it's own userid with the bot @JsonDumpBot
   // https://t.me/JsonDumpBot
   int32_t userid = 123456789;  
-  myBot.sendTo(chat_id, welcome_msg);
+  myBot.sendTo(userid, welcome_msg);
 }
 
 void loop() {
