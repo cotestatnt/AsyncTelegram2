@@ -1,6 +1,14 @@
 name: Compile Library
 
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - '.github/workflows/cpp_lint.yml'
+      - '.github/workflows/compile_examples.yml'
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/cpp_lint.yml'
+      - '.github/workflows/compile_examples.yml'
 
 jobs:
   build:
