@@ -6,12 +6,12 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     example: 
-    #       - "examples/OTAupdate_ESP8266/OTAupdate_ESP8266.ino"
-    #       - "examples/sendPhotoESP8266/sendPhotoESP8266.ino"
-    #       - "examples/echoBot/echoBot.ino"
+    strategy:
+      matrix:
+        boards: 
+          - "nodemcuv2"
+          - "lolin32"
+          - "uno"
 
     steps:
     - uses: actions/checkout@v2
@@ -40,4 +40,4 @@ jobs:
         echo "void loop() {}" >> src/main.ino
 
     - name: Run PlatformIO
-      run: pio ci --board=nodemcuv2 --board=lolin32 --board=uno src
+      run: pio ci --board=${{ matrix.example }} src
