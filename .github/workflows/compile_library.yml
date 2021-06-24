@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        boards: 
+        board: 
           - "nodemcuv2"
           - "lolin32"
           - "uno"
@@ -40,4 +40,4 @@ jobs:
         echo "void loop() {}" >> src/main.ino
 
     - name: Run PlatformIO
-      run: pio ci --board=${{ matrix.example }} src
+      run: pio ci --board=${{ matrix.board }} src
