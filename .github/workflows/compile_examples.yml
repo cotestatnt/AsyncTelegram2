@@ -95,7 +95,13 @@ jobs:
         pio lib -g install \
         https://github.com/cotestatnt/AsyncTelegram2 \
         https://github.com/OPEnSLab-OSU/SSLClient
-        
+
+    - name: Build eventScheduler
+      if: ${{ matrix.example == 'examples/advanced/EventScheduler/EventScheduler.ino' }}
+      run: pio ci --lib="examples/advanced/EventScheduler/" --board=lolin32
+      env:
+        PLATFORMIO_CI_SRC: ${{ matrix.example }}
+
     - name: Run PlatformIO Examples
       run: pio ci --board=lolin32
       env:
@@ -133,9 +139,8 @@ jobs:
         pio lib -g install \
         https://github.com/cotestatnt/AsyncTelegram2 \
         https://github.com/arduino-libraries/Ethernet \
-        https://github.com/OPEnSLab-OSU/SSLClient
-
-
+        https://github.com/OPEnSLab-OSU/SSLClient \
+        https://github.com/SGSSGene/StandardCplusplus
         
     - name: Run PlatformIO Examples
       run: pio ci --board=uno
