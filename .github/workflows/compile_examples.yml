@@ -86,7 +86,7 @@ jobs:
       run: | 
         pio lib -g install \
         https://github.com/cotestatnt/AsyncTelegram2 \
-        openslab-osu/SSLClient @ ^1.6.11
+        openslab-osu/SSLClient @ 1.6.10
         
     - name: Run PlatformIO Examples
       run: pio ci --board=lolin32
