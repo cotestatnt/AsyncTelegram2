@@ -62,7 +62,7 @@ jobs:
       fail-fast: false
       matrix:
         example: 
-        - "examples/advanced/EventScheduler/EventScheduler.ino"
+        - "examples/advanced/EventScheduler"
         - "examples/echoBot/echoBot.ino"
         - "examples/keyboardCallback/keyboardCallback.ino"
         - "examples/keyboards/keyboards.ino"
@@ -98,7 +98,9 @@ jobs:
 
     - name: Build eventScheduler
       if: ${{ matrix.example == 'examples/advanced/EventScheduler/EventScheduler.ino' }}
-      run: pio ci --src="examples/advanced/EventScheduler/" --board=lolin32
+      run: pio ci --board=lolin32
+      env:
+        PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
     - name: Run PlatformIO Examples
       run: pio ci --board=lolin32
