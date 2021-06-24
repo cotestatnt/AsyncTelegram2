@@ -3,7 +3,7 @@ name: Compile examples
 on: [push]
 
 jobs:
-  build_examples_esp8266:
+  esp8266:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -11,9 +11,13 @@ jobs:
         example: 
         - "examples/advanced/EventScheduler/EventScheduler.ino"
         - "examples/echoBot/echoBot.ino"
+        - "examples/keyboardCallback/keyboardCallback.ino"
+        - "examples/keyboards/keyboards.ino"
+        - "examples/lightBot/lightBot.ino"
+        - "examples/sendPhoto/sendPhoto.ino"
+
         - "examples/ESP8266/OTA_password/OTA_password.ino"
         - "examples/ESP8266/OTA_buttonQuery/OTA_buttonQuery.ino"
-        - "examples/sendPhoto/sendPhoto.ino"
 
     steps:
     - uses: actions/checkout@v2
@@ -43,3 +47,85 @@ jobs:
       run: pio ci --board=nodemcuv2
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
+
+  esp32:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        example: 
+        - "examples/advanced/EventScheduler/EventScheduler.ino"
+        - "examples/echoBot/echoBot.ino"
+        - "examples/keyboardCallback/keyboardCallback.ino"
+        - "examples/keyboards/keyboards.ino"
+        - "examples/lightBot/lightBot.ino"
+        - "examples/sendPhoto/sendPhoto.ino"
+
+        - "examples/ESP32/ESP32-CAM/ESP32-CAM.ino"
+        - "examples/ESP32/ESP32-CAM-adv/ESP32-CAM-adv.ino"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: ${{ runner.os }}-pip-
+    - name: Cache PlatformIO
+      uses: actions/cache@v2
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Set up Python
+      uses: actions/setup-python@v2
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade platformio
+    - name: Install 3rd party dependecies
+      run: | 
+        pio lib -g install \
+        https://github.com/cotestatnt/AsyncTelegram2/
+        
+    - name: Run PlatformIO Examples
+      run: pio ci --board=lolin32
+      env:
+        PLATFORMIO_CI_SRC: ${{ matrix.example }}
+
+  arduino:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        example: 
+        - "examples/Ethernet/Ethernet.ino"
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: ${{ runner.os }}-pip-
+    - name: Cache PlatformIO
+      uses: actions/cache@v2
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Set up Python
+      uses: actions/setup-python@v2
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade platformio
+    - name: Install 3rd party dependecies
+      run: | 
+        pio lib -g install \
+        https://github.com/cotestatnt/AsyncTelegram2/
+        
+    - name: Run PlatformIO Examples
+      run: pio ci --board=uno
+      env:
+        PLATFORMIO_CI_SRC: ${{ matrix.example }}
+
