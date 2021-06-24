@@ -85,7 +85,8 @@ jobs:
     - name: Install 3rd party dependecies
       run: | 
         pio lib -g install \
-        https://github.com/cotestatnt/AsyncTelegram2/
+        https://github.com/cotestatnt/AsyncTelegram2 \
+        openslab-osu/SSLClient @ ^1.6.11
         
     - name: Run PlatformIO Examples
       run: pio ci --board=lolin32
@@ -122,7 +123,10 @@ jobs:
     - name: Install 3rd party dependecies
       run: | 
         pio lib -g install \
-        https://github.com/cotestatnt/AsyncTelegram2/
+        https://github.com/cotestatnt/AsyncTelegram2 \
+        arduino-libraries/Ethernet @ ^2.0.0
+
+
         
     - name: Run PlatformIO Examples
       run: pio ci --board=uno
