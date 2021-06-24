@@ -52,7 +52,9 @@ jobs:
         https://github.com/cotestatnt/AsyncTelegram2/
         
     - name: Run PlatformIO Examples
-      run: pio ci --board=nodemcuv2
+      run: |
+        pio ci --board=nodemcuv2 \
+        --lib=examples/advanced/EventScheduler/**.h
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
@@ -142,7 +144,9 @@ jobs:
         https://github.com/SGSSGene/StandardCplusplus
         
     - name: Run PlatformIO Examples
-      run: pio ci --board=uno
+      run: |
+        pio ci --board=uno \
+        --lib=examples/Ethernet/**.h
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
