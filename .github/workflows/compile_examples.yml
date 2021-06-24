@@ -124,7 +124,7 @@ jobs:
       run: | 
         pio lib -g install \
         https://github.com/cotestatnt/AsyncTelegram2 \
-        arduino-libraries/Ethernet @ ^2.0.0
+        https://github.com/arduino-libraries/Ethernet
 
 
         
