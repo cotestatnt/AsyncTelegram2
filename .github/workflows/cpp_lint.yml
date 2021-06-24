@@ -4,8 +4,9 @@ on:
    push:
       paths-ignore:
        - '.github/workflows/compile_*.yml'
-   pull_request
-
+   pull_request:
+      paths-ignore:
+       - '.github/workflows/compile_*.yml'
 jobs:
   build:
     runs-on: ubuntu-latest
