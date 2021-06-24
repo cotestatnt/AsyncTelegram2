@@ -98,7 +98,7 @@ jobs:
 
     - name: Build eventScheduler
       if: ${{ matrix.example == 'examples/advanced/EventScheduler' }}
-      run: pio ci --board=lolin32 --lib=examples/advanced/EventScheduler
+      run: pio ci --board=lolin32 --lib=examples/Ethernet/certificates.h --lib=examples/advanced/EventScheduler/
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
