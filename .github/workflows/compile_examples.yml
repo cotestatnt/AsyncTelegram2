@@ -132,7 +132,8 @@ jobs:
       run: | 
         pio lib -g install \
         https://github.com/cotestatnt/AsyncTelegram2 \
-        https://github.com/arduino-libraries/Ethernet
+        https://github.com/arduino-libraries/Ethernet \
+        https://github.com/OPEnSLab-OSU/SSLClient
 
 
         
