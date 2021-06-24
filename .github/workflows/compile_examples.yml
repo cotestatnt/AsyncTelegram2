@@ -97,8 +97,8 @@ jobs:
         https://github.com/OPEnSLab-OSU/SSLClient
 
     - name: Build eventScheduler
-      if: ${{ matrix.example == 'examples/advanced/EventScheduler }}
-      run: pio ci --board=lolin32
+      if: ${{ matrix.example == 'examples/advanced/EventScheduler' }}
+      run: pio ci --board=lolin32 --lib=examples/advanced/EventScheduler
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
