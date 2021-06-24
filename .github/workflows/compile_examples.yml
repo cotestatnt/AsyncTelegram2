@@ -96,14 +96,13 @@ jobs:
         https://github.com/cotestatnt/AsyncTelegram2 \
         https://github.com/OPEnSLab-OSU/SSLClient
 
-    - name: Build eventScheduler
-      if: ${{ matrix.example == 'examples/advanced/EventScheduler' }}
-      run: pio ci --board=lolin32 --lib=examples/Ethernet/certificates.h --lib=examples/advanced/EventScheduler/
-      env:
-        PLATFORMIO_CI_SRC: ${{ matrix.example }}
-
     - name: Run PlatformIO Examples
-      run: pio ci --board=lolin32
+      run: |
+        pio ci --board=lolin32 \
+        --lib=examples/advanced/EventScheduler/**.h \
+        --lib=examples/ESP32/ESP32-CAM-adv/**.h \
+        --lib=examples/Ethernet/**.h
+
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
