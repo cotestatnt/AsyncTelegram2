@@ -22,3 +22,14 @@ jobs:
       - name: Linting
         run: |
           cpplint --repository=. --recursive --filter=-whitespace/line_length,-legal/copyright,-runtime/printf,-build/include,-build/namespace ./src
+
+  cpplint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: reviewdog/action-cpplint@master
+      with:
+        github_token: ${{ secrets.github_token }}
+        reporter: github-pr-review
+        flags: --linelength=50 # Optional
+        filter: "-readability/braces, -whitespace/braces,-whitespace/comments,-whitespace/indent,-whitespace/newline,-whitespace/operators,-whitespace/parens"
