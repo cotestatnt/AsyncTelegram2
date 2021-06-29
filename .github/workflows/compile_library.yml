@@ -22,7 +22,7 @@ jobs:
         board: 
           - "nodemcuv2"
           - "lolin32"
-          - "nano_33_iot"
+#          - "nano_33_iot"
 
     steps:
     - uses: actions/checkout@v2
@@ -45,17 +45,16 @@ jobs:
         pip install --upgrade platformio
         
     - name: Build mqtt & dep
-      if: ${{ matrix.board == 'uno' }}
+      if: ${{ matrix.board == 'nano_33_iot' }}
       run: |    
         pio lib -g install \
         https://github.com/SGSSGene/StandardCplusplus
-        
+
     - name: Create main file
       run: |
         echo "#include <Arduino.h>" >> src/main.ino
         echo "void setup() {}" >> src/main.ino
         echo "void loop() {}" >> src/main.ino
-
 
     - name: Run PlatformIO
       run: pio ci --board=${{ matrix.board }} src
