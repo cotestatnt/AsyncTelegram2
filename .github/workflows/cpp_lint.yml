@@ -8,12 +8,10 @@ on:
       paths-ignore:
        - '.github/workflows/compile_*.yml'
 jobs:
-  cpplint:
-    name: runner / cpplint
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code.
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: cpplint
         uses: reviewdog/action-cpplint@master
         with:
