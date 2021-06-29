@@ -22,7 +22,7 @@ jobs:
         board: 
           - "nodemcuv2"
           - "lolin32"
-          - "uno"
+          - "nano_33_iot"
 
     steps:
     - uses: actions/checkout@v2

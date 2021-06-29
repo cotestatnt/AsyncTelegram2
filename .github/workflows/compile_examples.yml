@@ -145,7 +145,7 @@ jobs:
         
     - name: Run PlatformIO Examples
       run: |
-        pio ci --board=nano_33_iot --platform=atmelsam \
+        pio ci --board=nano_33_iot \
         --lib=examples/Ethernet/**.h
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
