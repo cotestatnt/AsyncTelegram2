@@ -236,7 +236,7 @@ void setup() {
   int64_t userid = 1223456789;
   myBot.sendTo(userid, welcome_msg);
 
-  // Start telegram message checking in a separate task on core 0 (the loop() function run on core 1)
+  // Start telegram message checking in a parallel task
   xTaskCreate(
     checkTelegram,    // Function to implement the task
     "checkTelegram",  // Name of the task
