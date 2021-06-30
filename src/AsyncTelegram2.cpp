@@ -411,18 +411,18 @@ char *int64_to_string(int64_t input)
     // Clear result from any leftover digits from previous function call.
     memset(&result[0], 0, sizeof(result));
     // temp is used as a temporary result storage to prevent sprintf bugs.
-    char temp[21] = "";
+    char temp[21+1] = "";
     char c;
     uint8_t base = 10;
 
-    while (input) 
+    while (input)
     {
         int num = input % base;
         input /= base;
         c = '0' + num;
-        sprintf(temp, "%c%s", c, result);
+        snprintf(temp, sizeof(temp), "%c%s", c, result);
         strcpy(result, temp);
-    } 
+    }
     return result;
 }
 
