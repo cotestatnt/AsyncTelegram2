@@ -127,7 +127,7 @@ void setup() {
   myInlineKbd.addButton("ON", LIGHT_ON_CALLBACK, KeyboardButtonQuery);
   myInlineKbd.addButton("OFF", LIGHT_OFF_CALLBACK, KeyboardButtonQuery);
   myInlineKbd.addRow();
-  myInlineKbd.addButton("GitHub", "https://github.com/cotestatnt/AsyncTelegram2/", KeyboardButtonURL);
+  myInlineKbd.addButton("GitHub", "https://github.com/cotestatnt/AsyncTelegram/", KeyboardButtonURL);
 }
 
 

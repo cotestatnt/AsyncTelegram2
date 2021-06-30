@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <FS.h>
+#include <SPIFFS.h>
 #include <AsyncTelegram2.h>
 #include "esp_camera.h"
 #include "soc/soc.h"           // Brownout error fix
@@ -232,7 +233,7 @@ void setup() {
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-  int32_t userid = 436865110;
+  int64_t userid = 1223456789;
   myBot.sendTo(userid, welcome_msg);
 
   // Start telegram message checking in a separate task on core 0 (the loop() function run on core 1)

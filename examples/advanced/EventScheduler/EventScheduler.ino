@@ -1,4 +1,4 @@
-/*
+ /*
   Created:     24/03/2020
   Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
   Advance example with OTA support and "event scheduler".
@@ -126,7 +126,7 @@ void setup() {
   char welcome_msg[128];
   snprintf(welcome_msg, 128, PSTR("BOT @%s online\n/help all commands avalaible."), botName);
 
-  int32_t chat_id = 436865110; // You can discover your own chat id, with "Json Dump Bot"
+  int64_t chat_id = 436865110; // You can discover your own chat id, with "Json Dump Bot"
   myBot.sendTo(chat_id, welcome_msg);
 }
 

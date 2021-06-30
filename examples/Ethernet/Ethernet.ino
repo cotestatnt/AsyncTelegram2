@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <SSLClient.h>
-#include "certificates.h"
+#include "tg_certificate.h"
 #include <AsyncTelegram2.h>
 
 const char* token =  "xxxxxxxxx:xxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -112,7 +112,7 @@ void setup() {
   // Send a welcome message to specific user
   char welcome_msg[128];
   snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
-  int32_t chat_id = 436865110; // You can discover your own chat id, with "Json Dump Bot"
+  int64_t chat_id = 1234567890; // You can discover your own chat id, with "Json Dump Bot"
   myBot.sendTo(chat_id, welcome_msg);
 }
 

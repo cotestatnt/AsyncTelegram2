@@ -62,7 +62,7 @@ void setup() {
   
   char welcome_msg[128];
   snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
-  int32_t chat_id = 436865110; // You can discover your own chat id, with "Json Dump Bot"
+  int64_t chat_id = 1234567890; // You can discover your own chat id, with "Json Dump Bot"
   myBot.sendTo(chat_id, welcome_msg);
   
   // We have to handle reboot manually after sync with TG server

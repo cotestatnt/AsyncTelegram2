@@ -96,7 +96,7 @@ void setup() {
   // Send a message to specific user who has started your bot
   // Target user can find it's own userid with the bot @JsonDumpBot
   // https://t.me/JsonDumpBot
-  int32_t userid = 123456789;  
+  int64_t userid = 123456789;  
   myBot.sendTo(userid, welcome_msg);
 }
 

@@ -201,7 +201,7 @@ void setup() {
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-  int32_t userid = 436865110;
+  int64_t userid = 1234567890;
   myBot.sendTo(userid, welcome_msg); 
 
 }
