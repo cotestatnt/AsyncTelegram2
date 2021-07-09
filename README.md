@@ -46,4 +46,5 @@ Take a look at the examples provided in the [examples folder](https://github.com
 [Here how to use the library](https://github.com/cotestatnt/AsyncTelegram2/blob/master/REFERENCE.md). 
 
 + 2.0.0   Initial version, most of functionality of AsyncTelegram
-+ 2.0.1   Added sendDataBuffer() method and ESP32-CAM example (send picture frame directly from SPRAM memory)
++ 2.0.1   Added more overload functions to cover a lot of possible usage and mantain a little backward compatibility
++ 2.0.2   Increased upload speed. Now is possible send photo directly from a raw data buffer (e.g. ESP32-CAM)
