@@ -1,25 +1,18 @@
 /*
   https://github.com/cotestatnt/AsyncTelegram2
   Name:         sendPhoto.ino
-  Created:      20/06/2020
+  Created:      09/07/2021
   Author:       Tolentino Cotesta <cotestatnt@yahoo.com>
   Description:  an example to show how send a picture from bot.
 
   Note: 
   Sending image to Telegram take some time (as longer as bigger are picture files)
-  In this example image files will be sent in tree ways and for two of them, FFat filesystem is required 
-  
-    - with command /photofs, bot will send an example image stored in filesystem (or in an external SD)
-    - with command /photohost:<host>/path/to/image, bot will send a sendPhoto command 
-      uploading the image file that first was downloaded from a LAN network address.
-      If the file is small enough, could be stored only in memory, but for more reliability we save it before on flash.      
-      N.B. This can be useful in order to send images stored in local webservers, wich is not accessible from internet.
-      With images hosted on public webservers, this is not necessary because Telegram can handle links and parse it properly.    
-      
+    - with command /photofs, bot will send an example image stored in filesystem (or in an external SD)      
     - with command /photoweb:<url>, bot will send a sendPhoto command passing the url provided
 */
 #include <FS.h>
 #include <AsyncTelegram2.h>
+
 // Timezone definition
 #include <time.h>
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
@@ -28,22 +21,17 @@
   Set true if you want use external library for SSL connection instead ESP32@WiFiClientSecure 
   For example https://github.com/OPEnSLab-OSU/SSLClient/ is very efficient BearSSL library.
   You can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet)
-  With SSLClient, be sure "certificates.h" file is present in sketch folder
 */ 
 #define USE_CLIENTSSL false  
 #define FORMAT_FS_IF_FAILED true
 
 #ifdef ESP8266
   #include <ESP8266WiFi.h>
-  #include <ESP8266HTTPClient.h>
   #include <LittleFS.h>
   BearSSL::WiFiClientSecure client;
   BearSSL::Session   session;
   BearSSL::X509List  certificate(telegram_cert);
-
-  //fs::FS &FILESYSTEM = LittleFS;
   #define FILESYSTEM LittleFS      
-  
 #elif defined(ESP32)
   // Be sure to select the correct filesystem in IDE option 
   #define USE_FFAT false
@@ -54,12 +42,10 @@
     #include <SPIFFS.h>           
     #define FILESYSTEM SPIFFS       
   #endif
-
   #include <WiFi.h>
   #include <WiFiClient.h>
-  #include <HTTPClient.h>
   #if USE_CLIENTSSL
-    #include <SSLClient.h>  
+    #include <SSLClient.h>      //https://github.com/OPEnSLab-OSU/SSLClient/
     #include "tg_certificate.h"
     WiFiClient base_client;
     SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
@@ -74,31 +60,14 @@ const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxxx";     // Password  WiFi network
 const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
 
+// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
+// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
+int64_t userid = 1234567890;
+
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2
 #endif
 const uint8_t LED = LED_BUILTIN;
-
-//Example url == "http://192.168.2.81/telegram.png"
-void downloadFile(String &url, String &fileName){
-    HTTPClient http;    
-    WiFiClient client;    
-    Serial.println(url);
-    File file = FILESYSTEM.open("/" + fileName, "w");    
-    if (file) {
-      http.begin(client, url);
-      int httpCode = http.GET();
-      if (httpCode > 0) {
-        if (httpCode == HTTP_CODE_OK) {
-          http.writeToStream(&file);
-        }
-      } else {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-      }
-      file.close();
-    }
-    http.end();
-}
 
 // List all files saved in the selected filesystem
 void listDir(const char * dirname, uint8_t levels) {
@@ -161,6 +130,8 @@ void setup() {
     Serial.print('.');
     delay(500);
   }
+  Serial.println("\nWiFi connected");
+  Serial.println(WiFi.localIP());
 
   // Init filesystem (format if necessary)
   if (!FILESYSTEM.begin()) {
@@ -201,7 +172,6 @@ void setup() {
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-  int64_t userid = 1234567890;
   myBot.sendTo(userid, welcome_msg); 
 
 }
@@ -228,56 +198,40 @@ void loop() {
     Serial.print("New message from chat_id: ");
     Serial.println(msg.sender.id);
     MessageType msgType = msg.messageType;
-        
+
+    // Received a text message
     if (msgType == MessageText){
-      String msgText = msg.text;        
-      // Received a text message
+      String msgText = msg.text;      
       Serial.print("\nText message received: ");
       Serial.println(msgText);
 
+      // Send picture stored in filesystem passing only filename and filesystem type
       if (msgText.equalsIgnoreCase("/picfs1")) {
         Serial.println("\nSending picture 1 from filesystem");          
-        File file = FILESYSTEM.open("/telegram-bot1.jpg", "r");
-        myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
-        file.close();                  
+        myBot.sendPhoto(msg.sender.id, "/telegram-bot1.jpg", FILESYSTEM);          
       }
-
+      
+      // Send picture stored in filesystem passing the stream 
+      // (File is a class derived from Stream)
       else if (msgText.equalsIgnoreCase("/picfs2")) {
-        uint32_t t0 = millis();
         Serial.println("\nSending picture 2 from filesystem");                   
         File file = FILESYSTEM.open("/telegram-bot2.jpg", "r");
-        myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
-        Serial.println(millis() - t0);
+        myBot.sendPhoto(msg.sender.id, file, file.size());
         file.close();               
       }
 
-      else if (msgText.indexOf("/pichost") > -1) {          
-        String url = msgText.substring(msgText.indexOf("/pichost ") + sizeof("/pichost "));      
-        String filename = url.substring(url.lastIndexOf('/')+1);  
-        Serial.println("\nDownload picture from LAN: "); 
-        Serial.println(url);    
-        downloadFile(url, filename);      
-        Serial.println("\nSending downloaded picture");        
-
-        File file = FILESYSTEM.open(filename, "r");
-        if(file)
-            myBot.sendPhotoByFile(msg.sender.id, &file, file.size());
-        file.close();
-        listDir("/", 0);        
-      }
-
+      // Send a picture passing url to online file
       else if (msgText.indexOf("/picweb") > -1) {          
         String url = msgText.substring(msgText.indexOf("/picweb ") + sizeof("/picweb "));                   
-        Serial.println("\nSending picture from web: "); 
+        Serial.print("\nSending picture from web: "); 
         Serial.println(url);          
         if(url.length()) 
-            myBot.sendPhotoByUrl(msg, url, url);                   
+            myBot.sendPhoto(msg, url, url);                   
       }
-      
+
       else {
         String replyMsg = "Welcome to the Async Telegram bot.\n\n";
-        replyMsg += "/picfs1 or /picfs2 will send an example picture from fylesystem\n";      
-        replyMsg += "/pichost <b>123.456.78.9/path/to/image.jpg</b> will send a picture from your LAN\n";      
+        replyMsg += "/picfs1 or /picfs2 will send an example picture from fylesystem\n";         
         replyMsg += "/picweb <b>https://telegram.org/img/t_logo.svg</b> will send a picture from internet\n";      
         msg.isHTMLenabled = true;
         myBot.sendMessage(msg, replyMsg);    

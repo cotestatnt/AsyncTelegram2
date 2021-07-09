@@ -8,6 +8,8 @@
 #define errorJson(E)
 #endif
 
+#define HEADERS_END "\r\n\r\n"
+
 AsyncTelegram2::AsyncTelegram2(Client &client)
 {
     m_botusername.reserve(32); // Telegram username is 5-32 chars lenght
@@ -21,23 +23,28 @@ AsyncTelegram2::~AsyncTelegram2() {};
 
 bool AsyncTelegram2::checkConnection()
 {
+    #if DEBUG_ENABLE
+        static uint32_t lastCTime;
+    #endif
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected()) {
-
-        static uint32_t lastCTime;
         telegramClient->flush();
         telegramClient->clearWriteError();
+        telegramClient->stop();
+        telegramClient->stop();
         m_lastmsg_timestamp = millis();
         log_debug("Start handshaking...");
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
             Serial.printf("\n\nUnable to connect to Telegram server\n");
         }
+        #if DEBUG_ENABLE
         else {
             log_debug("Connected using Telegram hostname\n"
                       "Last connection was %d seconds ago\n",
                       (int)(millis() - lastCTime)/1000);
             lastCTime = millis();
         }
+        #endif
     }
     return telegramClient->connected();
 }
@@ -82,8 +89,7 @@ bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload
         m_waitingReply = true;
         // Blocking mode
         if (blocking) {
-            char endOfHeaders[] = "\r\n\r\n";
-            if (!telegramClient->find(endOfHeaders)) {
+            if (!telegramClient->find(HEADERS_END)) {
                 log_error("Invalid HTTP response");
                 telegramClient->stop();
                 return false;
@@ -140,7 +146,10 @@ bool AsyncTelegram2::getUpdates(){
         m_waitingReply = false;
         m_lastmsg_timestamp = millis();
 
-        if (close_connection) telegramClient->stop(), log_debug("Connection closed from server");
+        if (close_connection) {
+            telegramClient->stop();
+            log_debug("Connection closed from server");
+        }
 
         if(m_rxbuffer.indexOf("ok") < 0) {
             log_error("%s", m_rxbuffer.c_str());
@@ -411,7 +420,7 @@ char *int64_to_string(int64_t input)
     // Clear result from any leftover digits from previous function call.
     memset(&result[0], 0, sizeof(result));
     // temp is used as a temporary result storage to prevent sprintf bugs.
-    char temp[21+1] = "";
+    char temp[22] = "";
     char c;
     uint8_t base = 10;
 
@@ -427,71 +436,144 @@ char *int64_to_string(int64_t input)
 }
 
 
-bool AsyncTelegram2::sendDocument(int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream* stream, size_t size)
-{
+void AsyncTelegram2::setformData(int64_t chat_id, const char* cmd, const char* type,
+                        const char* propName, size_t size, String &formData, String& request){
+
     #define BOUNDARY            "----WebKitFormBoundary7MA4YWxkTrZu0gW"
     #define END_BOUNDARY        "\r\n--" BOUNDARY "--\r\n"
 
-    if (telegramClient->connected()) {
+    formData = "--" BOUNDARY "\r\nContent-disposition: form-data; name=\"chat_id\"\r\n\r\n";
+    formData += int64_to_string(chat_id);
+    formData += "\r\n--" BOUNDARY "\r\nContent-disposition: form-data; name=\"";
+    formData += propName;
+    formData += "\"; filename=\"image.jpg\"\r\nContent-Type: ";
+    formData += type;
+    formData += "\r\ncaption: \"image.jpg\"";
+    formData += "\r\n\r\n";
+    int contentLength = size + formData.length() + strlen(END_BOUNDARY);
+
+    request = "POST /bot";
+    request += m_token;
+    request += "/";
+    request += cmd;
+    request += " HTTP/1.0\r\nHost: " TELEGRAM_HOST "\r\nContent-Length: ";
+    request += contentLength;
+    request += "\r\nContent-Type: multipart/form-data; boundary=" BOUNDARY "\r\n";
+}
+
+
+bool AsyncTelegram2::sendStream(int64_t chat_id,  const char* cmd, const char* type, const char* propName, Stream &stream, size_t size)
+{
+    bool res = false;
+    if (checkConnection()) {
         m_waitingReply = true;
+        String formData;
+        formData.reserve(512);
+        String request;
+        request.reserve(256);
+        setformData(chat_id, cmd, type, propName, size, formData, request);
 
-        String formData((char *)0);
-        formData = "--" BOUNDARY;
-        formData += "\r\nContent-disposition: form-data; name=\"chat_id\"\r\n\r\n";
-        formData += int64_to_string(chat_id);
-        formData += "\r\n--" BOUNDARY;
-        formData += "\r\nContent-disposition: form-data; name=\"";
-        formData += binaryPropertyName;
-        formData += "\"; filename=\"";
-        formData += "image.jpg";
-        formData += "\"\r\nContent-Type: ";
-        formData += contentType;
-        formData += "\r\n\r\n";
-        int contentLength = size + formData.length() + strlen(END_BOUNDARY);
-
-        String request((char *)0);
-        request = "POST /bot";
-        request += m_token;
-        request += "/";
-        request += command;
-        request += " HTTP/1.1\r\nHost: " TELEGRAM_HOST;
-        request += "\r\nContent-Length: ";
-        request += contentLength;
-        request += "\r\nContent-Type: multipart/form-data; boundary=" BOUNDARY "\r\n";
-
+        #if DEBUG_ENABLE
+        uint32_t t1 = millis();
+        #endif
         // Send POST request to host
         telegramClient->println(request);
-
         // Body of request
         telegramClient->print(formData);
-		
-        // uint32_t t1 = millis();
-        uint8_t buff[BLOCK_SIZE];
-        uint16_t count = 0;
-        while (stream->available()) {
+
+        uint8_t data[BLOCK_SIZE];
+        int n_block = trunc(size / BLOCK_SIZE);
+        int lastBytes = size - (n_block*BLOCK_SIZE);
+
+        for( uint16_t pos = 0; pos < n_block; pos++){
+            stream.readBytes(data, BLOCK_SIZE);
+            telegramClient->write(data, BLOCK_SIZE);
             yield();
-            buff[count++] = (uint8_t)stream->read();
-            if (count == BLOCK_SIZE ) {
-                //log_debug("\nSending binary photo full buffer");
-                telegramClient->write((const uint8_t *)buff, BLOCK_SIZE);
-                count = 0;
-                m_lastmsg_timestamp = millis();
+        }
+        stream.readBytes(data, lastBytes);
+        telegramClient->write(data, lastBytes);
+
+         // Close the request form-data
+        telegramClient->println(END_BOUNDARY);
+        telegramClient->flush();
+
+        #if DEBUG_ENABLE
+        log_debug("Raw upload time: %lums\n", millis() - t1);
+        t1 = millis();
+        #endif
+
+        // Read server reply
+        while (telegramClient->connected()) {
+            if (telegramClient->find("{\"ok\":true")) {
+                res = true;
+                break;
             }
         }
-        if (count > 0) {
-            //log_debug("\nSending binary photo remaining buffer");
-            telegramClient->write((const uint8_t *)buff, count);
-        }		
-
-        telegramClient->print(END_BOUNDARY);
-
-        // Serial.printf("\nUpload time: %d\n", millis() - t1);
+        log_debug("Read reply time: %lums\n", millis() - t1);
+        telegramClient->stop();
         m_lastmsg_timestamp = millis();
         m_waitingReply = false;
+        return res;
     }
-    else {
-        Serial.println("\nError: client not connected");
-        return false;
+    Serial.println("\nError: client not connected");
+    return res;
+}
+
+
+
+bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char* cmd, const char* type, const char* propName, uint8_t *data, size_t size)
+{
+    bool res = false;
+    if (checkConnection()) {
+        m_waitingReply = true;
+        String formData;
+        formData.reserve(512);
+        String request;
+        request.reserve(256);
+        setformData(chat_id, cmd, type, propName, size, formData, request);
+
+        #if DEBUG_ENABLE
+        uint32_t t1 = millis();
+        #endif
+        // Send POST request to host
+        telegramClient->println(request);
+        // Body of request
+        telegramClient->print(formData);
+
+        // Serial.println(telegramClient->write((const uint8_t *) data, size));
+        uint16_t pos = 0;
+        int n_block = trunc(size / BLOCK_SIZE);
+        int lastBytes = size - (n_block*BLOCK_SIZE);
+
+        for( pos = 0; pos < n_block; pos++){
+            telegramClient->write((const uint8_t *) data + pos*BLOCK_SIZE, BLOCK_SIZE);
+            yield();
+        }
+        telegramClient->write((const uint8_t *) data + pos*BLOCK_SIZE, lastBytes);
+
+        // Close the request form-data
+        telegramClient->println(END_BOUNDARY);
+        telegramClient->flush();
+
+        #if DEBUG_ENABLE
+        log_debug("Raw upload time: %lums\n", millis() - t1);
+        t1 = millis();
+        #endif
+
+        // Read server reply
+        while (telegramClient->connected()) {
+            if (telegramClient->find("{\"ok\":true")) {
+                res = true;
+                break;
+            }
+        }
+        log_debug("Read reply time: %lums\n", millis() - t1);
+        telegramClient->stop();
+        m_lastmsg_timestamp = millis();
+        m_waitingReply = false;
+        return res;
     }
-    return true;
+
+    Serial.println("\nError: client not connected");
+    return res;
 }

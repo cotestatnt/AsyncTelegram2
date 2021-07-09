@@ -5,12 +5,18 @@
 #define ARDUINOJSON_USE_LONG_LONG 	1
 #define ARDUINOJSON_DECODE_UNICODE  1
 #include <ArduinoJson.h>
+
+#if defined(ESP8266) || defined(ESP32)
+#define ESP_MCU true
+#include <FS.h>
+#endif
+
 #include "Client.h"
 #include "time.h"
 
-#define DEBUG_ENABLE        1
+#define DEBUG_ENABLE        false
 #ifndef DEBUG_ENABLE
-    #define DEBUG_ENABLE    0
+    #define DEBUG_ENABLE    false
 #endif
 
 /*
@@ -18,13 +24,12 @@
     If you need more than MAX_INLINEKYB_CB distinct keybords with
     callback functions associated to buttons increase this value
 */
-#define MAX_INLINEKYB_CB    10
+#define MAX_INLINEKYB_CB    30
 
 #define SERVER_TIMEOUT      10000
 #define MIN_UPDATE_TIME     500
 
-#define BLOCK_SIZE          1460
-
+#define BLOCK_SIZE          1436    //2872   // 2 * TCP_MSS
 
 #include "DataStructures.h"
 #include "InlineKeyboard.h"
@@ -138,22 +143,8 @@ public:
         return sendMessage(msg, message, keyboard.getJSON().c_str());
     }
 
+    // Forward a specific message to user or chat
     bool forwardMessage(const TBMessage &msg, const int32_t to_chatid);
-
-
-    // Send message to a specific user. In order to work properly two conditions is needed:
-    //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)
-    //  - User has to start your bot in it's own client. For example send a message with @<your bot name>
-    bool sendTo(const int64_t userid, const char* message, const char*  keyboard = nullptr) {
-        TBMessage msg;
-        msg.chatId = userid;
-        return sendMessage(msg, message, keyboard);
-    }
-
-    // sendTo function overloads
-    inline bool sendTo(const int64_t userid, const String &message, String keyboard = "") {
-        return sendTo(userid, message.c_str(), keyboard.c_str() );
-    }
 
     // Send message to a channel. This bot must be in the admin group
     bool sendToChannel(const char* channel, const char* message, bool silent) ;
@@ -162,21 +153,84 @@ public:
         return sendToChannel(channel.c_str(), message.c_str(), silent) ;
     }
 
+    // Send message to a specific user. In order to work properly two conditions is needed:
+    //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)
+    //  - User has to start your bot in it's own client. For example send a message with @<your bot name>
+    inline bool sendTo(const int64_t userid, const char* message, const char*  keyboard = nullptr) {
+        TBMessage msg;
+        msg.chatId = userid;
+        return sendMessage(msg, message, keyboard);
+    }
+
+    inline bool sendTo(const int64_t userid, const String &message, String keyboard = "") {
+        return sendTo(userid, message.c_str(), keyboard.c_str() );
+    }
+
+
     // Send a picture passing the url
     bool sendPhotoByUrl(const int64_t& chat_id,  const char* url, const char* caption);
+
+    inline bool sendPhoto(const int64_t& chat_id,  const char* url, const char* caption){
+        return sendPhotoByUrl(chat_id, url, caption);
+    }
+
+    inline bool sendPhoto(const int64_t& chat_id,  const String& url, const String& caption){
+        return sendPhotoByUrl(chat_id, url.c_str(), caption.c_str());
+    }
+
+    inline bool sendPhoto(const TBMessage &msg,  const String& url, const String& caption){
+        return sendPhotoByUrl(msg.sender.id, url.c_str(), caption.c_str());
+    }
+
+    // Send a picture passing a stream object
+    inline bool sendPhoto(int64_t chat_id, Stream &stream, size_t size) {
+        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size);
+    }
+
+    #ifdef ESP_MCU
+    // Send a picture passing a file and relative filesystem
+    inline bool sendPhoto(int64_t chat_id, const char* filename, fs::FS &fs) {
+        File file = fs.open(filename, "r");
+        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size());
+        file.close();
+        return res;
+    }
+    #endif
+    // Send a picture passing a raw buffer
+    inline bool sendPhoto(int64_t chat_id, uint8_t *data, size_t size) {
+        return sendBuffer(chat_id, "sendPhoto", "image/jpeg", "photo", data, size);
+    }
+
+    inline bool sendPhoto(const TBMessage &msg, uint8_t *data, size_t size) {
+        return sendBuffer(msg.sender.id, "sendPhoto", "image/jpeg", "photo", data, size);
+    }
+
+
+    /////////////////////////////// Backward compatibility  ///////////////////////////////////////
 
     inline bool sendPhotoByUrl(const int64_t& chat_id,  const String& url, const String& caption){
         return sendPhotoByUrl(chat_id, url.c_str(), caption.c_str());
     }
 
     inline bool sendPhotoByUrl(const TBMessage &msg,  const String& url, const String& caption){
-        return sendPhotoByUrl(msg.sender.id, url, caption);
+        return sendPhotoByUrl(msg.sender.id, url.c_str(), caption.c_str());
     }
 
-    // Send a picture stored in local memory
-    inline bool sendPhotoByFile(int64_t chat_id, Stream* stream, size_t size) {
-        return sendDocument(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size);
+    inline bool sendPhotoByFile(int64_t chat_id, Stream *stream, size_t size) {
+        return sendStream(chat_id,"sendPhoto", "image/jpeg", "photo", *stream, size);
     }
+
+    #ifdef ESP_MCU
+    inline bool sendPhotoByFile(int64_t chat_id, const char* filename, fs::FS &fs) {
+        File file = fs.open(filename, "r");
+        Serial.println(file.size());
+        bool res = sendStream(chat_id,"sendPhoto", "image/jpeg", "photo", file, file.size());
+        file.close();
+        return res;
+    }
+    #endif
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
 
     // terminate a query started by pressing an inlineKeyboard button. The steps are:
     // 1) send a message with an inline keyboard
@@ -246,6 +300,10 @@ private:
     InlineKeyboard* m_keyboards[10];
     uint8_t         m_keyboardCount = 0;
 
+    void setformData(int64_t chat_id, const char* cmd, const char* type, const char* propName, size_t size, String &formData, String& request);
+    bool sendStream( int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream& stream, size_t size);
+    bool sendBuffer(int64_t chat_id, const char* cmd, const char* type, const char* propName, uint8_t *data, size_t size);
+
     // send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
     // params
     //   command   : the command to send, i.e. getMe
@@ -253,7 +311,6 @@ private:
     // returns
     //   an empty string if error
     //   a string containing the Telegram JSON response
-    //bool sendCommand(const char* const &command, JsonDocument &doc, bool blocking = false);
 
     bool sendCommand(const char* const &command, const char* payload, bool blocking = false);
 
@@ -270,9 +327,6 @@ private:
     // returns
     //   true if no error occurred
     bool getMe();
-
-    //  example: sendDocument("sendPhoto", chat_id, "image/jpeg", "photo", File );
-    bool sendDocument( int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream* stream, size_t size);
 
     // check if connection with server is active
     // returns
