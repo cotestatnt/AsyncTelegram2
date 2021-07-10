@@ -49,8 +49,8 @@ jobs:
     - name: Install 3rd party dependecies
       run: | 
         pio lib -g install \
-        https://github.com/cotestatnt/AsyncTelegram2/
-        
+        https://github.com/cotestatnt/AsyncTelegram2/ \
+        https://github.com/cotestatnt/ArduinoJson
     - name: Run PlatformIO Examples
       run: |
         pio ci --board=nodemcuv2 \
@@ -96,7 +96,9 @@ jobs:
       run: | 
         pio lib -g install \
         https://github.com/cotestatnt/AsyncTelegram2 \
-        https://github.com/OPEnSLab-OSU/SSLClient
+        https://github.com/OPEnSLab-OSU/SSLClient \
+        https://github.com/cotestatnt/ArduinoJson
+
 
     - name: Run PlatformIO Examples
       run: |
