@@ -116,7 +116,7 @@ void printHeapStats() {
 }
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);  
+  pinMode(LED_BUILTIN, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
 
@@ -172,7 +172,7 @@ void setup() {
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-  myBot.sendTo(userid, welcome_msg); 
+  myBot.sendTo(userid, welcome_msg);
 
 }
 
@@ -183,7 +183,7 @@ void loop() {
   printHeapStats();
 
   // In the meantime LED_BUILTIN will blink with a fixed frequency
-  // to evaluate async and non-blocking working of library  
+  // to evaluate async and non-blocking working of library
   static uint32_t ledTime = millis();
   if (millis() - ledTime > 200) {
     ledTime = millis();
@@ -194,48 +194,48 @@ void loop() {
   TBMessage msg;
 
   // if there is an incoming message...
-  if (myBot.getNewMessage(msg)) {        
+  if (myBot.getNewMessage(msg)) {
     Serial.println("New message received: ");
     MessageType msgType = msg.messageType;
 
     // Received a text message
     if (msgType == MessageText){
-      String msgText = msg.text;      
+      String msgText = msg.text;
       Serial.print("\nText message received: ");
       Serial.println(msgText);
 
       // Send picture stored in filesystem passing only filename and filesystem type
       if (msgText.equalsIgnoreCase("/picfs1")) {
-        Serial.println("\nSending picture 1 from filesystem");          
-        myBot.sendPhoto(msg.sender.id, "/telegram-bot1.jpg", FILESYSTEM);          
+        Serial.println("\nSending picture 1 from filesystem");
+        myBot.sendPhoto(msg, "/telegram-bot1.jpg", FILESYSTEM);
       }
-      
-      // Send picture stored in filesystem passing the stream 
+
+      // Send picture stored in filesystem passing the stream
       // (File is a class derived from Stream)
       else if (msgText.equalsIgnoreCase("/picfs2")) {
-        Serial.println("\nSending picture 2 from filesystem");                   
+        Serial.println("\nSending picture 2 from filesystem");
         File file = FILESYSTEM.open("/telegram-bot2.jpg", "r");
-        myBot.sendPhoto(msg.sender.id, file, file.size());
-        file.close();               
+        myBot.sendPhoto(msg, file, file.size());
+        file.close();
       }
 
       // Send a picture passing url to online file
-      else if (msgText.indexOf("/picweb") > -1) {          
-        String url = msgText.substring(msgText.indexOf("/picweb ") + sizeof("/picweb "));                   
-        Serial.print("\nSending picture from web: "); 
-        Serial.println(url);          
-        if(url.length()) 
-            myBot.sendPhoto(msg, url, url);                   
+      else if (msgText.indexOf("/picweb") > -1) {
+        String url = msgText.substring(msgText.indexOf("/picweb ") + sizeof("/picweb "));
+        Serial.print("\nSending picture from web: ");
+        Serial.println(url);
+        if(url.length())
+            myBot.sendPhoto(msg, url, url);
       }
 
       else {
         String replyMsg = "Welcome to the Async Telegram bot.\n\n";
-        replyMsg += "/picfs1 or /picfs2 will send an example picture from fylesystem\n";         
-        replyMsg += "/picweb <b>https://telegram.org/img/t_logo.svg</b> will send a picture from internet\n";      
+        replyMsg += "/picfs1 or /picfs2 will send an example picture from fylesystem\n";
+        replyMsg += "/picweb <b>https://telegram.org/img/t_logo.svg</b> will send a picture from internet\n";
         msg.isHTMLenabled = true;
-        myBot.sendMessage(msg, replyMsg);    
+        myBot.sendMessage(msg, replyMsg);
       }
-      
+
     }
   }
 }
