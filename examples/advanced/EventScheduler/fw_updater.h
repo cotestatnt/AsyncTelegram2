@@ -27,8 +27,10 @@ bool updateHandler(TBMessage &theMsg, AsyncTelegram2 &theBot) {
                         theMsg.document.file_name, theMsg.document.file_size);
                     // Inform user and query for flash confirmation with password
                     theBot.sendMessage(theMsg, report, "");
+
+                   // Force reply don't work with web version of Telegram Client (use Telegram Desktop or mobile app)
                     theMsg.force_reply = true;
-                    theBot.sendMessage(theMsg, "Please insert password", "");   // Force reply == true
+                    theBot.sendMessage(theMsg, "Please, reply to this message with the right password", "");  
                 }
             }
             else {

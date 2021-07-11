@@ -11,9 +11,8 @@
   Set true if you want use external library for SSL connection instead ESP32@WiFiClientSecure
   For example https://github.com/OPEnSLab-OSU/SSLClient/ is very efficient BearSSL library.
   You can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet)
-  With SSLClient, be sure "certificates.h" file is present in sketch folder
 */
-#define USE_CLIENTSSL true
+#define USE_CLIENTSSL false
 
 // Timezone definition
 #include <time.h>
@@ -50,6 +49,11 @@ AsyncTelegram2 myBot(client);
 const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
 const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
+
+
+// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
+// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
+int64_t userid = 1234567890;
 
 ReplyKeyboard weekdaysKbd;
 InlineKeyboard scheduleKbd;
@@ -125,9 +129,7 @@ void setup() {
 
   char welcome_msg[128];
   snprintf(welcome_msg, 128, PSTR("BOT @%s online\n/help all commands avalaible."), botName);
-
-  int64_t chat_id = 436865110; // You can discover your own chat id, with "Json Dump Bot"
-  myBot.sendTo(chat_id, welcome_msg);
+  myBot.sendTo(userid, welcome_msg);
 }
 
 
@@ -208,7 +210,7 @@ void loop() {
           myBot.sendMessage(msg,"To update firmware, upload compiled file ########.bin \n"
                                 "System:\n/restart for restart MCU\n"
                                 "/version for print the current firmware version\n"
-                                "/time per conoscere la mia ora locale\n\nScheduler:\n"
+                                "/time for local system timedate\n\nScheduler:\n"
                                 "/clear delete all scheduled events \n\n"
                                 "/list print all events in memory\n"
                                 "/edit to edit a specific event\n"

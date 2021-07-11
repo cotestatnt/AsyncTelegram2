@@ -78,25 +78,28 @@ void getWeekdayKeyboard(ReplyKeyboard *kbd) {
 }
 
 void listScheduledEvents(TBMessage &theMsg, AsyncTelegram2 &theBot) {
-
-    for(uint8_t i=0; i<lastEvent; i++){
-        Event_t event = events[i];
-        snprintf(replyBuffer, MAX_MSG_LEN, "Event n.%d\nSetpoint %d.%d °C\nStart: %02d:%02d\nEnd: %02d:%02d\n",
-            i+1, (int)event.setpoint, (int)(event.setpoint * 10.0)%10,
-            (int)event.start / 3600, (int) (event.start % 3600)/60,
-            (int)event.stop / 3600, (int) (event.stop % 3600)/60
-        );
-        strcat(replyBuffer, "[");
-        for(uint8_t i=0; i<7; i++){
-            if(bitRead(event.days, i)) {
-                strcat(replyBuffer, dayNames[i]);
-                strcat(replyBuffer, ", ");
-            }
-        }
-        strcat(replyBuffer, "]");
-        theBot.sendMessage(theMsg, replyBuffer);
-        delay(100);
+    if (lastEvent != 0) {
+      for(uint8_t i=0; i<lastEvent; i++){
+          Event_t event = events[i];
+          snprintf(replyBuffer, MAX_MSG_LEN, "Event n.%d\nSetpoint %d.%d °C\nStart: %02d:%02d\nEnd: %02d:%02d\n",
+              i+1, (int)event.setpoint, (int)(event.setpoint * 10.0)%10,
+              (int)event.start / 3600, (int) (event.start % 3600)/60,
+              (int)event.stop / 3600, (int) (event.stop % 3600)/60
+          );
+          strcat(replyBuffer, "[");
+          for(uint8_t i=0; i<7; i++){
+              if(bitRead(event.days, i)) {
+                  strcat(replyBuffer, dayNames[i]);
+                  strcat(replyBuffer, ", ");
+              }
+          }
+          strcat(replyBuffer, "]");
+          theBot.sendMessage(theMsg, replyBuffer);
+          delay(100);
+      }
     }
+    else
+        theBot.sendMessage(theMsg, "Event list empty");
 }
 
 
