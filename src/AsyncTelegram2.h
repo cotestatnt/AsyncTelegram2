@@ -187,7 +187,11 @@ public:
         return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size);
     }
 
-    #ifdef ESP_MCU
+    inline bool sendPhoto(const TBMessage &msg, Stream &stream, size_t size) {
+        return sendStream(msg.sender.id, "sendPhoto", "image/jpeg", "photo", stream, size);
+    }
+
+    #ifdef ESP_MCU  // #support for <FS.h> is needed
     // Send a picture passing a file and relative filesystem
     inline bool sendPhoto(int64_t chat_id, const char* filename, fs::FS &fs) {
         File file = fs.open(filename, "r");
@@ -195,7 +199,14 @@ public:
         file.close();
         return res;
     }
+    inline bool sendPhoto(const TBMessage &msg, const char* filename, fs::FS &fs) {
+        File file = fs.open(filename, "r");
+        bool res = sendStream(msg.sender.id, "sendPhoto", "image/jpeg", "photo", file, file.size());
+        file.close();
+        return res;
+    }
     #endif
+
     // Send a picture passing a raw buffer
     inline bool sendPhoto(int64_t chat_id, uint8_t *data, size_t size) {
         return sendBuffer(chat_id, "sendPhoto", "image/jpeg", "photo", data, size);
