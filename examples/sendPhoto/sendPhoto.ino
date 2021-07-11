@@ -195,8 +195,7 @@ void loop() {
 
   // if there is an incoming message...
   if (myBot.getNewMessage(msg)) {        
-    Serial.print("New message from chat_id: ");
-    Serial.println(msg.sender.id);
+    Serial.println("New message received: ");
     MessageType msgType = msg.messageType;
 
     // Received a text message
