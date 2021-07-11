@@ -17,16 +17,8 @@
 #define FILESYSTEM FFat        // Be sure to select the correct filesystem in IDE option
 #endif
 
-#define USE_SSLCLIENT false
-#if USE_SSLCLIENT
-#include <SSLClient.h>
-#include "tg_certificate.h"
-WiFiClient base_client;
-SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0);
-#else
 #include <WiFiClientSecure.h>
 WiFiClientSecure client;
-#endif
 
 #define PIR_PIN   GPIO_NUM_13
 
@@ -102,9 +94,7 @@ void setup() {
 
   // Sync time with NTP
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
-#if USE_SSLCLIENT == false
   client.setCACert(telegram_cert);
-#endif
 
   // Set the Telegram bot properies
   myBot.setUpdateTime(1000);
