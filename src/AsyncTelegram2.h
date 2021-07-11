@@ -6,10 +6,13 @@
 #define ARDUINOJSON_DECODE_UNICODE  1
 #include <ArduinoJson.h>
 
-#if defined(ESP8266) || defined(ESP32)
-#define ESP_MCU true
-#include <FS.h>
+#ifndef STM32
+	#define FS_SUPPORT true
+	#include <FS.h>
+#else
+	#define FS_SUPPORT false
 #endif
+
 
 #include "Client.h"
 #include "time.h"
@@ -191,7 +194,7 @@ public:
         return sendStream(msg.sender.id, "sendPhoto", "image/jpeg", "photo", stream, size);
     }
 
-    #ifdef ESP_MCU  // #support for <FS.h> is needed
+    #if FS_SUPPORT == true  // #support for <FS.h> is needed
     // Send a picture passing a file and relative filesystem
     inline bool sendPhoto(int64_t chat_id, const char* filename, fs::FS &fs) {
         File file = fs.open(filename, "r");
