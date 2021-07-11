@@ -7,10 +7,10 @@
 #include <ArduinoJson.h>
 
 #ifndef STM32
-	#define FS_SUPPORT true
-	#include <FS.h>
+    #define FS_SUPPORT true
+    #include <FS.h>
 #else
-	#define FS_SUPPORT false
+    #define FS_SUPPORT false
 #endif
 
 
@@ -234,7 +234,7 @@ public:
         return sendStream(chat_id,"sendPhoto", "image/jpeg", "photo", *stream, size);
     }
 
-    #ifdef ESP_MCU
+    #if FS_SUPPORT == true  // #support for <FS.h> is needed
     inline bool sendPhotoByFile(int64_t chat_id, const char* filename, fs::FS &fs) {
         File file = fs.open(filename, "r");
         Serial.println(file.size());
