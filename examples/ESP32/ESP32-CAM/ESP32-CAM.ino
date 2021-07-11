@@ -4,16 +4,8 @@
 #include "soc/soc.h"           // Brownout error fix
 #include "soc/rtc_cntl_reg.h"  // Brownout error fix
 
-#define USE_SSLCLIENT false
-#if USE_SSLCLIENT
-  #include <SSLClient.h>
-  #include "tg_certificate.h"
-  WiFiClient base_client;
-  SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0);
-#else
-  #include <WiFiClientSecure.h>
-  WiFiClientSecure client;
-#endif
+#include <WiFiClientSecure.h>
+WiFiClientSecure client;
 
 const char* ssid = "xxxxxxxxxxxx";  // SSID WiFi network
 const char* pass = "xxxxxxxxxxxx";  // Password  WiFi network
@@ -166,9 +158,7 @@ void setup() {
 
   // Sync time with NTP
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
-  #if USE_CLIENTSSL == false
-    client.setCACert(telegram_cert);
-  #endif
+  client.setCACert(telegram_cert);
 
   // Set the Telegram bot properies
   myBot.setUpdateTime(1000);
