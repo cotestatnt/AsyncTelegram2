@@ -5,7 +5,7 @@ It was chosen to change the name in addition to the major version to mark clearl
 AsyncTelegram2 is now no longer tied to the Espressif ESP8266 / ESP32 hardware, but can virtually work with any MCU capable of a SSL connection and with any kind of transport layer like WiFi, Ethernet, GSM module (still to be tested).
 
 When dealing with IoT systems, connection security is often an underestimated issue.
-Due to this reason in AsyncTelegram2 insecure connections or verification method based on the server fingerprint (nnot strong secure, and moreover with short validity, typically 1 year) are no longer supported.
+Due to this reason in AsyncTelegram2 insecure connections or verification method based on the server fingerprint (not strong secure, and moreover with short validity, typically 1 year) are no longer supported.
 
 ___
 ### Introduction
@@ -19,7 +19,7 @@ AsyncTelegram2 do this job in async way and not interfee with the rest of code!
 
 It relies on [ArduinoJson](https://github.com/bblanchon/ArduinoJson) v6 library so, in order to use a AsyncTelegram2 object, you need to install the ArduinoJson library first.
 
-With Ethernet adapter, but not only, i wold strongly suggest to use this library for secure connection [SSLClient](https://github.com/OPEnSLab-OSU/SSLClient), a BearSSL based library wich is very light and fast. For example, on ESP32 platform the same code with SSLClient against WiFiClientSecure, uses about 30 kb less SRAM and is much faster to re-establish connection to the server thanks to the support of sessions.
+With Ethernet adapter, but not only, i wold suggest to use this library for secure connection [SSLClient](https://github.com/OPEnSLab-OSU/SSLClient), a BearSSL based library wich is very light and fast.
 
 + **this library work with ArduinoJson library V6.x _**
 
