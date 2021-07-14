@@ -88,6 +88,9 @@ void setup() {
 
   if (!FILESYSTEM.begin()) {
     Serial.println("Unable to mount filesystem, check selected partition scheme");
+    FILESYSTEM.format();
+    delay(1000);
+    ESP.restart();
   }
   loadConfigFile();
 
