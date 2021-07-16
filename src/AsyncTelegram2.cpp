@@ -211,6 +211,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             message.sender.username  = updateDoc["result"][0]["message"]["from"]["username"];
             message.sender.firstName = updateDoc["result"][0]["message"]["from"]["first_name"];
             message.sender.lastName  = updateDoc["result"][0]["message"]["from"]["last_name"];
+            message.sender.languageCode = updateDoc["result"][0]["message"]["from"]["language_code"];
             message.group.id         = updateDoc["result"][0]["message"]["chat"]["id"];
             message.group.title      = updateDoc["result"][0]["message"]["chat"]["title"];
             message.date             = updateDoc["result"][0]["message"]["date"];
