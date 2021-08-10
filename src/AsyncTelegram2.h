@@ -298,6 +298,24 @@ public:
         m_keyboards[m_keyboardCount++] = keyb;
     }
 
+    // set custom commands for bot
+    // params
+    //   command: Text of the command, 1-32 characters. Can contain only lowercase English letters, digits and underscores.
+    //   description: Description of the command, 3-256 characters.
+    // return:
+    //   true if success
+    bool setMyCommands(const String &cmd, const String &desc);
+
+    // get list of custom commands defined for bot
+    // params:
+    //   A string that will contains a JSON-serialized list of bot commands
+    void getMyCommands(String &cmdList);
+
+    // clear list of custom commands defined for bot
+    // return:
+    //   true if success
+    bool deleteMyCommands();
+
 private:
     Client*         telegramClient;
     const char*     m_token;

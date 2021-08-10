@@ -578,3 +578,66 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char* cmd, const char* ty
     Serial.println("\nError: client not connected");
     return res;
 }
+
+
+void AsyncTelegram2::getMyCommands(String &cmdList) {
+    if (!sendCommand("getMyCommands", "", true)) {
+        log_error("getMyCommands error ");
+        return;
+    }
+    StaticJsonDocument<BUFFER_MEDIUM> doc;
+	DeserializationError err = deserializeJson(doc, m_rxbuffer);
+	if (err) {
+		return;
+    }
+    debugJson(doc, Serial);
+    //cmdList = doc["result"].as<String>();
+	serializeJsonPretty(doc["result"], cmdList);
+}
+
+
+bool AsyncTelegram2::deleteMyCommands() {
+    if (!sendCommand("deleteMyCommands", "", true)) {
+        log_error("getMyCommands error ");
+        return "";
+    }
+    return true;
+}
+
+
+ bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc) {
+
+    // get actual list of commands
+    if (!sendCommand("getMyCommands", "", true)) {
+        log_error("getMyCommands error ");
+        return "";
+    }
+    DynamicJsonDocument doc(BUFFER_MEDIUM);
+	DeserializationError err = deserializeJson(doc, m_rxbuffer);
+	if (err) {
+		return false;
+    }
+
+    // Check if command already present in list
+    for (JsonObject key : doc["result"].as<JsonArray>()) {
+      if(key["command"] == cmd) {
+        return false;
+      }
+    }
+
+    StaticJsonDocument<256> obj;
+    obj["command"] = cmd;
+    obj["description"] = desc;
+    doc["result"].as<JsonArray>().add(obj);
+
+    StaticJsonDocument<BUFFER_MEDIUM> doc2;
+    doc2["commands"] = doc["result"].as<JsonArray>();
+
+    size_t len = measureJson(doc2);
+    char payload[len];
+    serializeJson(doc2, payload, len);
+    debugJson(doc2, Serial);
+
+    const bool result = sendCommand("setMyCommands", payload, true);
+    return result;
+}
