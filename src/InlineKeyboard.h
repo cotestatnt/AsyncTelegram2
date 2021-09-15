@@ -27,6 +27,7 @@ struct InlineButton{
 
 public:
   InlineKeyboard();
+  InlineKeyboard(const String& keyboard);
   ~InlineKeyboard();
 
   // Get total number of keyboard buttons

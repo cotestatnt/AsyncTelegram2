@@ -316,6 +316,30 @@ public:
     //   true if success
     bool deleteMyCommands();
 
+
+    // Edit a previous sent message
+    // params:
+    //    chat_id: the iD of chat
+    //    message_id: the message ID to be edited
+    //    txt: the new text
+    //    keyboard: the new inline keyboard (if present)
+    // return:
+    //    true if success
+	bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, const String &keyboard);
+
+    inline bool editMessage(const TBMessage &msg, const String& txt, const String &keyboard) {
+		return editMessage(msg.sender.id, msg.messageID, txt, keyboard);
+	}
+
+    inline bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, InlineKeyboard &keyboard) {
+        return editMessage(chat_id, message_id, txt, keyboard.getJSON());
+    }
+
+	inline bool editMessage(const TBMessage &msg, const String& txt, InlineKeyboard &keyboard) {
+		return editMessage(msg.sender.id, msg.messageID, txt, keyboard.getJSON());
+	}
+
+
 private:
     Client*         telegramClient;
     const char*     m_token;
@@ -324,7 +348,7 @@ private:
 
     int32_t         m_lastUpdateId = 0;
     uint32_t        m_lastUpdateTime;
-    uint32_t        m_minUpdateTime = 2000;
+    uint32_t        m_minUpdateTime = MIN_UPDATE_TIME;
 
     uint32_t        m_lastmsg_timestamp;
     bool            m_waitingReply;

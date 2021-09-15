@@ -346,7 +346,7 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, cons
     serializeJson(root, payload, len);
 
     debugJson(root, Serial);
-    const bool result = sendCommand("sendMessage", payload, NULL);
+    const bool result = sendCommand("sendMessage", payload);
     return result;
 }
 
@@ -639,5 +639,28 @@ bool AsyncTelegram2::deleteMyCommands() {
     debugJson(doc2, Serial);
 
     const bool result = sendCommand("setMyCommands", payload, true);
+    return result;
+}
+
+
+bool AsyncTelegram2::editMessage(int32_t chat_id, int32_t message_id, const String& txt, const String &keyboard) {
+    String payload = "{\"chat_id\":" ;
+	payload += chat_id;
+	payload += ",\"message_id\":" ;
+	payload += message_id;
+	payload += ", \"text\": \"";
+	payload += txt;
+
+    if(keyboard.length()) {
+        payload += "\", \"reply_markup\": ";
+        payload += keyboard;
+        payload += "}";
+    }
+    else {
+         payload += "\"}";
+    }
+
+    const bool result = sendCommand("editMessageText", payload.c_str());
+
     return result;
 }

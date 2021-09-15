@@ -10,14 +10,16 @@ InlineKeyboard::~InlineKeyboard(){}
 
 bool InlineKeyboard::addRow()
 {
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 128);	 // Current size + space for new row (empty)
+  // if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
+  // DynamicJsonDocument doc(m_jsonSize + 128);	 // Current size + space for new row (empty)
+  
+  StaticJsonDocument<BUFFER_MEDIUM> doc;
   deserializeJson(doc, m_json);
   JsonArray  rows = doc["inline_keyboard"];
   rows.createNestedArray();
   m_json = "";
   serializeJson(doc, m_json);
-  doc.shrinkToFit();
+  //doc.shrinkToFit();
   m_jsonSize = doc.memoryUsage();
   return true;
 }
@@ -39,8 +41,9 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
 
   // As reccomended use local JsonDocument instead global
   // inline keyboard json structure will be stored in a String var
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 256);	 // Current size + space for new object (button)
+  //if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
+  // DynamicJsonDocument doc(m_jsonSize + 256);	 // Current size + space for new object (button)
+  StaticJsonDocument<BUFFER_MEDIUM> doc;
   deserializeJson(doc, m_json);
 
   JsonArray  rows = doc["inline_keyboard"];
@@ -55,8 +58,9 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
   // Store inline keyboard json structure
   m_json = "";
   serializeJson(doc, m_json);
-  doc.shrinkToFit();
-  m_jsonSize = doc.memoryUsage();
+
+  //doc.shrinkToFit();
+  //m_jsonSize = doc.memoryUsage();
   return true;
 }
 
@@ -83,9 +87,10 @@ String InlineKeyboard::getJSON() const
 
 String InlineKeyboard::getJSONPretty() const
 {
-  uint16_t jsonSize;
-  if(m_jsonSize < BUFFER_SMALL) jsonSize = BUFFER_SMALL;
-  DynamicJsonDocument doc(jsonSize + 128);	// Current size + space for new lines
+  //uint16_t jsonSize;
+  //if(m_jsonSize < BUFFER_SMALL) jsonSize = BUFFER_SMALL;
+  //DynamicJsonDocument doc(jsonSize + 128);	// Current size + space for new lines
+  StaticJsonDocument<BUFFER_MEDIUM> doc;
   deserializeJson(doc, m_json);
 
   String serialized;
