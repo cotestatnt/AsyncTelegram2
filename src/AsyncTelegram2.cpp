@@ -301,11 +301,10 @@ bool AsyncTelegram2::noNewMessage() {
     this->getNewMessage(msg);
     while (!this->getUpdates()) {
         delay(100);
-        Serial.print(".");
         // if(millis() - startTime > 10000UL)
         //     break;
     }
-    Serial.println(".");
+    log_debug("\n");
     return true;
 }
 

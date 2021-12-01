@@ -7,18 +7,18 @@ extern "C"
 #endif
 
 // Windows
-#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#define __FILE_NAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 
 // Linux, Mac
-// #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+// #define __FILE_NAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
-#define _LOG_FORMAT(letter, format)  "\n[" #letter "][%s:%u] %s():\t" format, __FILENAME__, __LINE__, __FUNCTION__
+#define _LOG_FORMAT(letter, format)  "\n[" #letter "][%s:%u] %s():\t" format, __FILE_NAME__, __LINE__, __FUNCTION__
 
 #if DEBUG_ENABLE
 #define log_debug(format, ...) Serial.printf(_LOG_FORMAT(D, format), ##__VA_ARGS__)
 #define log_error(format, ...) { Serial.println(); Serial.printf(_LOG_FORMAT(E, format), ##__VA_ARGS__); }
 #define log_info(format, ...) Serial.printf(_LOG_FORMAT(I, format), ##__VA_ARGS__)
-#define lineTrap() {Serial.printf("[%s:%u] - ", __FILENAME__, __LINE__); Serial.print(__func__); Serial.println("()");}
+#define lineTrap() {Serial.printf("[%s:%u] - ", __FILE_NAME__, __LINE__); Serial.print(__func__); Serial.println("()");}
 #else
 #define log_debug(format, ...)
 #define log_error(format, ...)

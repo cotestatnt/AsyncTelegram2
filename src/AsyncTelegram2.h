@@ -33,6 +33,8 @@
 #define MIN_UPDATE_TIME     500
 
 #define BLOCK_SIZE          1436    //2872   // 2 * TCP_MSS
+#define XX TCP_MSS
+
 
 #include "DataStructures.h"
 #include "InlineKeyboard.h"
@@ -339,6 +341,10 @@ public:
 		return editMessage(msg.sender.id, msg.messageID, txt, keyboard.getJSON());
 	}
 
+	// check if connection with server is active
+    // returns
+    //   true on connected
+    bool checkConnection();
 
 private:
     Client*         telegramClient;
@@ -384,10 +390,7 @@ private:
     //   true if no error occurred
     bool getMe();
 
-    // check if connection with server is active
-    // returns
-    //   true on connected
-    bool checkConnection();
+
 
 };
 
