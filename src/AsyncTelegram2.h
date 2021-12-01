@@ -33,8 +33,6 @@
 #define MIN_UPDATE_TIME     500
 
 #define BLOCK_SIZE          1436    //2872   // 2 * TCP_MSS
-#define XX TCP_MSS
-
 
 #include "DataStructures.h"
 #include "InlineKeyboard.h"
