@@ -52,23 +52,23 @@ struct TBDocument {
 };
 
 struct TBMessage {
-  MessageType 	  messageType;
-  bool			  isHTMLenabled = false;
+  MessageType 	messageType;
+  bool			    isHTMLenabled = true;
   bool       	  isMarkdownEnabled = false;
   bool 	     	  disable_notification = false;
-  bool			  force_reply = false;
-  int32_t         date;
-  int32_t         chatInstance;
-  int64_t         chatId;
-  int32_t         messageID;
-  TBUser          sender;
-  TBGroup         group;
-  TBLocation      location;
-  TBContact       contact;
-  TBDocument      document;
-  const char*     callbackQueryID;
-  const char*     callbackQueryData;
-  String      	  text;
+  bool			    force_reply = false;
+  int32_t       date;
+  int32_t       chatInstance;
+  int64_t       chatId;
+  int32_t       messageID;
+  TBUser        sender;
+  TBGroup       group;
+  TBLocation    location;
+  TBContact     contact;
+  TBDocument    document;
+  const char*   callbackQueryID;
+  const char*   callbackQueryData;
+  String      	text;
 };
 
 #endif
