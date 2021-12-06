@@ -320,8 +320,7 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, cons
 
     if(msg.isMarkdownEnabled)
         root["parse_mode"] = "MarkdownV2";
-
-    if(msg.isHTMLenabled)
+    else if(msg.isHTMLenabled)
         root["parse_mode"] = "HTML";
 
     if(msg.disable_notification)
