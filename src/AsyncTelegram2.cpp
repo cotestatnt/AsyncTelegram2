@@ -89,7 +89,7 @@ bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload
         m_waitingReply = true;
         // Blocking mode
         if (blocking) {
-            if (!telegramClient->find(HEADERS_END)) {
+            if (!telegramClient->find((char *) HEADERS_END)) {
                 log_error("Invalid HTTP response");
                 telegramClient->stop();
                 return false;
@@ -121,7 +121,7 @@ bool AsyncTelegram2::getUpdates(){
         // If previuos reply from server was received (and parsed)
         if( m_waitingReply == false ) {
             char payload[BUFFER_SMALL];
-            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%ld}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
         }
     }
@@ -318,9 +318,9 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, cons
     root["chat_id"] = msg.sender.id != 0 ? msg.sender.id : msg.chatId;
     root["text"] = message;
 
-    if(msg.isMarkdownEnabled)
+	if(msg.isMarkdownEnabled)
         root["parse_mode"] = "MarkdownV2";
-    else if(msg.isHTMLenabled)
+	else if(msg.isHTMLenabled)
         root["parse_mode"] = "HTML";
 
     if(msg.disable_notification)
@@ -353,7 +353,7 @@ bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int32_t to_chati
 {
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-        "{\"chat_id\":%d,\"from_chat_id\":%lld,\"message_id\":%d}",
+        "{\"chat_id\":%ld,\"from_chat_id\":%lld,\"message_id\":%ld}",
         to_chatid, msg.chatId, msg.messageID);
 
     const bool result = sendCommand("forwardMessage", payload);
@@ -503,7 +503,7 @@ bool AsyncTelegram2::sendStream(int64_t chat_id,  const char* cmd, const char* t
 
         // Read server reply
         while (telegramClient->connected()) {
-            if (telegramClient->find("{\"ok\":true")) {
+            if (telegramClient->find((char*)"{\"ok\":true")) {
                 res = true;
                 break;
             }
@@ -561,7 +561,7 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char* cmd, const char* ty
 
         // Read server reply
         while (telegramClient->connected()) {
-            if (telegramClient->find("{\"ok\":true")) {
+            if (telegramClient->find((char*)"{\"ok\":true")) {
                 res = true;
                 break;
             }
