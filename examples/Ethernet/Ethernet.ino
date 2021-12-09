@@ -45,6 +45,8 @@ void button2Pressed(const TBMessage &queryMsg){
 void setup() {
   pinMode(BLINK_LED, OUTPUT);
   pinMode(LED, OUTPUT);
+  pinMode(10, OUTPUT);
+  SPI.begin();
   // You can use Ethernet.init(pin) to configure the CS pin
   Ethernet.init(D10);  // Most Arduino shields
 
