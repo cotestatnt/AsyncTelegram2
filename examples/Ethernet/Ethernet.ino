@@ -1,10 +1,11 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <SSLClient.h>
-#include "tg_certificate.h"
-#include <AsyncTelegram2.h>
 
-const char* token =  "xxxxxxxxx:xxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+#include <AsyncTelegram2.h>
+#include <tg_certificate.h>
+
+const char* token =  "xxxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxx";
 
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
@@ -69,9 +70,9 @@ void setup() {
   }
   // give the Ethernet shield a second to initialize:
   delay(1000);
-  
+
   // Set the Telegram bot properies
-  myBot.setUpdateTime(2000);
+  myBot.setUpdateTime(3000);
   myBot.setTelegramToken(token);
 
   // Check if all things are ok
@@ -112,7 +113,7 @@ void setup() {
   // Send a welcome message to specific user
   char welcome_msg[128];
   snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
-  int64_t chat_id = 1234567890; // You can discover your own chat id, with "Json Dump Bot"
+  int32_t chat_id = 436865110; // You can discover your own chat id, with "Json Dump Bot"
   myBot.sendTo(chat_id, welcome_msg);
 }
 
@@ -126,7 +127,7 @@ void loop() {
     digitalWrite(BLINK_LED, !digitalRead(BLINK_LED));
   }
 
-  // a variable to store telegram message data
+// a variable to store telegram message data
   TBMessage msg;
 
   // if there is an incoming message...
@@ -186,6 +187,8 @@ void loop() {
           digitalWrite(LED, HIGH);
           // terminate the callback with an alert message
           myBot.endQuery(msg, "Light is on", true);
+
+          myBot.forwardMessage(msg, 1345177361);
         }
         else if (tgReply.equalsIgnoreCase(LIGHT_OFF_CALLBACK)) {
           // pushed "LIGHT OFF" button...
