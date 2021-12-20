@@ -48,15 +48,15 @@ struct TBDocument {
   int32_t      file_size;
   const char*  file_id;
   const char*  file_name;
-  String	   file_path;
+  String	     file_path;
 };
 
 struct TBMessage {
-  MessageType 	messageType;
-  bool			    isHTMLenabled = true;
-  bool       	  isMarkdownEnabled = false;
-  bool 	     	  disable_notification = false;
-  bool			    force_reply = false;
+  MessageType  messageType;
+  bool          isHTMLenabled = true;
+  bool          isMarkdownEnabled = false;
+  bool          disable_notification = false;
+  bool          force_reply = false;
   int32_t       date;
   int32_t       chatInstance;
   int64_t       chatId;
