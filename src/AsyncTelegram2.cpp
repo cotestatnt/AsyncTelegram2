@@ -1,13 +1,5 @@
 #include "AsyncTelegram2.h"
 
-#if DEBUG_ENABLE
-#define debugJson(X, Y)  { log_debug(); Serial.println(); serializeJsonPretty(X, Y); Serial.println();}
-#define errorJson(E)  { log_error(); Serial.println(); Serial.println(E);}
-#else
-#define debugJson(X, Y)
-#define errorJson(E)
-#endif
-
 #define HEADERS_END "\r\n\r\n"
 
 AsyncTelegram2::AsyncTelegram2(Client &client)
