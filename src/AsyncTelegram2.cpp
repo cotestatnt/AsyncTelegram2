@@ -388,7 +388,7 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool al
     if (! msg.callbackQueryID) return false;
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":30,\"show_alert\":%s}",
+        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":3,\"show_alert\":%s}",
         msg.callbackQueryID, message, alertMode ? "true" : "false");
     const bool result = sendCommand("answerCallbackQuery", payload, true);
     return result;
