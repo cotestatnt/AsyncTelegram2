@@ -1,6 +1,6 @@
 # AsyncTelegram2
 
-Thi library is the successor to the AsyncTelegram library.
+This library is the successor to the AsyncTelegram library.
 It was chosen to change the name in addition to the major version to mark clearly a breaking point.
 AsyncTelegram2 is now no longer tied to the Espressif ESP8266 / ESP32 hardware, but can virtually work with any MCU capable of a SSL connection and with any kind of transport layer like WiFi, Ethernet, GSM module (still to be tested).
 
