@@ -16,7 +16,6 @@
   Set true if you want use external library for SSL connection instead ESP32@WiFiClientSecure 
   For example https://github.com/OPEnSLab-OSU/SSLClient/ is very efficient BearSSL library.
   You can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet)
-  With SSLClient, be sure "certificates.h" file is present in sketch folder
 */ 
 #define USE_CLIENTSSL true  
 
