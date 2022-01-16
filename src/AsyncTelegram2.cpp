@@ -314,7 +314,7 @@ bool AsyncTelegram2::noNewMessage() {
 }
 
 
-bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, const char* keyboard)
+bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, const char* keyboard, bool wait)
 {
     if (!strlen(message)) return false;
 
@@ -349,7 +349,7 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, cons
     serializeJson(root, payload, len);
 
     debugJson(root, Serial);
-    bool result = sendCommand("sendMessage", payload);
+    bool result = sendCommand("sendMessage", payload, wait);
     return result;
 }
 

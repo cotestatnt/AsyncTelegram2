@@ -136,7 +136,7 @@ public:
     //   message : the message to send
     //   keyboard: the inline/reply keyboard (optional)
     //             (in json format or using the inlineKeyboard/ReplyKeyboard class helper)
-    bool sendMessage(const TBMessage &msg, const char* message, const char* keyboard = nullptr);
+    bool sendMessage(const TBMessage &msg, const char* message, const char* keyboard = nullptr, bool wait = false);
 
     // sendMessage function overloads
     inline bool sendMessage(const TBMessage &msg, const String &message, String keyboard = "")
