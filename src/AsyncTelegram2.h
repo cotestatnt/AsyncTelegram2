@@ -17,7 +17,7 @@
 #include "Client.h"
 #include "time.h"
 
-#define DEBUG_ENABLE        true
+#define DEBUG_ENABLE        false
 #ifndef DEBUG_ENABLE
     #define DEBUG_ENABLE    false
 #endif
