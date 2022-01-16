@@ -127,7 +127,8 @@ void loop() {
         }
 
       default:
-        {
+        {   
+            tgReply = msg.text;  
             if (tgReply.equalsIgnoreCase("/version")) {
               String fw = "Version: " + String(firmware_version);
               myBot.sendMessage(msg, fw);
