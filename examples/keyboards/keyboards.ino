@@ -18,7 +18,7 @@
   You can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet)
   With SSLClient, be sure "certificates.h" file is present in sketch folder
 */ 
-#define USE_CLIENTSSL true  
+#define USE_CLIENTSSL false  
 
 #include <AsyncTelegram2.h>
 
