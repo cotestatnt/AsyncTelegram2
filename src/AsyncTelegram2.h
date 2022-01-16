@@ -23,11 +23,11 @@
 #endif
 
 #if DEBUG_ENABLE
-    #define debugJson(X, Y)  { log_debug(); Serial.println(); serializeJsonPretty(X, Y); Serial.println();}
-    #define errorJson(E)  { log_error(); Serial.println(); Serial.println(E);}
+#define debugJson(X, Y)  { log_debug(); Serial.println(); serializeJsonPretty(X, Y); Serial.println();}
+#define errorJson(E)  { log_error(); Serial.println(); Serial.println(E);}
 #else
-    #define debugJson(X, Y)
-    #define errorJson(E)
+#define debugJson(X, Y)
+#define errorJson(E)
 #endif
 
 /*
@@ -372,7 +372,7 @@ private:
     bool sendBuffer(int64_t chat_id, const char* cmd, const char* type, const char* propName, uint8_t *data, size_t size);
 
 protected:
-    
+
 	// send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
     // params
     //   command   : the command to send, i.e. getMe
@@ -396,8 +396,6 @@ protected:
     // returns
     //   true if no error occurred
     bool getMe();
-
-
 
 };
 

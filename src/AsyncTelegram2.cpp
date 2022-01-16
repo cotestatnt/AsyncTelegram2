@@ -2,10 +2,10 @@
 
 #define HEADERS_END "\r\n\r\n"
 
-AsyncTelegram2::AsyncTelegram2(Client &client)
+AsyncTelegram2::AsyncTelegram2(Client &client, uint32_t bufferSize )
 {
     m_botusername.reserve(32); // Telegram username is 5-32 chars lenght
-    m_rxbuffer.reserve(BUFFER_BIG);
+    m_rxbuffer.reserve(bufferSize);
     this->telegramClient = &client;
     m_minUpdateTime = MIN_UPDATE_TIME;
 }
@@ -59,7 +59,7 @@ bool AsyncTelegram2::reset(void)
 }
 
 
-bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload, bool blocking )
+bool AsyncTelegram2::sendCommand(const char* command, const char* payload, bool blocking )
 {
     if(checkConnection()) {
         String httpBuffer((char *)0);
@@ -90,12 +90,13 @@ bool AsyncTelegram2::sendCommand(const char* const &command, const char* payload
             m_rxbuffer = "";
             while (telegramClient->available()) {
                 yield();
-                m_rxbuffer  += (char) telegramClient->read();
+                m_rxbuffer += (char) telegramClient->read();
             }
             m_waitingReply = false;
-            if(m_rxbuffer.indexOf("ok") > -1) return true;
+            if(m_rxbuffer.indexOf("\"ok\":true") > -1) return true;
         }
     }
+
     return false;
 }
 
@@ -113,7 +114,7 @@ bool AsyncTelegram2::getUpdates(){
         // If previuos reply from server was received (and parsed)
         if( m_waitingReply == false ) {
             char payload[BUFFER_SMALL];
-            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%ld}", m_lastUpdateId);
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
         }
     }
@@ -143,11 +144,14 @@ bool AsyncTelegram2::getUpdates(){
             log_debug("Connection closed from server");
         }
 
-        if(m_rxbuffer.indexOf("ok") < 0) {
-            log_error("%s", m_rxbuffer.c_str());
+        if(m_rxbuffer.indexOf("\"ok\":true") > -1) {
+           return true;
+        } 
+		else {
+			log_error("%s", m_rxbuffer.c_str());
             return false;
-        }
-        return true;
+		}
+        
     }
     return false;
 }
@@ -161,11 +165,20 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
     // We have a message, parse data received
     if (getUpdates()) {
         DynamicJsonDocument updateDoc(BUFFER_BIG);
-        deserializeJson(updateDoc, m_rxbuffer);
-        m_rxbuffer = "";
 
+        DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
+        if (err) {
+            log_error("deserializeJson() failed\n");
+            log_error("%s", err.c_str());
+            Serial.println();
+            Serial.println(m_rxbuffer);
+            m_rxbuffer = "";
+            return MessageNoData;
+        }
+
+        m_rxbuffer = "";
         if (!updateDoc.containsKey("result")) {
-            log_error("deserializeJson() failed with code");
+            log_error("JSON data not expected");
             serializeJsonPretty(updateDoc, Serial);
             return MessageNoData;
         }
@@ -324,7 +337,7 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, cons
             JsonObject myKeyb = doc.as<JsonObject>();
             root["reply_markup"] = myKeyb;
             if(msg.force_reply) {
-                root["reply_markup"]["selective"] = true,
+                root["reply_markup"]["selective"] = true;
                 root["reply_markup"]["force_reply"] = true;
             }
         }
@@ -336,19 +349,19 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, cons
     serializeJson(root, payload, len);
 
     debugJson(root, Serial);
-    const bool result = sendCommand("sendMessage", payload);
+    bool result = sendCommand("sendMessage", payload);
     return result;
 }
 
 
-bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int32_t to_chatid)
+bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chatid)
 {
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-        "{\"chat_id\":%ld,\"from_chat_id\":%lld,\"message_id\":%ld}",
+        "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%d}",
         to_chatid, msg.chatId, msg.messageID);
 
-    const bool result = sendCommand("forwardMessage", payload);
+    bool result = sendCommand("forwardMessage", payload);
     log_debug("%s", payload);
     return result;
 }
@@ -363,7 +376,7 @@ bool AsyncTelegram2::sendPhotoByUrl(const int64_t& chat_id,  const char* url, co
         "{\"chat_id\":%lld,\"photo\":\"%s\",\"caption\":\"%s\"}",
         chat_id, url, caption);
 
-    const bool result = sendCommand("sendPhoto", payload);
+    bool result = sendCommand("sendPhoto", payload);
     log_debug("%s", payload);
     return result;
 }
@@ -377,7 +390,7 @@ bool AsyncTelegram2::sendToChannel(const char* channel, const char* message, boo
         "{\"chat_id\":\"%s\",\"text\":\"%s\",\"silent\":%s}",
         channel, message, silent ? "true" : "false");
 
-    const bool result = sendCommand("sendMessage", payload);
+    bool result = sendCommand("sendMessage", payload);
     log_debug("%s", payload);
     return result;
 }
@@ -388,9 +401,9 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool al
     if (! msg.callbackQueryID) return false;
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":3,\"show_alert\":%s}",
+        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":2,\"show_alert\":%s}",
         msg.callbackQueryID, message, alertMode ? "true" : "false");
-    const bool result = sendCommand("answerCallbackQuery", payload, true);
+    bool result = sendCommand("answerCallbackQuery", payload, true);
     return result;
 }
 
@@ -400,7 +413,7 @@ bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char* messa
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
         "{\"remove_keyboard\":true,\"selective\":%s}", selective ? "true" : "false");
-    const bool result = sendMessage(msg, message, payload);
+    bool result = sendMessage(msg, message, payload);
     return result;
 }
 
@@ -624,11 +637,11 @@ bool AsyncTelegram2::deleteMyCommands() {
     doc2["commands"] = doc["result"].as<JsonArray>();
 
     size_t len = measureJson(doc2);
-    char payload[len];
+    char payload[len+1];
     serializeJson(doc2, payload, len);
     debugJson(doc2, Serial);
 
-    const bool result = sendCommand("setMyCommands", payload, true);
+    bool result = sendCommand("setMyCommands", payload, true);
     return result;
 }
 
@@ -650,7 +663,6 @@ bool AsyncTelegram2::editMessage(int32_t chat_id, int32_t message_id, const Stri
          payload += "\"}";
     }
 
-    const bool result = sendCommand("editMessageText", payload.c_str());
-
+    bool result = sendCommand("editMessageText", payload.c_str());
     return result;
 }
