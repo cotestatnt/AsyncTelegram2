@@ -48,7 +48,7 @@ void setup() {
   pinMode(10, OUTPUT);
   SPI.begin();
   // You can use Ethernet.init(pin) to configure the CS pin
-  Ethernet.init(D10);  // Most Arduino shields
+  Ethernet.init(10);  // Most Arduino shields
 
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
