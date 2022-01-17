@@ -69,7 +69,7 @@ jobs:
         - "examples/keyboards/keyboards.ino"
         - "examples/lightBot/lightBot.ino"
         - "examples/sendPhoto/sendPhoto.ino"
-        - "examples/Ethernet/Ethernet.ino"
+#        - "examples/Ethernet/Ethernet.ino"
         
         - "examples/ESP32/ESP32-CAM/ESP32-CAM.ino"
         - "examples/ESP32/ESP32-CAM-PIR/ESP32-CAM-PIR.ino"
