@@ -28,8 +28,8 @@ bool isKeyboardActive;      // store if the reply keyboard is shown
 #define BUTTON1_CALLBACK   "Button1"   // callback data sent when "Button1" button is pressed
 #define BUTTON2_CALLBACK   "Button2"   // callback data sent when "Button1" button is pressed
 
-const byte BLINK_LED = D7;
-const byte LED = D8;
+const byte BLINK_LED = 7;
+const byte LED = 8;
 
 void button1Pressed(const TBMessage &queryMsg){
   Serial.printf("\nButton 1 pressed (callback); \nQueryId: %s\n\n", queryMsg.callbackQueryID);
