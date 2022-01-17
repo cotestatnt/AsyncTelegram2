@@ -13,6 +13,8 @@
     #define FS_SUPPORT false
 #endif
 
+#ifndef LED_BUILTIN
+#define LED_BUILTIN 2
 
 #include "Client.h"
 #include "time.h"
