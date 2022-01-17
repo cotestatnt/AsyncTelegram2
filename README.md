@@ -49,3 +49,6 @@ Take a look at the examples provided in the [examples folder](https://github.com
 + 2.0.1   Added more overload functions to cover a lot of possible usage and mantain a little backward compatibility
 + 2.0.2   Increased upload speed. Now is possible send photo directly from a raw data buffer (e.g. ESP32-CAM)
 + 2.0.3   Added support for [custom commands](https://core.telegram.org/bots#commands) (`getMyCommands()`, `setMyCommands()`, `deleteMyCommands()`)
++ 2.0.5   Bug fixes
++ 2.0.6   Added support in TBmessage struct for handling event related to add/remove users from groups
++ 2.0.7   Added support for "send message" callback function
