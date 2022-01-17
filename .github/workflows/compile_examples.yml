@@ -23,7 +23,7 @@ jobs:
         - "examples/keyboardCallback/keyboardCallback.ino"
         - "examples/keyboards/keyboards.ino"
         - "examples/lightBot/lightBot.ino"
-#        - "examples/sendPhoto/sendPhoto.ino"
+        - "examples/sendPhoto/sendPhoto.ino"
 
         - "examples/ESP8266/OTA_password/OTA_password.ino"
         - "examples/ESP8266/OTA_buttonQuery/OTA_buttonQuery.ino"
@@ -55,8 +55,8 @@ jobs:
     - name: Run PlatformIO Examples
       run: |
         pio ci --board=nodemcuv2 \
-        --lib=examples/advanced/EventScheduler/**.h
-        --lib=examples/advanced/multipleTimers/**.h
+#        --lib=examples/advanced/EventScheduler/**.h
+#        --lib=examples/advanced/multipleTimers/**.h
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
@@ -107,8 +107,8 @@ jobs:
     - name: Run PlatformIO Examples
       run: |
         pio ci --board=esp32dev \
-        --lib=examples/advanced/EventScheduler/**.h \
-        --lib=examples/ESP32/ESP32-CAM-PIR/**.h \
+#        --lib=examples/advanced/EventScheduler/**.h \
+#        --lib=examples/ESP32/ESP32-CAM-PIR/**.h \
 
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
