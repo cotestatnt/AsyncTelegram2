@@ -236,6 +236,24 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 message.contact.vCard       = updateDoc["result"][0]["message"]["contact"]["vcard"];
                 message.messageType = MessageContact;
             }
+			else if (updateDoc["result"][0]["message"]["new_chat_member"]) {
+                // this is a add member message
+                message.member.id          = updateDoc["result"][0]["message"]["new_chat_member"]["id"];
+                message.member.firstName   = updateDoc["result"][0]["message"]["new_chat_member"]["first_name"];
+                message.member.lastName    = updateDoc["result"][0]["message"]["new_chat_member"]["last_name"];
+                message.member.username    = updateDoc["result"][0]["message"]["new_chat_member"]["username"];
+                message.member.isBot       = updateDoc["result"][0]["message"]["new_chat_member"]["is_bot"];
+                message.messageType        = MessageNewMember;
+            }
+			else if (updateDoc["result"][0]["message"]["left_chat_member"]) {
+                // this is a left member message
+                message.member.id          = updateDoc["result"][0]["message"]["left_chat_member"]["id"];
+                message.member.firstName   = updateDoc["result"][0]["message"]["left_chat_member"]["first_name"];
+                message.member.lastName    = updateDoc["result"][0]["message"]["left_chat_member"]["last_name"];
+                message.member.username    = updateDoc["result"][0]["message"]["left_chat_member"]["username"];
+                message.member.isBot       = updateDoc["result"][0]["message"]["left_chat_member"]["is_bot"];
+                message.messageType        = MessageLeftMember;
+            }
             else if (updateDoc["result"][0]["message"]["document"]) {
                 // this is a document message
                 message.document.file_id      = updateDoc["result"][0]["message"]["document"]["file_id"];

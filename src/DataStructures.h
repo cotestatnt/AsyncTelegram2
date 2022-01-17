@@ -13,7 +13,9 @@ enum MessageType {
   MessageLocation = 3,
   MessageContact  = 4,
   MessageDocument = 5,
-  MessageReply 	= 6
+  MessageReply 	  = 6,
+  MessageNewMember= 7,
+  MessageLeftMember=8
 };
 
 struct TBUser {
@@ -43,6 +45,14 @@ struct TBContact {
   const char*  vCard;
 };
 
+struct TBMember {
+  int64_t 	   id;
+  bool         isBot;
+  const char*  firstName;
+  const char*  lastName;
+  const char*  username;
+};
+
 struct TBDocument {
   bool         file_exists;
   int32_t      file_size;
@@ -66,6 +76,7 @@ struct TBMessage {
   TBLocation    location;
   TBContact     contact;
   TBDocument    document;
+  TBMember      member;
   const char*   callbackQueryID;
   const char*   callbackQueryData;
   String      	text;
