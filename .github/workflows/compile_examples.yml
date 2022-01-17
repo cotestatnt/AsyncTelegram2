@@ -17,6 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         example: 
+        - "examples/advanced/multipleTimers/multipleTimers.ino"
         - "examples/advanced/EventScheduler/EventScheduler.ino"
         - "examples/echoBot/echoBot.ino"
         - "examples/keyboardCallback/keyboardCallback.ino"
@@ -49,11 +50,13 @@ jobs:
     - name: Install 3rd party dependecies
       run: | 
         pio lib -g install \
-        https://github.com/cotestatnt/AsyncTelegram2/ \
+        https://github.com/cotestatnt/AsyncTelegram2 \
+        
     - name: Run PlatformIO Examples
       run: |
         pio ci --board=nodemcuv2 \
         --lib=examples/advanced/EventScheduler/**.h
+        --lib=examples/advanced/multipleTimers/**.h
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
 
@@ -63,13 +66,14 @@ jobs:
       fail-fast: false
       matrix:
         example: 
+        - "examples/advanced/multipleTimers"
         - "examples/advanced/EventScheduler"
         - "examples/echoBot/echoBot.ino"
         - "examples/keyboardCallback/keyboardCallback.ino"
         - "examples/keyboards/keyboards.ino"
         - "examples/lightBot/lightBot.ino"
         - "examples/sendPhoto/sendPhoto.ino"
-#        - "examples/Ethernet/Ethernet.ino"
+        - "examples/Ethernet/Ethernet.ino"
         
         - "examples/ESP32/ESP32-CAM/ESP32-CAM.ino"
         - "examples/ESP32/ESP32-CAM-PIR/ESP32-CAM-PIR.ino"
@@ -97,6 +101,7 @@ jobs:
         pio lib -g install \
         https://github.com/bblanchon/ArduinoJson \
         https://github.com/OPEnSLab-OSU/SSLClient \
+        https://github.com/arduino-libraries/Ethernet \
         https://github.com/cotestatnt/AsyncTelegram2 \
        
     - name: Run PlatformIO Examples
