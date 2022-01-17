@@ -15,6 +15,7 @@
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2
+#endif
 
 #include "Client.h"
 #include "time.h"
