@@ -69,7 +69,7 @@ jobs:
         - "examples/keyboards/keyboards.ino"
         - "examples/lightBot/lightBot.ino"
         - "examples/sendPhoto/sendPhoto.ino"
-
+        
         - "examples/ESP32/ESP32-CAM/ESP32-CAM.ino"
         - "examples/ESP32/ESP32-CAM-PIR/ESP32-CAM-PIR.ino"
     steps:
@@ -94,13 +94,13 @@ jobs:
     - name: Install 3rd party dependecies
       run: | 
         pio lib -g install \
-        https://github.com/cotestatnt/AsyncTelegram2 \
+        https://github.com/bblanchon/ArduinoJson \
         https://github.com/OPEnSLab-OSU/SSLClient \
-        https://github.com/bblanchon/ArduinoJson
-
+        https://github.com/cotestatnt/AsyncTelegram2 \
+       
     - name: Run PlatformIO Examples
       run: |
-        pio ci --board=lolin32 \
+        pio ci --board=esp32dev \
         --lib=examples/advanced/EventScheduler/**.h \
         --lib=examples/ESP32/ESP32-CAM-PIR/**.h \
         --lib=examples/Ethernet/**.h
