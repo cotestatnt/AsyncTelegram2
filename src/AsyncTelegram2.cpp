@@ -145,10 +145,12 @@ bool AsyncTelegram2::getUpdates(){
         }
 
         if(m_rxbuffer.indexOf("\"ok\":true") > -1) {
+		   if (m_sentCallback != nullptr && m_waitSent) { m_sentCallback(m_waitSent); m_waitSent = false;}
            return true;
         } 
 		else {
 			log_error("%s", m_rxbuffer.c_str());
+			if (m_sentCallback != nullptr && m_waitSent) { m_waitSent = false; m_sentCallback(m_waitSent);}
             return false;
 		}
         
@@ -335,6 +337,7 @@ bool AsyncTelegram2::noNewMessage() {
 bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, const char* keyboard, bool wait)
 {
     if (!strlen(message)) return false;
+	m_waitSent = true;	
 
     DynamicJsonDocument root(BUFFER_BIG);
     // Backward compatibility

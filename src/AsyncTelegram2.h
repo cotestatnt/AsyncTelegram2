@@ -88,6 +88,8 @@ ReYNnyicsbkqWletNw+vHX/bvZ8=
 class AsyncTelegram2
 {
 
+using SentCallback = std::function<void(bool sent)>;
+
 public:
     // default constructor
     AsyncTelegram2(Client &client, uint32_t bufferSize = BUFFER_BIG);
@@ -139,6 +141,7 @@ public:
     //   message : the message to send
     //   keyboard: the inline/reply keyboard (optional)
     //             (in json format or using the inlineKeyboard/ReplyKeyboard class helper)
+	//   wait:    true if method must be blocking
     bool sendMessage(const TBMessage &msg, const char* message, const char* keyboard = nullptr, bool wait = false);
 
     // sendMessage function overloads
@@ -353,6 +356,14 @@ public:
     // returns
     //   true on connected
     bool checkConnection();
+	
+	// This callback function will be executed once the message was delivered succesfully
+	inline void addSentCallback(SentCallback sentcb, uint32_t timeout = 1000) {
+		if(sentcb != nullptr) {
+			m_sentCallback = sentcb;
+		}
+			
+	}
 
 private:
     Client*         telegramClient;
@@ -374,6 +385,10 @@ private:
     bool sendStream( int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream& stream, size_t size);
     bool sendBuffer(int64_t chat_id, const char* cmd, const char* type, const char* propName, uint8_t *data, size_t size);
 
+	SentCallback 	m_sentCallback = nullptr;
+	bool 			m_waitSent = false;
+	uint32_t		m_lastSentTime;
+	
 protected:
 
 	// send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
