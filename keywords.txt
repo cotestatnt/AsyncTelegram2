@@ -14,6 +14,8 @@ sendToChannel		KEYWORD2
 sendTo				KEYWORD2
 sendPhotoByUrl		KEYWORD2
 getBotName			KEYWORD2
+addSentCallback		KEYWORD2
+checkConnection		KEYWORD2
 
 addRow	    KEYWORD2
 addButton	KEYWORD2
