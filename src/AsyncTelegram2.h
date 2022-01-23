@@ -20,9 +20,9 @@
 #include "Client.h"
 #include "time.h"
 
-#define DEBUG_ENABLE        false
+#define DEBUG_ENABLE        0
 #ifndef DEBUG_ENABLE
-    #define DEBUG_ENABLE    false
+    #define DEBUG_ENABLE    0
 #endif
 
 #if DEBUG_ENABLE
@@ -141,7 +141,7 @@ public:
     //   message : the message to send
     //   keyboard: the inline/reply keyboard (optional)
     //             (in json format or using the inlineKeyboard/ReplyKeyboard class helper)
-	//   wait:    true if method must be blocking
+    //   wait:    true if method must be blocking
     bool sendMessage(const TBMessage &msg, const char* message, const char* keyboard = nullptr, bool wait = false);
 
     // sendMessage function overloads
@@ -338,32 +338,31 @@ public:
     //    keyboard: the new inline keyboard (if present)
     // return:
     //    true if success
-	bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, const String &keyboard);
+    bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, const String &keyboard);
 
     inline bool editMessage(const TBMessage &msg, const String& txt, const String &keyboard) {
-		return editMessage(msg.sender.id, msg.messageID, txt, keyboard);
-	}
+        return editMessage(msg.sender.id, msg.messageID, txt, keyboard);
+    }
 
     inline bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, InlineKeyboard &keyboard) {
         return editMessage(chat_id, message_id, txt, keyboard.getJSON());
     }
 
-	inline bool editMessage(const TBMessage &msg, const String& txt, InlineKeyboard &keyboard) {
-		return editMessage(msg.sender.id, msg.messageID, txt, keyboard.getJSON());
-	}
+    inline bool editMessage(const TBMessage &msg, const String& txt, InlineKeyboard &keyboard) {
+        return editMessage(msg.sender.id, msg.messageID, txt, keyboard.getJSON());
+    }
 
-	// check if connection with server is active
-    // returns
+    // check if connection with server is active
     //   true on connected
     bool checkConnection();
-	
-	// This callback function will be executed once the message was delivered succesfully
-	inline void addSentCallback(SentCallback sentcb, uint32_t timeout = 1000) {
-		if(sentcb != nullptr) {
-			m_sentCallback = sentcb;
-		}
-			
-	}
+
+    // This callback function will be executed once the message was delivered succesfully
+    inline void addSentCallback(SentCallback sentcb, uint32_t timeout = 5000) {
+        if(sentcb != nullptr) {
+            m_sentCallback = sentcb;
+            m_sentTimeout = timeout;
+        }
+    }
 
 private:
     Client*         telegramClient;
@@ -385,13 +384,15 @@ private:
     bool sendStream( int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream& stream, size_t size);
     bool sendBuffer(int64_t chat_id, const char* cmd, const char* type, const char* propName, uint8_t *data, size_t size);
 
-	SentCallback 	m_sentCallback = nullptr;
-	bool 			m_waitSent = false;
-	uint32_t		m_lastSentTime;
-	
+    SentCallback 	m_sentCallback = nullptr;
+    bool 			m_waitSent = false;
+    uint32_t        m_sentTimeout;
+    uint32_t		m_lastSentTime;
+    uint32_t		m_lastSentMsgId;
+
 protected:
 
-	// send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
+    // send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
     // params
     //   command   : the command to send, i.e. getMe
     //   parameters: optional parameters

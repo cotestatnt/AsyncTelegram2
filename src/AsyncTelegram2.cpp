@@ -76,7 +76,6 @@ bool AsyncTelegram2::sendCommand(const char* command, const char* payload, bool 
         httpBuffer += payload;
         // Send the whole request in one go is much faster
         telegramClient->print(httpBuffer);
-        //Serial.println(httpBuffer);
 
         m_waitingReply = true;
         // Blocking mode
@@ -145,15 +144,20 @@ bool AsyncTelegram2::getUpdates(){
         }
 
         if(m_rxbuffer.indexOf("\"ok\":true") > -1) {
-		   if (m_sentCallback != nullptr && m_waitSent) { m_sentCallback(m_waitSent); m_waitSent = false;}
-           return true;
-        } 
-		else {
-			log_error("%s", m_rxbuffer.c_str());
-			if (m_sentCallback != nullptr && m_waitSent) { m_waitSent = false; m_sentCallback(m_waitSent);}
+            if (m_sentCallback != nullptr && m_waitSent) {
+                if(m_rxbuffer.indexOf(String(m_lastSentMsgId)) > -1) {
+                    m_sentCallback(m_waitSent);
+                    m_waitSent = false;
+                }
+            }
+            return true;
+        }
+        else {
+            log_error("%s", m_rxbuffer.c_str());
+            if (m_sentCallback != nullptr && m_waitSent) { m_waitSent = false; m_sentCallback(m_waitSent);}
             return false;
-		}
-        
+        }
+
     }
     return false;
 }
@@ -163,6 +167,12 @@ bool AsyncTelegram2::getUpdates(){
 MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 {
     message.messageType = MessageNoData;
+
+    // Last sent message timeout
+    if(millis() - m_lastSentTime > m_sentTimeout && m_waitSent  && m_sentCallback != nullptr) {
+        m_waitSent = false;
+        m_sentCallback(m_waitSent);
+    }
 
     // We have a message, parse data received
     if (getUpdates()) {
@@ -183,6 +193,11 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             log_error("JSON data not expected");
             serializeJsonPretty(updateDoc, Serial);
             return MessageNoData;
+        }
+
+        // This a reply after send message
+        if (updateDoc["result"]["message_id"]) {
+            m_lastSentMsgId = updateDoc["result"]["message_id"];
         }
 
         uint32_t updateID = updateDoc["result"][0]["update_id"];
@@ -238,7 +253,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 message.contact.vCard       = updateDoc["result"][0]["message"]["contact"]["vcard"];
                 message.messageType = MessageContact;
             }
-			else if (updateDoc["result"][0]["message"]["new_chat_member"]) {
+            else if (updateDoc["result"][0]["message"]["new_chat_member"]) {
                 // this is a add member message
                 message.member.id          = updateDoc["result"][0]["message"]["new_chat_member"]["id"];
                 message.member.firstName   = updateDoc["result"][0]["message"]["new_chat_member"]["first_name"];
@@ -247,7 +262,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 message.member.isBot       = updateDoc["result"][0]["message"]["new_chat_member"]["is_bot"];
                 message.messageType        = MessageNewMember;
             }
-			else if (updateDoc["result"][0]["message"]["left_chat_member"]) {
+            else if (updateDoc["result"][0]["message"]["left_chat_member"]) {
                 // this is a left member message
                 message.member.id          = updateDoc["result"][0]["message"]["left_chat_member"]["id"];
                 message.member.firstName   = updateDoc["result"][0]["message"]["left_chat_member"]["first_name"];
@@ -275,6 +290,8 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 message.messageType = MessageText;
             }
         }
+
+        m_lastSentMsgId = message.messageID;
         return message.messageType;
     }
     return MessageNoData;   // waiting for reply from server
@@ -337,16 +354,19 @@ bool AsyncTelegram2::noNewMessage() {
 bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, const char* keyboard, bool wait)
 {
     if (!strlen(message)) return false;
-	m_waitSent = true;	
+    m_waitSent = true;
+    m_lastSentTime = millis();
+    m_lastSentMsgId += 1;
 
     DynamicJsonDocument root(BUFFER_BIG);
     // Backward compatibility
-    root["chat_id"] = msg.sender.id != 0 ? msg.sender.id : msg.chatId;
+    //root["chat_id"] = msg.sender.id != 0 ? msg.sender.id : msg.chatId;
+    root["chat_id"] = msg.chatId;
     root["text"] = message;
 
-	if(msg.isMarkdownEnabled)
+    if(msg.isMarkdownEnabled)
         root["parse_mode"] = "MarkdownV2";
-	else if(msg.isHTMLenabled)
+    else if(msg.isHTMLenabled)
         root["parse_mode"] = "HTML";
 
     if(msg.disable_notification)
@@ -422,7 +442,7 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool al
     if (! msg.callbackQueryID) return false;
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":2,\"show_alert\":%s}",
+        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":5,\"show_alert\":%s}",
         msg.callbackQueryID, message, alertMode ? "true" : "false");
     bool result = sendCommand("answerCallbackQuery", payload, true);
     return result;
@@ -610,13 +630,13 @@ void AsyncTelegram2::getMyCommands(String &cmdList) {
         return;
     }
     StaticJsonDocument<BUFFER_MEDIUM> doc;
-	DeserializationError err = deserializeJson(doc, m_rxbuffer);
-	if (err) {
-		return;
+    DeserializationError err = deserializeJson(doc, m_rxbuffer);
+    if (err) {
+        return;
     }
     debugJson(doc, Serial);
     //cmdList = doc["result"].as<String>();
-	serializeJsonPretty(doc["result"], cmdList);
+    serializeJsonPretty(doc["result"], cmdList);
 }
 
 
@@ -637,9 +657,9 @@ bool AsyncTelegram2::deleteMyCommands() {
         return "";
     }
     DynamicJsonDocument doc(BUFFER_MEDIUM);
-	DeserializationError err = deserializeJson(doc, m_rxbuffer);
-	if (err) {
-		return false;
+    DeserializationError err = deserializeJson(doc, m_rxbuffer);
+    if (err) {
+        return false;
     }
 
     // Check if command already present in list
@@ -669,11 +689,11 @@ bool AsyncTelegram2::deleteMyCommands() {
 
 bool AsyncTelegram2::editMessage(int32_t chat_id, int32_t message_id, const String& txt, const String &keyboard) {
     String payload = "{\"chat_id\":" ;
-	payload += chat_id;
-	payload += ",\"message_id\":" ;
-	payload += message_id;
-	payload += ", \"text\": \"";
-	payload += txt;
+    payload += chat_id;
+    payload += ",\"message_id\":" ;
+    payload += message_id;
+    payload += ", \"text\": \"";
+    payload += txt;
 
     if(keyboard.length()) {
         payload += "\", \"reply_markup\": ";
