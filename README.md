@@ -19,7 +19,7 @@ AsyncTelegram2 do this job in async way and not interfee with the rest of code!
 
 It relies on [ArduinoJson](https://github.com/bblanchon/ArduinoJson) v6 library so, in order to use a AsyncTelegram2 object, you need to install the ArduinoJson library first.
 
-With Ethernet adapter, but not only, i wold suggest to use this library for secure connection [SSLClient](https://github.com/OPEnSLab-OSU/SSLClient), a BearSSL based library wich is very light and fast.
+With Ethernet adapter, i wold suggest to use this library for secure connection [SSLClient](https://github.com/OPEnSLab-OSU/SSLClient), a BearSSL based library wich is very light and fast.
 
 + **this library work with ArduinoJson library V6.x _**
 
@@ -32,6 +32,7 @@ With Ethernet adapter, but not only, i wold suggest to use this library for secu
 + Receive contacts messages 
 + Remote OTA updates (examples only for Espressif's MCU)
 + Forward any kind of message to user or group
++ Checking message delivery with a notification callback function 
 
 ### To do
 + Send documents (partially done with pictures)
