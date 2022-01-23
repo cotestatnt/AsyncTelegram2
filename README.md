@@ -5,7 +5,11 @@ It was chosen to change the name in addition to the major version to mark clearl
 AsyncTelegram2 is now no longer tied to the Espressif ESP8266 / ESP32 hardware, but can virtually work with any MCU capable of a SSL connection and with any kind of transport layer like WiFi, Ethernet, GSM module (still to be tested).
 
 When dealing with IoT systems, connection security is often an underestimated issue.
-Due to this reason in AsyncTelegram2 insecure connections or verification method based on the server fingerprint (not strong secure, and moreover with short validity, typically 1 year) are no longer supported.
+Due to this reason in AsyncTelegram2 insecure connections or verification method based on the server fingerprint (not strong secure, and moreover with short validity, typically 1 year) are no longer internally supported.
+
+However, since you need to pass an HTTP client reference to the library, connect to Telegram with unsecure or fingerprint verified connections it's still possible on sketch side.
+
+Could be useful check this gist for a way to get updated fingerprint of any HTTPS webservice or website: [get_https_fingerprint.ino](https://gist.github.com/cotestatnt/570f882e19f12490304d4d217aa1d8af)
 
 ___
 ### Introduction
