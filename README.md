@@ -52,3 +52,4 @@ Take a look at the examples provided in the [examples folder](https://github.com
 + 2.0.5   Bug fixes
 + 2.0.6   Added support in TBmessage struct for handling event related to add/remove users from groups
 + 2.0.7   Added support for "send message" callback function
++ 2.7.8   Bot will reply ever in the originates message chat (user or group), bug fixes in checking sent messages routines
