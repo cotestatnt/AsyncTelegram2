@@ -184,7 +184,18 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             log_error("%s", err.c_str());
             Serial.println();
             Serial.println(m_rxbuffer);
+
+            // Skip this message id due to the impossibility to parse correctly
+            m_lastUpdateId = m_rxbuffer
+                .substring(m_rxbuffer.indexOf(F("\"update_id\":")) + 12)   /* strlen("\"update_id\":")*/
+                .toInt() + 1;
+            int64_t chat_id =m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + 6).toInt();
             m_rxbuffer = "";
+
+            // Inform the user about parsing error (blocking)
+            sendTo(chat_id, "[ERROR] - Your last message is too much long.");
+
+            //telegramClient->stop();
             return MessageNoData;
         }
 

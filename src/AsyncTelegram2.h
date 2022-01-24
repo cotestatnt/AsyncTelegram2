@@ -377,7 +377,7 @@ private:
     uint32_t        m_lastmsg_timestamp;
     bool            m_waitingReply;
 
-    InlineKeyboard* m_keyboards[10];
+    InlineKeyboard* m_keyboards[16];
     uint8_t         m_keyboardCount = 0;
 
     void setformData(int64_t chat_id, const char* cmd, const char* type, const char* propName, size_t size, String &formData, String& request);
