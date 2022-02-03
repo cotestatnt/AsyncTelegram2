@@ -27,7 +27,7 @@ bool AsyncTelegram2::checkConnection()
         m_lastmsg_timestamp = millis();
         log_debug("Start handshaking...");
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
-            Serial.printf("\n\nUnable to connect to Telegram server\n");
+            Serial.print("\n\nUnable to connect to Telegram server\n");
         }
         #if DEBUG_ENABLE
         else {
