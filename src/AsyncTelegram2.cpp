@@ -25,9 +25,9 @@ bool AsyncTelegram2::checkConnection()
         telegramClient->stop();
         telegramClient->stop();
         m_lastmsg_timestamp = millis();
-        log_debug("Start handshaking...");
+        log_debug("Start handshaking...\n");
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
-            Serial.print("\n\nUnable to connect to Telegram server\n");
+            log_error("\n\nUnable to connect to Telegram server\n");
         }
         #if DEBUG_ENABLE
         else {
@@ -181,9 +181,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
         DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
         if (err) {
             log_error("deserializeJson() failed\n");
-            log_error("%s", err.c_str());
-            Serial.println();
-            Serial.println(m_rxbuffer);
+            log_error("%s\n%s\n", err.c_str(), m_rxbuffer.c_str());
 
             // Skip this message id due to the impossibility to parse correctly
             m_lastUpdateId = m_rxbuffer
@@ -202,7 +200,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
         m_rxbuffer = "";
         if (!updateDoc.containsKey("result")) {
             log_error("JSON data not expected");
-            serializeJsonPretty(updateDoc, Serial);
+            debugJson(updateDoc, Serial);
             return MessageNoData;
         }
 
@@ -571,7 +569,7 @@ bool AsyncTelegram2::sendStream(int64_t chat_id,  const char* cmd, const char* t
         m_waitingReply = false;
         return res;
     }
-    Serial.println("\nError: client not connected");
+    log_error("\nError: client not connected");
     return res;
 }
 
@@ -630,7 +628,7 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char* cmd, const char* ty
         return res;
     }
 
-    Serial.println("\nError: client not connected");
+    log_error("\nError: client not connected");
     return res;
 }
 
