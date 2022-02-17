@@ -23,7 +23,6 @@ bool AsyncTelegram2::checkConnection()
         telegramClient->flush();
         telegramClient->clearWriteError();
         telegramClient->stop();
-        telegramClient->stop();
         m_lastmsg_timestamp = millis();
         log_debug("Start handshaking...\n");
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
