@@ -20,7 +20,6 @@
 #include "Client.h"
 #include "time.h"
 
-#define DEBUG_ENABLE        0
 #ifndef DEBUG_ENABLE
     #define DEBUG_ENABLE    0
 #endif
