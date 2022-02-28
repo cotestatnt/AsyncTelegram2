@@ -8,11 +8,18 @@ AsyncTelegram2::AsyncTelegram2(Client &client, uint32_t bufferSize )
     m_rxbuffer.reserve(bufferSize);
     this->telegramClient = &client;
     m_minUpdateTime = MIN_UPDATE_TIME;
+
+#if defined(ESP8266)
+	// Set Soft WDT to max time
+	ESP.wdtEnable(WDTO_4S);
+#endif
 }
 
 AsyncTelegram2::~AsyncTelegram2() {};
 
 
+// This method fail sometimes with ESP8266 causing Soft WDT reset
+// leaved for backward compatibility, but not used from other class methods
 bool AsyncTelegram2::checkConnection()
 {
     #if DEBUG_ENABLE
@@ -20,47 +27,64 @@ bool AsyncTelegram2::checkConnection()
     #endif
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected()) {
-        telegramClient->flush();
         telegramClient->clearWriteError();
         telegramClient->stop();
-        m_lastmsg_timestamp = millis();
-        log_debug("Start handshaking...\n");
+
+        log_debug("Start handshaking...");
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
             log_error("\n\nUnable to connect to Telegram server\n");
         }
-        #if DEBUG_ENABLE
         else {
+            m_lastmsg_timestamp = millis();
+            #if DEBUG_ENABLE
             log_debug("Connected using Telegram hostname\n"
                       "Last connection was %d seconds ago\n",
                       (int)(millis() - lastCTime)/1000);
             lastCTime = millis();
+            #endif
         }
-        #endif
     }
     return telegramClient->connected();
 }
 
-
 bool AsyncTelegram2::begin()
 {
-    checkConnection();
+    // Start connection with Telegramn server (if necessary)
+    if (!telegramClient->connected()) {
+            log_debug("Start connection handshaking...");
+        if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
+            log_error("\n\nUnable to connect to Telegram server\n");
+        }
+        else {
+            log_debug("Connected using Telegram hostname\n");
+        }
+    }
     return getMe();
 }
 
 
-bool AsyncTelegram2::reset(void)
+void AsyncTelegram2::reset(void)
 {
     log_debug("Restart Telegram connection\n");
     telegramClient->stop();
     m_lastmsg_timestamp = millis();
     m_waitingReply = false;
-    return checkConnection();
 }
 
 
 bool AsyncTelegram2::sendCommand(const char* command, const char* payload, bool blocking )
 {
-    if(checkConnection()) {
+    // Start connection with Telegramn server (if necessary)
+    if (!telegramClient->connected()) {
+            log_debug("Start connection handshaking...");
+        if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
+            log_error("\n\nUnable to connect to Telegram server\n");
+        }
+        else {
+            log_debug("Connected using Telegram hostname\n");
+        }
+    }
+    if(telegramClient->connected()) {
         String httpBuffer((char *)0);
         httpBuffer.reserve(BUFFER_BIG);
         httpBuffer = "POST https://" TELEGRAM_HOST "/bot";
@@ -99,7 +123,8 @@ bool AsyncTelegram2::sendCommand(const char* command, const char* payload, bool 
 }
 
 
-bool AsyncTelegram2::getUpdates(){
+bool AsyncTelegram2::getUpdates()
+{
     // No response from Telegram server for a long time
     if(millis() - m_lastmsg_timestamp > 10*m_minUpdateTime) {
         reset();
@@ -110,7 +135,7 @@ bool AsyncTelegram2::getUpdates(){
         m_lastUpdateTime = millis();
 
         // If previuos reply from server was received (and parsed)
-        if( m_waitingReply == false ) {
+        if( m_waitingReply == false) {
             char payload[BUFFER_SMALL];
             snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
@@ -123,6 +148,7 @@ bool AsyncTelegram2::getUpdates(){
 
         // Skip headers
         while (telegramClient->connected()) {
+			yield();
             String line = telegramClient->readStringUntil('\n');
             if (line == "\r")  break;
             if (line.indexOf("close") > -1)  close_connection = true;
@@ -137,7 +163,7 @@ bool AsyncTelegram2::getUpdates(){
         m_waitingReply = false;
         m_lastmsg_timestamp = millis();
 
-        if (close_connection) {
+        if (close_connection && telegramClient->connected()) {
             telegramClient->stop();
             log_debug("Connection closed from server");
         }
@@ -180,13 +206,15 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
         DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
         if (err) {
             log_error("deserializeJson() failed\n");
-            log_error("%s\n%s\n", err.c_str(), m_rxbuffer.c_str());
+            log_error("%s", err.c_str());
+            Serial.println();
+            Serial.println(m_rxbuffer);
 
             // Skip this message id due to the impossibility to parse correctly
             m_lastUpdateId = m_rxbuffer
-                .substring(m_rxbuffer.indexOf(F("\"update_id\":")) + 12)   /* strlen("\"update_id\":")*/
+                .substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":"))
                 .toInt() + 1;
-            int64_t chat_id =m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + 6).toInt();
+            int64_t chat_id =m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
             m_rxbuffer = "";
 
             // Inform the user about parsing error (blocking)
@@ -199,7 +227,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
         m_rxbuffer = "";
         if (!updateDoc.containsKey("result")) {
             log_error("JSON data not expected");
-            debugJson(updateDoc, Serial);
+            serializeJsonPretty(updateDoc, Serial);
             return MessageNoData;
         }
 
@@ -216,84 +244,85 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 
         if (updateDoc["result"][0]["callback_query"]["id"]) {
             // this is a callback query
-            message.chatId            = updateDoc["result"][0]["callback_query"]["message"]["chat"]["id"];
             message.sender.id         = updateDoc["result"][0]["callback_query"]["from"]["id"];
-            message.sender.username   = updateDoc["result"][0]["callback_query"]["from"]["username"];
-            message.sender.firstName  = updateDoc["result"][0]["callback_query"]["from"]["first_name"];
-            message.sender.lastName   = updateDoc["result"][0]["callback_query"]["from"]["last_name"];
-            message.messageID         = updateDoc["result"][0]["callback_query"]["message"]["message_id"];
+            message.sender.username   = updateDoc["result"][0]["callback_query"]["from"]["username"].as<String>();
+            message.sender.firstName  = updateDoc["result"][0]["callback_query"]["from"]["first_name"].as<String>();
+            message.sender.lastName   = updateDoc["result"][0]["callback_query"]["from"]["last_name"].as<String>();
+			message.chatId            = updateDoc["result"][0]["callback_query"]["message"]["chat"]["id"];
+			message.messageID         = updateDoc["result"][0]["callback_query"]["message"]["message_id"];
             message.date              = updateDoc["result"][0]["callback_query"]["message"]["date"];
-            message.chatInstance      = updateDoc["result"][0]["callback_query"]["chat_instance"];
-            message.callbackQueryID   = updateDoc["result"][0]["callback_query"]["id"];
-            message.callbackQueryData = updateDoc["result"][0]["callback_query"]["data"];
-            message.text              = updateDoc["result"][0]["callback_query"]["message"]["text"].as<String>();
+			message.text              = updateDoc["result"][0]["callback_query"]["message"]["text"].as<String>();
+
+			message.chatInstance      = updateDoc["result"][0]["callback_query"]["chat_instance"];
+			message.callbackQueryID   = updateDoc["result"][0]["callback_query"]["id"];
+            message.callbackQueryData = updateDoc["result"][0]["callback_query"]["data"].as<String>();
             message.messageType       = MessageQuery;
 
             // Check if callback function is defined for this button query
             for(uint8_t i=0; i<m_keyboardCount; i++)
                 m_keyboards[i]->checkCallback(message);
         }
+		// this is a message
         else if (updateDoc["result"][0]["message"]["message_id"]) {
-            // this is a message
-            message.messageID        = updateDoc["result"][0]["message"]["message_id"];
-            message.chatId           = updateDoc["result"][0]["message"]["chat"]["id"];
-            message.sender.id        = updateDoc["result"][0]["message"]["from"]["id"];
-            message.sender.username  = updateDoc["result"][0]["message"]["from"]["username"];
-            message.sender.firstName = updateDoc["result"][0]["message"]["from"]["first_name"];
-            message.sender.lastName  = updateDoc["result"][0]["message"]["from"]["last_name"];
-            message.sender.languageCode = updateDoc["result"][0]["message"]["from"]["language_code"];
-            message.group.id         = updateDoc["result"][0]["message"]["chat"]["id"];
-            message.group.title      = updateDoc["result"][0]["message"]["chat"]["title"];
-            message.date             = updateDoc["result"][0]["message"]["date"];
+			// Message properties
+			message.messageID           = updateDoc["result"][0]["message"]["message_id"];
+            message.chatId              = updateDoc["result"][0]["message"]["chat"]["id"];
+            message.group.id            = updateDoc["result"][0]["message"]["chat"]["id"];
+            message.group.title         = updateDoc["result"][0]["message"]["chat"]["title"].as<String>();
+            message.date                = updateDoc["result"][0]["message"]["date"];
 
+			message.sender.id           = updateDoc["result"][0]["message"]["from"]["id"];
+			//message.sender.languageCode = updateDoc["result"][0]["message"]["from"]["language_code"];
+			message.sender.username     = updateDoc["result"][0]["message"]["from"]["username"].as<String>();
+            message.sender.firstName    = updateDoc["result"][0]["message"]["from"]["first_name"].as<String>();
+            message.sender.lastName     = updateDoc["result"][0]["message"]["from"]["last_name"].as<String>();
+
+			// this is a location message
             if (updateDoc["result"][0]["message"]["location"]) {
-                // this is a location message
                 message.location.longitude = updateDoc["result"][0]["message"]["location"]["longitude"];
                 message.location.latitude = updateDoc["result"][0]["message"]["location"]["latitude"];
                 message.messageType = MessageLocation;
             }
+			// this is a contact message
             else if (updateDoc["result"][0]["message"]["contact"]) {
-                // this is a contact message
                 message.contact.id          = updateDoc["result"][0]["message"]["contact"]["user_id"];
-                message.contact.firstName   = updateDoc["result"][0]["message"]["contact"]["first_name"];
-                message.contact.lastName    = updateDoc["result"][0]["message"]["contact"]["last_name"];
-                message.contact.phoneNumber = updateDoc["result"][0]["message"]["contact"]["phone_number"];
-                message.contact.vCard       = updateDoc["result"][0]["message"]["contact"]["vcard"];
+                message.contact.firstName   = updateDoc["result"][0]["message"]["contact"]["first_name"].as<String>();
+                message.contact.lastName    = updateDoc["result"][0]["message"]["contact"]["last_name"].as<String>();
+                message.contact.phoneNumber = updateDoc["result"][0]["message"]["contact"]["phone_number"].as<String>();
+                message.contact.vCard       = updateDoc["result"][0]["message"]["contact"]["vcard"].as<String>();
                 message.messageType = MessageContact;
             }
+			// this is a add member message
             else if (updateDoc["result"][0]["message"]["new_chat_member"]) {
-                // this is a add member message
                 message.member.id          = updateDoc["result"][0]["message"]["new_chat_member"]["id"];
-                message.member.firstName   = updateDoc["result"][0]["message"]["new_chat_member"]["first_name"];
-                message.member.lastName    = updateDoc["result"][0]["message"]["new_chat_member"]["last_name"];
-                message.member.username    = updateDoc["result"][0]["message"]["new_chat_member"]["username"];
-                message.member.isBot       = updateDoc["result"][0]["message"]["new_chat_member"]["is_bot"];
-                message.messageType        = MessageNewMember;
+				message.member.isBot       = updateDoc["result"][0]["message"]["new_chat_member"]["is_bot"];
+				message.member.username    = updateDoc["result"][0]["message"]["new_chat_member"]["username"].as<String>();
+                message.member.firstName   = updateDoc["result"][0]["message"]["new_chat_member"]["first_name"].as<String>();
+                message.member.lastName    = updateDoc["result"][0]["message"]["new_chat_member"]["last_name"].as<String>();    message.messageType        = MessageNewMember;
             }
+            // this is a left member message
             else if (updateDoc["result"][0]["message"]["left_chat_member"]) {
-                // this is a left member message
                 message.member.id          = updateDoc["result"][0]["message"]["left_chat_member"]["id"];
-                message.member.firstName   = updateDoc["result"][0]["message"]["left_chat_member"]["first_name"];
-                message.member.lastName    = updateDoc["result"][0]["message"]["left_chat_member"]["last_name"];
-                message.member.username    = updateDoc["result"][0]["message"]["left_chat_member"]["username"];
-                message.member.isBot       = updateDoc["result"][0]["message"]["left_chat_member"]["is_bot"];
-                message.messageType        = MessageLeftMember;
+				message.member.isBot       = updateDoc["result"][0]["message"]["left_chat_member"]["is_bot"];
+				message.member.username    = updateDoc["result"][0]["message"]["left_chat_member"]["username"].as<String>();
+                message.member.firstName   = updateDoc["result"][0]["message"]["left_chat_member"]["first_name"].as<String>();
+                message.member.lastName    = updateDoc["result"][0]["message"]["left_chat_member"]["last_name"].as<String>();    message.messageType        = MessageLeftMember;
             }
+			// this is a document message
             else if (updateDoc["result"][0]["message"]["document"]) {
-                // this is a document message
-                message.document.file_id      = updateDoc["result"][0]["message"]["document"]["file_id"];
-                message.document.file_name    = updateDoc["result"][0]["message"]["document"]["file_name"];
-                message.text                  = updateDoc["result"][0]["message"]["caption"].as<String>();
+                message.document.file_id      = updateDoc["result"][0]["message"]["document"]["file_id"].as<String>();
+                message.document.file_name    = updateDoc["result"][0]["message"]["document"]["file_name"].as<String>();
+				message.text                  = updateDoc["result"][0]["message"]["caption"].as<String>();
                 message.document.file_exists  = getFile(message.document);
                 message.messageType           = MessageDocument;
             }
+	        // this is a reply to message
             else if (updateDoc["result"][0]["message"]["reply_to_message"]) {
-                // this is a reply to message
                 message.text        = updateDoc["result"][0]["message"]["text"].as<String>();
                 message.messageType = MessageReply;
             }
+            // this is a text message
             else if (updateDoc["result"][0]["message"]["text"]) {
-                // this is a text message
                 message.text        = updateDoc["result"][0]["message"]["text"].as<String>();
                 message.messageType = MessageText;
             }
@@ -325,7 +354,7 @@ bool AsyncTelegram2::getMe()
 bool AsyncTelegram2::getFile(TBDocument &doc)
 {
     char cmd[BUFFER_SMALL];
-    snprintf(cmd, BUFFER_SMALL, "getFile?file_id=%s", doc.file_id);
+    snprintf(cmd, BUFFER_SMALL, "getFile?file_id=%s", doc.file_id.c_str());
 
     // getFile has to be blocking (wait server reply
     if (!sendCommand(cmd, "", true)) {
@@ -350,6 +379,7 @@ bool AsyncTelegram2::noNewMessage() {
     this->reset();
     this->getNewMessage(msg);
     while (!this->getUpdates()) {
+		yield();
         delay(100);
         // if(millis() - startTime > 10000UL)
         //     break;
@@ -450,7 +480,7 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char* message, bool al
     if (! msg.callbackQueryID) return false;
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-        "{\"callback_query_id\":%s,\"text\":\"%s\",\"cache_time\":5,\"show_alert\":%s}",
+        "{\"callback_query_id\":%lld,\"text\":\"%s\",\"cache_time\":5,\"show_alert\":%s}",
         msg.callbackQueryID, message, alertMode ? "true" : "false");
     bool result = sendCommand("answerCallbackQuery", payload, true);
     return result;
@@ -489,6 +519,24 @@ char *int64_to_string(int64_t input)
 }
 
 
+//enum DocumentType { DOCUMENT, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};
+bool AsyncTelegram2::sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc){
+    switch (doc) {
+        case ZIP:
+            return sendStream(chat_id, "sendDocument", "application/zip", "zip", stream, size);
+        case PDF:
+            return sendStream(chat_id, "sendDocument", "application/pdf", "pdf", stream, size);
+        case PHOTO:
+            return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size);
+        case AUDIO:
+            return sendStream(chat_id, "sendPhoto", "audio/mp3", "audio", stream, size);
+        default:
+            break;
+    }
+    return false;
+}
+
+
 void AsyncTelegram2::setformData(int64_t chat_id, const char* cmd, const char* type,
                         const char* propName, size_t size, String &formData, String& request){
 
@@ -517,8 +565,18 @@ void AsyncTelegram2::setformData(int64_t chat_id, const char* cmd, const char* t
 
 bool AsyncTelegram2::sendStream(int64_t chat_id,  const char* cmd, const char* type, const char* propName, Stream &stream, size_t size)
 {
+   // Start connection with Telegramn server (if necessary)
+    if (!telegramClient->connected()) {
+            log_debug("Start connection handshaking...");
+        if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
+            log_error("\n\nUnable to connect to Telegram server\n");
+        }
+        else {
+            log_debug("Connected using Telegram hostname\n");
+        }
+    }
     bool res = false;
-    if (checkConnection()) {
+    if (telegramClient->connected()) {
         m_waitingReply = true;
         String formData;
         formData.reserve(512);
@@ -557,6 +615,7 @@ bool AsyncTelegram2::sendStream(int64_t chat_id,  const char* cmd, const char* t
 
         // Read server reply
         while (telegramClient->connected()) {
+			yield();
             if (telegramClient->find((char*)"{\"ok\":true")) {
                 res = true;
                 break;
@@ -577,7 +636,17 @@ bool AsyncTelegram2::sendStream(int64_t chat_id,  const char* cmd, const char* t
 bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char* cmd, const char* type, const char* propName, uint8_t *data, size_t size)
 {
     bool res = false;
-    if (checkConnection()) {
+    // Start connection with Telegramn server (if necessary)
+    if (!telegramClient->connected()) {
+            log_debug("Start connection handshaking...");
+        if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
+            log_error("\n\nUnable to connect to Telegram server\n");
+        }
+        else {
+            log_debug("Connected using Telegram hostname\n");
+        }
+    }
+    if (telegramClient->connected()) {
         m_waitingReply = true;
         String formData;
         formData.reserve(512);
@@ -615,6 +684,7 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char* cmd, const char* ty
 
         // Read server reply
         while (telegramClient->connected()) {
+			yield();
             if (telegramClient->find((char*)"{\"ok\":true")) {
                 res = true;
                 break;

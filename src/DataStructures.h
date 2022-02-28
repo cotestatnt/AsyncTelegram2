@@ -19,17 +19,17 @@ enum MessageType {
 };
 
 struct TBUser {
-  bool          isBot;
-  int64_t       id = 0;
-  const char*   firstName;
-  const char*   lastName;
-  const char*   username;
-  const char*   languageCode;
+  bool     isBot;
+  int64_t  id = 0;
+  //char     languageCode[2+1];   // Ex: it, en, etc etc
+  String   username;		// Username length 5-32 chars
+  String   firstName;
+  String   lastName;
 };
 
 struct TBGroup {
   int64_t id;
-  const char*  title;
+  String  title;
 };
 
 struct TBLocation{
@@ -38,31 +38,31 @@ struct TBLocation{
 };
 
 struct TBContact {
-  int64_t 	   id;
-  const char*  phoneNumber;
-  const char*  firstName;
-  const char*  lastName;
-  const char*  vCard;
+  int64_t id;
+  String  phoneNumber;
+  String  firstName;
+  String  lastName;
+  String  vCard;
 };
 
 struct TBMember {
-  int64_t 	   id;
-  bool         isBot;
-  const char*  firstName;
-  const char*  lastName;
-  const char*  username;
+  int64_t id;
+  bool    isBot;
+  String  firstName;
+  String  lastName;
+  String  username;
 };
 
 struct TBDocument {
-  bool         file_exists;
-  int32_t      file_size;
-  const char*  file_id;
-  const char*  file_name;
-  String	     file_path;
+  bool    file_exists;
+  int32_t file_size;
+  String  file_id;
+  String  file_name;
+  String  file_path;
 };
 
 struct TBMessage {
-  MessageType  messageType;
+  MessageType   messageType;
   bool          isHTMLenabled = true;
   bool          isMarkdownEnabled = false;
   bool          disable_notification = false;
@@ -71,14 +71,15 @@ struct TBMessage {
   int32_t       chatInstance;
   int64_t       chatId;
   int32_t       messageID;
+
   TBUser        sender;
   TBGroup       group;
   TBLocation    location;
   TBContact     contact;
   TBDocument    document;
   TBMember      member;
-  const char*   callbackQueryID;
-  const char*   callbackQueryData;
+  int64_t       callbackQueryID;
+  String        callbackQueryData;  
   String      	text;
 };
 

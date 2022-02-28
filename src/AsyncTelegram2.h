@@ -21,7 +21,7 @@
 #include "time.h"
 
 #ifndef DEBUG_ENABLE
-    #define DEBUG_ENABLE    0
+    #define DEBUG_ENABLE    1
 #endif
 
 #if DEBUG_ENABLE
@@ -38,10 +38,7 @@
     callback functions associated to buttons increase this value
 */
 #define MAX_INLINEKYB_CB    30
-
-#define SERVER_TIMEOUT      10000
 #define MIN_UPDATE_TIME     500
-
 #define BLOCK_SIZE          1436    //2872   // 2 * TCP_MSS
 
 #include "DataStructures.h"
@@ -101,9 +98,7 @@ public:
     bool begin(void);
 
     // reset the connection between ESP8266 and the telegram server (ex. when connection was lost)
-    // returns
-    //    true if no error occurred
-    bool reset(void);
+    void reset(void);
 
     // set the telegram token
     // params
@@ -181,6 +176,13 @@ public:
         return sendTo(userid, message.c_str(), keyboard.c_str() );
     }
 
+    // Send a document passing a stream object
+    enum DocumentType { ZIP, PDF, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};
+    bool sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc);
+
+    inline bool sendDocument(const TBMessage &msg, Stream &stream, size_t size, DocumentType doc) {
+        return sendDocument(msg.chatId, stream, size, doc);
+    }
 
     // Send a picture passing the url
     bool sendPhotoByUrl(const int64_t& chat_id,  const char* url, const char* caption);

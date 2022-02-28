@@ -66,9 +66,8 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
 
 // Check if a callback function has to be called for this button query message
 void InlineKeyboard::checkCallback( const TBMessage &msg)  {
-  char* buttonName = (char*) msg.callbackQueryData;
   for(InlineButton *_button = _firstButton; _button != nullptr; _button = _button->nextButton){
-    if( strstr(_button->btnName, buttonName) != nullptr && _button->argCallback != nullptr){
+    if( msg.callbackQueryData.equals(_button->btnName) && _button->argCallback != nullptr){
       _button->argCallback(msg);
     }
   }
