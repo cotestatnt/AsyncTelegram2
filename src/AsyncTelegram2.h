@@ -21,7 +21,7 @@
 #include "time.h"
 
 #ifndef DEBUG_ENABLE
-    #define DEBUG_ENABLE    1
+    #define DEBUG_ENABLE    0
 #endif
 
 #if DEBUG_ENABLE
