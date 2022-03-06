@@ -211,7 +211,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             m_rxbuffer = "";
 
             // Inform the user about parsing error (blocking)
-            sendTo(chat_id, "[ERROR] - Your last message is too much long.");
+            // sendTo(chat_id, "[ERROR] - Your last message is too much long.");
             return MessageNoData;
         }
 
