@@ -255,10 +255,10 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
         }
         else if (updateDoc["result"][0]["message"]["message_id"]) {
             // this is a message
-            message.sender.id         = updateDoc["result"][0]["callback_query"]["from"]["id"];
-            message.sender.username   = updateDoc["result"][0]["callback_query"]["from"]["username"].as<String>();
-            message.sender.firstName  = updateDoc["result"][0]["callback_query"]["from"]["first_name"].as<String>();
-            message.sender.lastName   = updateDoc["result"][0]["callback_query"]["from"]["last_name"].as<String>();
+            message.sender.id         = updateDoc["result"][0]["message"]["from"]["id"];
+            message.sender.username   = updateDoc["result"][0]["message"]["from"]["username"].as<String>();
+            message.sender.firstName  = updateDoc["result"][0]["message"]["from"]["first_name"].as<String>();
+            message.sender.lastName   = updateDoc["result"][0]["message"]["from"]["last_name"].as<String>();
 
             message.messageID        = updateDoc["result"][0]["message"]["message_id"];
             message.chatId           = updateDoc["result"][0]["message"]["chat"]["id"];
