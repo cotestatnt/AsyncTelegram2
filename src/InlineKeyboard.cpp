@@ -12,7 +12,7 @@ bool InlineKeyboard::addRow()
 {
   // if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
   // DynamicJsonDocument doc(m_jsonSize + 128);	 // Current size + space for new row (empty)
-  
+
   StaticJsonDocument<BUFFER_MEDIUM> doc;
   deserializeJson(doc, m_json);
   JsonArray  rows = doc["inline_keyboard"];

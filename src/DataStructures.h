@@ -21,15 +21,9 @@ enum MessageType {
 struct TBUser {
   bool     isBot;
   int64_t  id = 0;
-  //char     languageCode[2+1];   // Ex: it, en, etc etc
-  String   username;		// Username length 5-32 chars
   String   firstName;
   String   lastName;
-};
-
-struct TBGroup {
-  int64_t id;
-  String  title;
+  String   username;
 };
 
 struct TBLocation{
@@ -43,14 +37,6 @@ struct TBContact {
   String  firstName;
   String  lastName;
   String  vCard;
-};
-
-struct TBMember {
-  int64_t id;
-  bool    isBot;
-  String  firstName;
-  String  lastName;
-  String  username;
 };
 
 struct TBDocument {
@@ -71,15 +57,13 @@ struct TBMessage {
   int32_t       chatInstance;
   int64_t       chatId;
   int32_t       messageID;
-
   TBUser        sender;
-  TBGroup       group;
+  TBUser        member;		// A user enter or leave a group
   TBLocation    location;
   TBContact     contact;
   TBDocument    document;
-  TBMember      member;
   int64_t       callbackQueryID;
-  String        callbackQueryData;  
+  String        callbackQueryData;
   String      	text;
 };
 

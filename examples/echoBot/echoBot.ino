@@ -49,6 +49,10 @@ const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
 const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
 
+// Target user can find it's own userid with the bot @JsonDumpBot
+// https://t.me/JsonDumpBot
+int64_t userid = 123456789;  
+
 
 // Name of public channel (your bot must be in admin group)
 const char* channel = "@tolentino_cotesta";
@@ -94,9 +98,6 @@ void setup() {
   snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
 
   // Send a message to specific user who has started your bot
-  // Target user can find it's own userid with the bot @JsonDumpBot
-  // https://t.me/JsonDumpBot
-  int64_t userid = 123456789;  
   myBot.sendTo(userid, welcome_msg);
 }
 

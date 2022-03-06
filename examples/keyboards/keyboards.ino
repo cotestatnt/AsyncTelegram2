@@ -1,6 +1,6 @@
 /*
   Name:        keyboards.ino
-  Created:     26/03/2021
+  Created:     05/03/2022
   Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
   Description: a more complex example that do:
              1) if a "/inline_keyboard" text message is received, show the inline custom keyboard,
@@ -11,46 +11,46 @@
              4) if "GitHub" inline keyboard button is pressed,
                 open a browser window with URL "https://github.com/cotestatnt/AsyncTelegram"
 */
-
-/* 
-  Set true if you want use external library for SSL connection instead ESP32@WiFiClientSecure 
-  For example https://github.com/OPEnSLab-OSU/SSLClient/ is very efficient BearSSL library.
-  You can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet)
-*/ 
-#define USE_CLIENTSSL true  
-
 #include <AsyncTelegram2.h>
 
 // Timezone definition
-#define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
 #include <time.h>
+#define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
+
+/*
+  Set true if you want use external library for SSL connection 
+  For example https://github.com/OPEnSLab-OSU/SSLClient/ is very efficient BearSSL library and 
+  you can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet or GPRS)
+*/
+#define USE_CLIENTSSL false
 
 #ifdef ESP8266
   #include <ESP8266WiFi.h>
-  BearSSL::WiFiClientSecure client;
-  BearSSL::Session   session;
-  BearSSL::X509List  certificate(telegram_cert);
-  
+  WiFiClientSecure client;
+  Session   session;
+  X509List  certificate(telegram_cert);
 #elif defined(ESP32)
   #include <WiFi.h>
   #include <WiFiClient.h>
   #if USE_CLIENTSSL
-    #include <SSLClient.h>  
+    #include <SSLClient.h>      // https://github.com/OPEnSLab-OSU/SSLClient/
     #include "tg_certificate.h"
     WiFiClient base_client;
     SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
   #else
     #include <WiFiClientSecure.h>
-    WiFiClientSecure client;  
+    WiFiClientSecure client;
   #endif
 #endif
 
 AsyncTelegram2 myBot(client);
-
 const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
-const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
+const char* token =  "xxxxxxxxxxxx";  // Telegram token
 
+// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
+// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
+int64_t userid = 123456789;
 
 ReplyKeyboard myReplyKbd;   // reply keyboard object helper
 InlineKeyboard myInlineKbd; // inline keyboard object helper
@@ -65,9 +65,6 @@ void setup() {
   pinMode(LED, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
-
-  WiFi.setAutoConnect(true);
-  WiFi.mode(WIFI_STA);
 
   // connects to the access point
   WiFi.begin(ssid, pass);
@@ -127,8 +124,16 @@ void setup() {
   myInlineKbd.addButton("OFF", LIGHT_OFF_CALLBACK, KeyboardButtonQuery);
   myInlineKbd.addRow();
   myInlineKbd.addButton("GitHub", "https://github.com/cotestatnt/AsyncTelegram2/", KeyboardButtonURL);
+
+  char welcome_msg[128];
+  snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
+
+  // Send a message to specific user who has started your bot
+  myBot.sendTo(userid, welcome_msg);
 }
 
+// local variable to store telegram message data
+TBMessage msg;
 
 void loop() {
 
@@ -140,9 +145,6 @@ void loop() {
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
   }
 
-  // local variable to store telegram message data
-  TBMessage msg;
-
   // if there is an incoming message...
   if (myBot.getNewMessage(msg)) {
     // check what kind of message I received
@@ -151,7 +153,7 @@ void loop() {
 
     switch (msgType) {
       case MessageText :
-        // received a text message       
+        // received a text message
         Serial.print("\nText message received: ");
         Serial.println(msgText);
 
@@ -163,9 +165,9 @@ void loop() {
         }
         else if (msgText.equalsIgnoreCase("/inline_keyboard")) {
           myBot.sendMessage(msg, "This is inline keyboard:", myInlineKbd);
-          
+          myBot.sendMessage(msg, "Hi", keyboardJson);
         }
-        
+
         // check if the reply keyboard is active
         else if (isKeyboardActive) {
           // is active -> manage the text messages sent by pressing the reply keyboard buttons
@@ -177,10 +179,10 @@ void loop() {
             // print every others messages received
             myBot.sendMessage(msg, msg.text);
           }
-        } 
+        }
 
         // the user write anything else and the reply keyboard is not active --> show a hint message
-        else {          
+        else {
           myBot.sendMessage(msg, "Try /reply_keyboard or /inline_keyboard");
         }
         break;
@@ -189,15 +191,15 @@ void loop() {
         // received a callback query message
         msgText = msg.callbackQueryData;
         Serial.print("\nCallback query message received: ");
-        Serial.println(msgText);
-        
+        Serial.println(msg.callbackQueryData);
+
         if (msgText.equalsIgnoreCase(LIGHT_ON_CALLBACK)) {
           // pushed "LIGHT ON" button...
           Serial.println("\nSet light ON");
           digitalWrite(LED, HIGH);
           // terminate the callback with an alert message
           myBot.endQuery(msg, "Light on", true);
-        } 
+        }
         else if (msgText.equalsIgnoreCase(LIGHT_OFF_CALLBACK)) {
           // pushed "LIGHT OFF" button...
           Serial.println("\nSet light OFF");
@@ -205,25 +207,29 @@ void loop() {
           // terminate the callback with a popup message
           myBot.endQuery(msg, "Light off");
         }
-        
         break;
-
+		
       case MessageLocation:
         // received a location message --> send a message with the location coordinates
-        char bufL[50];
-        snprintf(bufL, sizeof(bufL), "Longitude: %f\nLatitude: %f\n", msg.location.longitude, msg.location.latitude) ;
-        myBot.sendMessage(msg, bufL);
-        Serial.println(bufL);
+        String reply = "Longitude: ";
+        reply += msg.location.longitude;
+        reply += "; Latitude: ";
+        reply += msg.location.latitude;
+        Serial.println(reply);
+        myBot.sendMessage(msg, reply);
         break;
 
       case MessageContact:
-        char bufC[50];
-        snprintf(bufC, sizeof(bufC), "Contact information received: %s - %s\n", msg.contact.firstName, msg.contact.phoneNumber ) ;
-        // received a contact message --> send a message with the contact information
-        myBot.sendMessage(msg, bufC);
-        Serial.println(bufC);
+        String reply = "Contact information received:");
+        reply += msg.contact.firstName;
+        reply += " ";
+        reply += msg.contact.lastName;
+        reply += ", mobile ";
+        reply += msg.contact.phoneNumber;
+        Serial.println(reply);
+        myBot.sendMessage(msg, reply);
         break;
-        
+
       default:
         break;
     }
