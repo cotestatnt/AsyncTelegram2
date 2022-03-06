@@ -182,6 +182,13 @@ public:
         return sendTo(userid, message.c_str(), keyboard.c_str() );
     }
 
+	// Send a document passing a stream object
+    enum DocumentType { ZIP, PDF, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};
+    bool sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc);
+
+    inline bool sendDocument(const TBMessage &msg, Stream &stream, size_t size, DocumentType doc) {
+        return sendDocument(msg.chatId, stream, size, doc);
+    }
 
     // Send a picture passing the url
     bool sendPhotoByUrl(const int64_t& chat_id,  const char* url, const char* caption);
@@ -195,7 +202,7 @@ public:
     }
 
     inline bool sendPhoto(const TBMessage &msg,  const String& url, const String& caption){
-        return sendPhotoByUrl(msg.sender.id, url.c_str(), caption.c_str());
+        return sendPhotoByUrl(msg.chatId, url.c_str(), caption.c_str());
     }
 
     // Send a picture passing a stream object
@@ -204,7 +211,7 @@ public:
     }
 
     inline bool sendPhoto(const TBMessage &msg, Stream &stream, size_t size) {
-        return sendStream(msg.sender.id, "sendPhoto", "image/jpeg", "photo", stream, size);
+        return sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", stream, size);
     }
 
     #if FS_SUPPORT == true  // #support for <FS.h> is needed
@@ -217,7 +224,7 @@ public:
     }
     inline bool sendPhoto(const TBMessage &msg, const char* filename, fs::FS &fs) {
         File file = fs.open(filename, "r");
-        bool res = sendStream(msg.sender.id, "sendPhoto", "image/jpeg", "photo", file, file.size());
+        bool res = sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", file, file.size());
         file.close();
         return res;
     }
@@ -229,7 +236,7 @@ public:
     }
 
     inline bool sendPhoto(const TBMessage &msg, uint8_t *data, size_t size) {
-        return sendBuffer(msg.sender.id, "sendPhoto", "image/jpeg", "photo", data, size);
+        return sendBuffer(msg.chatId, "sendPhoto", "image/jpeg", "photo", data, size);
     }
 
 
@@ -240,7 +247,7 @@ public:
     }
 
     inline bool sendPhotoByUrl(const TBMessage &msg,  const String& url, const String& caption){
-        return sendPhotoByUrl(msg.sender.id, url.c_str(), caption.c_str());
+        return sendPhotoByUrl(msg.chatId, url.c_str(), caption.c_str());
     }
 
     inline bool sendPhotoByFile(int64_t chat_id, Stream *stream, size_t size) {
@@ -341,7 +348,7 @@ public:
 	bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, const String &keyboard);
 
     inline bool editMessage(const TBMessage &msg, const String& txt, const String &keyboard) {
-		return editMessage(msg.sender.id, msg.messageID, txt, keyboard);
+		return editMessage(msg.chatId, msg.messageID, txt, keyboard);
 	}
 
     inline bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, InlineKeyboard &keyboard) {
@@ -349,7 +356,7 @@ public:
     }
 
 	inline bool editMessage(const TBMessage &msg, const String& txt, InlineKeyboard &keyboard) {
-		return editMessage(msg.sender.id, msg.messageID, txt, keyboard.getJSON());
+		return editMessage(msg.chatId, msg.messageID, txt, keyboard.getJSON());
 	}
 
 	// check if connection with server is active

@@ -132,8 +132,6 @@ void setup() {
   myBot.sendTo(userid, welcome_msg);
 }
 
-// local variable to store telegram message data
-TBMessage msg;
 
 void loop() {
 
@@ -146,6 +144,8 @@ void loop() {
   }
 
   // if there is an incoming message...
+  // local variable to store telegram message data
+  TBMessage msg;
   if (myBot.getNewMessage(msg)) {
     // check what kind of message I received
     MessageType msgType = msg.messageType;
@@ -165,7 +165,6 @@ void loop() {
         }
         else if (msgText.equalsIgnoreCase("/inline_keyboard")) {
           myBot.sendMessage(msg, "This is inline keyboard:", myInlineKbd);
-          myBot.sendMessage(msg, "Hi", keyboardJson);
         }
 
         // check if the reply keyboard is active
@@ -208,27 +207,30 @@ void loop() {
           myBot.endQuery(msg, "Light off");
         }
         break;
-		
-      case MessageLocation:
-        // received a location message --> send a message with the location coordinates
-        String reply = "Longitude: ";
-        reply += msg.location.longitude;
-        reply += "; Latitude: ";
-        reply += msg.location.latitude;
-        Serial.println(reply);
-        myBot.sendMessage(msg, reply);
-        break;
 
-      case MessageContact:
-        String reply = "Contact information received:");
-        reply += msg.contact.firstName;
-        reply += " ";
-        reply += msg.contact.lastName;
-        reply += ", mobile ";
-        reply += msg.contact.phoneNumber;
-        Serial.println(reply);
-        myBot.sendMessage(msg, reply);
-        break;
+      case MessageLocation: {
+          // received a location message
+          String reply = "Longitude: ";
+          reply += msg.location.longitude;
+          reply += "; Latitude: ";
+          reply += msg.location.latitude;
+          Serial.println(reply);
+          myBot.sendMessage(msg, reply);
+          break;
+        }
+
+      case MessageContact: {
+          // received a contact message
+          String reply = "Contact information received:";
+          reply += msg.contact.firstName;
+          reply += " ";
+          reply += msg.contact.lastName;
+          reply += ", mobile ";
+          reply += msg.contact.phoneNumber;
+          Serial.println(reply);
+          myBot.sendMessage(msg, reply);
+          break;
+        }
 
       default:
         break;

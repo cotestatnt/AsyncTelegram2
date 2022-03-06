@@ -78,7 +78,7 @@ bool AsyncTelegram2::sendCommand(const char* command, const char* payload, bool 
         httpBuffer += "/";
         httpBuffer += command;
         // Let's use 1.0 protocol in order to avoid chunked transfer encoding
-        httpBuffer += " HTTP/1.1" "\nHost: api.telegram.org" "\nConnection: keep-alive" "\nContent-Type: application/json";
+        httpBuffer += " HTTP/1.0" "\nHost: api.telegram.org" "\nConnection: keep-alive" "\nContent-Type: application/json";
         httpBuffer += "\nContent-Length: ";
         httpBuffer += strlen(payload);
         httpBuffer += "\n\n";
@@ -203,7 +203,15 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             log_error("%s", err.c_str());
             Serial.println();
             Serial.println(m_rxbuffer);
+            // Skip this message id due to the impossibility to parse correctly
+            m_lastUpdateId = m_rxbuffer
+                .substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":"))
+                .toInt() + 1;
+            int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
             m_rxbuffer = "";
+
+            // Inform the user about parsing error (blocking)
+            sendTo(chat_id, "[ERROR] - Your last message is too much long.");
             return MessageNoData;
         }
 
@@ -497,6 +505,23 @@ char *int64_to_string(int64_t input)
         strcpy(result, temp);
     }
     return result;
+}
+
+//enum DocumentType { DOCUMENT, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};
+bool AsyncTelegram2::sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc){
+    switch (doc) {
+        case ZIP:
+            return sendStream(chat_id, "sendDocument", "application/zip", "zip", stream, size);
+        case PDF:
+            return sendStream(chat_id, "sendDocument", "application/pdf", "pdf", stream, size);
+        case PHOTO:
+            return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size);
+        case AUDIO:
+            return sendStream(chat_id, "sendPhoto", "audio/mp3", "audio", stream, size);
+        default:
+            break;
+    }
+    return false;
 }
 
 
