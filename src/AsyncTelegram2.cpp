@@ -138,7 +138,7 @@ bool AsyncTelegram2::getUpdates(){
         }
     }
 
-    if(telegramClient->connected() && telegramClient->available()) {
+    if(telegramClient->connected() && telegramClient->available() && m_waitingReply) {
         // We have a message, parse data received
         bool close_connection = false;
 
@@ -207,11 +207,11 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             m_lastUpdateId = m_rxbuffer
                 .substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":"))
                 .toInt() + 1;
-            int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
+            //int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
             m_rxbuffer = "";
 
             // Inform the user about parsing error (blocking)
-            // sendTo(chat_id, "[ERROR] - Your last message is too much long.");
+            //sendTo(chat_id, "[ERROR] - Your last message is too much long.");
             return MessageNoData;
         }
 
@@ -486,27 +486,6 @@ bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char* messa
 }
 
 
-char *int64_to_string(int64_t input)
-{
-    static char result[21] = "";
-    // Clear result from any leftover digits from previous function call.
-    memset(&result[0], 0, sizeof(result));
-    // temp is used as a temporary result storage to prevent sprintf bugs.
-    char temp[22] = "";
-    char c;
-    uint8_t base = 10;
-
-    while (input)
-    {
-        int num = input % base;
-        input /= base;
-        c = '0' + num;
-        snprintf(temp, sizeof(temp), "%c%s", c, result);
-        strcpy(result, temp);
-    }
-    return result;
-}
-
 //enum DocumentType { DOCUMENT, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};
 bool AsyncTelegram2::sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc){
     switch (doc) {
@@ -531,8 +510,11 @@ void AsyncTelegram2::setformData(int64_t chat_id, const char* cmd, const char* t
     #define BOUNDARY            "----WebKitFormBoundary7MA4YWxkTrZu0gW"
     #define END_BOUNDARY        "\r\n--" BOUNDARY "--\r\n"
 
+    char int64_buf[22] = {0};
+    snprintf(int64_buf, sizeof(int64_buf), "%lld", chat_id);
+
     formData = "--" BOUNDARY "\r\nContent-disposition: form-data; name=\"chat_id\"\r\n\r\n";
-    formData += int64_to_string(chat_id);
+    formData += int64_buf;
     formData += "\r\n--" BOUNDARY "\r\nContent-disposition: form-data; name=\"";
     formData += propName;
     formData += "\"; filename=\"image.jpg\"\r\nContent-Type: ";
@@ -591,20 +573,27 @@ bool AsyncTelegram2::sendStream(int64_t chat_id,  const char* cmd, const char* t
         t1 = millis();
         #endif
 
-        // Read server reply
-        while (telegramClient->connected()) {
-            if (telegramClient->find((char*)"{\"ok\":true")) {
-                res = true;
-                break;
-            }
-        }
-        log_debug("Read reply time: %lums\n", millis() - t1);
-        telegramClient->stop();
-        m_lastmsg_timestamp = millis();
-        m_waitingReply = false;
-        return res;
+        // Handle reply with getUpdates() method
+
+        // // Read server reply
+        // while (telegramClient->connected()) {
+        //     while (telegramClient->available()) {
+        //         String line = telegramClient->readStringUntil('\n');
+        //         Serial.println(line);
+        //         if (line.indexOf("{\"ok\":true")  -1) {
+        //             res = true;
+        //             break;
+        //         }
+        //     }
+        // }
+        // log_debug("Read reply time: %lums\n", millis() - t1);
+        // telegramClient->stop();
+        // m_lastmsg_timestamp = millis();
+        // m_waitingReply = false;
+        // return res;
     }
-    Serial.println("\nError: client not connected");
+    else
+        Serial.println("\nError: client not connected");
     return res;
 }
 
@@ -649,21 +638,23 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char* cmd, const char* ty
         t1 = millis();
         #endif
 
-        // Read server reply
-        while (telegramClient->connected()) {
-            if (telegramClient->find((char*)"{\"ok\":true")) {
-                res = true;
-                break;
-            }
-        }
-        log_debug("Read reply time: %lums\n", millis() - t1);
-        telegramClient->stop();
-        m_lastmsg_timestamp = millis();
-        m_waitingReply = false;
-        return res;
-    }
+        // Handle reply with getUpdates() method
 
-    Serial.println("\nError: client not connected");
+        // // Read server reply
+        // while (telegramClient->connected()) {
+        //     if (telegramClient->find((char*)"{\"ok\":true")) {
+        //         res = true;
+        //         break;
+        //     }
+        // }
+        // log_debug("Read reply time: %lums\n", millis() - t1);
+        // telegramClient->stop();
+        // m_lastmsg_timestamp = millis();
+        // m_waitingReply = false;
+        // return res;
+    }
+        else
+            Serial.println("\nError: client not connected");
     return res;
 }
 
