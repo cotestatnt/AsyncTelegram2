@@ -51,7 +51,6 @@
 #include "serial_log.h"
 
 #define TELEGRAM_HOST  "api.telegram.org"
-#define TELEGRAM_IP    "149.154.167.220"
 #define TELEGRAM_PORT   443
 
 /* This is used with ESP8266 platform only */
