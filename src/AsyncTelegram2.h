@@ -22,7 +22,7 @@
 #include "time.h"
 
 #ifndef DEBUG_ENABLE
-    #define DEBUG_ENABLE    0
+    #define DEBUG_ENABLE    1
 #endif
 
 #if DEBUG_ENABLE
@@ -51,6 +51,7 @@
 #include "serial_log.h"
 
 #define TELEGRAM_HOST  "api.telegram.org"
+#define TELEGRAM_IP    "149.154.167.220"
 #define TELEGRAM_PORT   443
 
 /* This is used with ESP8266 platform only */

@@ -195,126 +195,146 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 
     // We have a message, parse data received
     if (getUpdates()) {
-        DynamicJsonDocument updateDoc(BUFFER_BIG);
 
-        DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
-        if (err) {
-            log_error("deserializeJson() failed\n");
-            log_error("%s", err.c_str());
-            Serial.println();
-            Serial.println(m_rxbuffer);
-            // Skip this message id due to the impossibility to parse correctly
-            m_lastUpdateId = m_rxbuffer
-                .substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":"))
-                .toInt() + 1;
-            //int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
-            m_rxbuffer = "";
+		DynamicJsonDocument updateDoc(BUFFER_BIG);
+		DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
+		if (err) {
+			log_error("deserializeJson() failed\n");
+			log_error("%s", err.c_str());
+			Serial.println();
+			Serial.println(m_rxbuffer);
+			// Skip this message id due to the impossibility to parse correctly
+			m_lastUpdateId = m_rxbuffer
+				.substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":"))
+				.toInt() + 1;
+			//int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
+			m_rxbuffer = "";
 
-            // Inform the user about parsing error (blocking)
-            //sendTo(chat_id, "[ERROR] - Your last message is too much long.");
-            return MessageNoData;
-        }
-
-        m_rxbuffer = "";
-        if (!updateDoc.containsKey("result")) {
-            log_error("JSON data not expected");
-            serializeJsonPretty(updateDoc, Serial);
-            return MessageNoData;
-        }
-
+			// Inform the user about parsing error (blocking)
+			//sendTo(chat_id, "[ERROR] - Your last message is too much long.");
+			return MessageNoData;
+		}
+		
+		m_rxbuffer = "";
+		updateDoc.shrinkToFit();
+		
+		if (!updateDoc.containsKey("result")) {
+			log_error("JSON data not expected");
+			serializeJsonPretty(updateDoc, Serial);
+			return MessageNoData;
+		}
+		
+		JsonVariant result = updateDoc["result"];		
+		if (result.is<JsonArray>()) {
+		  result = result[0];		  
+		}		
+		
 		// This a reply after send message
-        if (updateDoc["result"]["message_id"]) {
-            m_lastSentMsgId = updateDoc["result"]["message_id"];
+        if (result["message_id"]) {
+            m_lastSentMsgId = result["message_id"];
         }
 
-        uint32_t updateID = updateDoc["result"][0]["update_id"];
-        if (!updateID) return MessageNoData;
-
-        m_lastUpdateId = updateID + 1;
-        debugJson(updateDoc, Serial);
-
-        if (updateDoc["result"][0]["callback_query"]["id"]) {
+        uint32_t updateID = result["update_id"];
+        if (updateID) {
+			m_lastUpdateId = updateID + 1;		
+		} else {
+			// In case of forwarded message reply, we need to get original text
+			// so don't skip parsing the reply to just sent forwarMessage command
+			if (!result["forward_from"])
+				return MessageNoData;		
+		}
+			
+        debugJson(result, Serial);
+        if (result["callback_query"]["id"]) {
             // this is a callback query
-            message.sender.id         = updateDoc["result"][0]["callback_query"]["from"]["id"];
-            message.sender.username   = updateDoc["result"][0]["callback_query"]["from"]["username"].as<String>();
-            message.sender.firstName  = updateDoc["result"][0]["callback_query"]["from"]["first_name"].as<String>();
-            message.sender.lastName   = updateDoc["result"][0]["callback_query"]["from"]["last_name"].as<String>();
+            message.sender.id         = result["callback_query"]["from"]["id"];
+            message.sender.username   = result["callback_query"]["from"]["username"].as<String>();
+            message.sender.firstName  = result["callback_query"]["from"]["first_name"].as<String>();
+            message.sender.lastName   = result["callback_query"]["from"]["last_name"].as<String>();
 
-            message.chatId            = updateDoc["result"][0]["callback_query"]["message"]["chat"]["id"];
-            message.messageID         = updateDoc["result"][0]["callback_query"]["message"]["message_id"];
-            message.date              = updateDoc["result"][0]["callback_query"]["message"]["date"];
-            message.chatInstance      = updateDoc["result"][0]["callback_query"]["chat_instance"];
-            message.callbackQueryID   = updateDoc["result"][0]["callback_query"]["id"];
-            message.callbackQueryData = updateDoc["result"][0]["callback_query"]["data"].as<String>();
-            message.text              = updateDoc["result"][0]["callback_query"]["message"]["text"].as<String>();
+            message.chatId            = result["callback_query"]["message"]["chat"]["id"];
+            message.messageID         = result["callback_query"]["message"]["message_id"];
+            message.date              = result["callback_query"]["message"]["date"];
+            message.chatInstance      = result["callback_query"]["chat_instance"];
+            message.callbackQueryID   = result["callback_query"]["id"];
+            message.callbackQueryData = result["callback_query"]["data"].as<String>();
+            message.text              = result["callback_query"]["message"]["text"].as<String>();
             message.messageType       = MessageQuery;
 
             // Check if callback function is defined for this button query
             for(uint8_t i=0; i<m_keyboardCount; i++)
                 m_keyboards[i]->checkCallback(message);
         }
-        else if (updateDoc["result"][0]["message"]["message_id"]) {
+		else if (result["forward_from"]) {
+			// this is a forwarded message from user or group		
+			message.sender.id         = result["forward_from"]["id"];
+            message.sender.username   = result["forward_from"]["username"].as<String>();
+            message.sender.firstName  = result["forward_from"]["first_name"].as<String>();
+            message.sender.lastName   = result["forward_from"]["last_name"].as<String>();
+			
+			message.text        = result["text"].as<String>();
+			message.messageType = MessageForwarded;
+		}
+        else if (result["message"]["message_id"]) {
             // this is a message
-            message.sender.id         = updateDoc["result"][0]["message"]["from"]["id"];
-            message.sender.username   = updateDoc["result"][0]["message"]["from"]["username"].as<String>();
-            message.sender.firstName  = updateDoc["result"][0]["message"]["from"]["first_name"].as<String>();
-            message.sender.lastName   = updateDoc["result"][0]["message"]["from"]["last_name"].as<String>();
+            message.sender.id         = result["message"]["from"]["id"];
+            message.sender.username   = result["message"]["from"]["username"].as<String>();
+            message.sender.firstName  = result["message"]["from"]["first_name"].as<String>();
+            message.sender.lastName   = result["message"]["from"]["last_name"].as<String>();
 
-            message.messageID        = updateDoc["result"][0]["message"]["message_id"];
-            message.chatId           = updateDoc["result"][0]["message"]["chat"]["id"];
-            // message.group.id         = updateDoc["result"][0]["message"]["chat"]["id"];
-            // message.group.title      = updateDoc["result"][0]["message"]["chat"]["title"].as<String>();
-            message.date             = updateDoc["result"][0]["message"]["date"];
+            message.messageID        = result["message"]["message_id"];
+            message.chatId           = result["message"]["chat"]["id"];            
+            message.date             = result["message"]["date"];
 
-            if (updateDoc["result"][0]["message"]["location"]) {
+            if (result["message"]["location"]) {
                 // this is a location message
-                message.location.longitude = updateDoc["result"][0]["message"]["location"]["longitude"];
-                message.location.latitude = updateDoc["result"][0]["message"]["location"]["latitude"];
+                message.location.longitude = result["message"]["location"]["longitude"];
+                message.location.latitude = result["message"]["location"]["latitude"];
                 message.messageType = MessageLocation;
             }
-            else if (updateDoc["result"][0]["message"]["contact"]) {
+            else if (result["message"]["contact"]) {
                 // this is a contact message
-                message.contact.id          = updateDoc["result"][0]["message"]["contact"]["user_id"];
-                message.contact.firstName   = updateDoc["result"][0]["message"]["contact"]["first_name"].as<String>();
-                message.contact.lastName    = updateDoc["result"][0]["message"]["contact"]["last_name"].as<String>();
-                message.contact.phoneNumber = updateDoc["result"][0]["message"]["contact"]["phone_number"].as<String>();
-                message.contact.vCard       = updateDoc["result"][0]["message"]["contact"]["vcard"].as<String>();
+                message.contact.id          = result["message"]["contact"]["user_id"];
+                message.contact.firstName   = result["message"]["contact"]["first_name"].as<String>();
+                message.contact.lastName    = result["message"]["contact"]["last_name"].as<String>();
+                message.contact.phoneNumber = result["message"]["contact"]["phone_number"].as<String>();
+                message.contact.vCard       = result["message"]["contact"]["vcard"].as<String>();
                 message.messageType = MessageContact;
             }
-			else if (updateDoc["result"][0]["message"]["new_chat_member"]) {
+			else if (result["message"]["new_chat_member"]) {
                 // this is a add member message
-                message.member.isBot       = updateDoc["result"][0]["message"]["new_chat_member"]["is_bot"];
-                message.member.id          = updateDoc["result"][0]["message"]["new_chat_member"]["id"];
-                message.member.firstName   = updateDoc["result"][0]["message"]["new_chat_member"]["first_name"].as<String>();
-                message.member.lastName    = updateDoc["result"][0]["message"]["new_chat_member"]["last_name"].as<String>();
-                message.member.username    = updateDoc["result"][0]["message"]["new_chat_member"]["username"].as<String>();
+                message.member.isBot       = result["message"]["new_chat_member"]["is_bot"];
+                message.member.id          = result["message"]["new_chat_member"]["id"];
+                message.member.firstName   = result["message"]["new_chat_member"]["first_name"].as<String>();
+                message.member.lastName    = result["message"]["new_chat_member"]["last_name"].as<String>();
+                message.member.username    = result["message"]["new_chat_member"]["username"].as<String>();
                 message.messageType        = MessageNewMember;
             }
-			else if (updateDoc["result"][0]["message"]["left_chat_member"]) {
+			else if (result["message"]["left_chat_member"]) {
                 // this is a left member message
-                message.member.isBot       = updateDoc["result"][0]["message"]["new_chat_member"]["is_bot"];
-                message.member.id          = updateDoc["result"][0]["message"]["new_chat_member"]["id"];
-                message.member.firstName   = updateDoc["result"][0]["message"]["new_chat_member"]["first_name"].as<String>();
-                message.member.lastName    = updateDoc["result"][0]["message"]["new_chat_member"]["last_name"].as<String>();
-                message.member.username    = updateDoc["result"][0]["message"]["new_chat_member"]["username"].as<String>();
+                message.member.isBot       = result["message"]["new_chat_member"]["is_bot"];
+                message.member.id          = result["message"]["new_chat_member"]["id"];
+                message.member.firstName   = result["message"]["new_chat_member"]["first_name"].as<String>();
+                message.member.lastName    = result["message"]["new_chat_member"]["last_name"].as<String>();
+                message.member.username    = result["message"]["new_chat_member"]["username"].as<String>();
                 message.messageType        = MessageLeftMember;
             }
-            else if (updateDoc["result"][0]["message"]["document"]) {
+            else if (result["message"]["document"]) {
                 // this is a document message
-                message.document.file_id      = updateDoc["result"][0]["message"]["document"]["file_id"].as<String>();
-                message.document.file_name    = updateDoc["result"][0]["message"]["document"]["file_name"].as<String>();
-                message.text                  = updateDoc["result"][0]["message"]["caption"].as<String>();
+                message.document.file_id      = result["message"]["document"]["file_id"].as<String>();
+                message.document.file_name    = result["message"]["document"]["file_name"].as<String>();
+                message.text                  = result["message"]["caption"].as<String>();
                 message.document.file_exists  = getFile(message.document);
                 message.messageType           = MessageDocument;
-            }
-            else if (updateDoc["result"][0]["message"]["reply_to_message"]) {
+            }			
+            else if (result["message"]["reply_to_message"]) {
                 // this is a reply to message
-                message.text        = updateDoc["result"][0]["message"]["text"].as<String>();
+                message.text        = result["message"]["text"].as<String>();
                 message.messageType = MessageReply;
             }
-            else if (updateDoc["result"][0]["message"]["text"]) {
+            else if (result["message"]["text"]) {
                 // this is a text message
-                message.text        = updateDoc["result"][0]["message"]["text"].as<String>();
+                message.text        = result["message"]["text"].as<String>();
                 message.messageType = MessageText;
             }
         }
@@ -430,7 +450,8 @@ bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chati
         to_chatid, msg.chatId, msg.messageID);
 
     bool result = sendCommand("forwardMessage", payload);
-    log_debug("%s", payload);
+    log_debug("%s\n", payload);
+	m_lastUpdateTime = millis();
     return result;
 }
 
