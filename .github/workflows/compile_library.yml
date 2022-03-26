@@ -20,10 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         board: 
+          - "uno"
           - "nodemcuv2"
           - "lolin32"
-#          - "nano_33_iot"
-
+          - "nucleo_l152re"
+          
     steps:
     - uses: actions/checkout@v2
     - name: Cache pip
@@ -44,12 +45,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
         
-    - name: Build mqtt & dep
-      if: ${{ matrix.board == 'nano_33_iot' }}
-      run: |    
-        pio lib -g install \
-        https://github.com/SGSSGene/StandardCplusplus
-
     - name: Create main file
       run: |
         echo "#include <Arduino.h>" >> src/main.ino
