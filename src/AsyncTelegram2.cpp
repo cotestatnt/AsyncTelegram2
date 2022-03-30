@@ -131,7 +131,7 @@ bool AsyncTelegram2::getUpdates(){
         m_lastUpdateTime = millis();
 
         // If previuos reply from server was received (and parsed)
-        if( m_waitingReply == false ) {
+        if( m_waitingReply == false && telegramClient->connected()) {
             char payload[BUFFER_SMALL];
             snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
