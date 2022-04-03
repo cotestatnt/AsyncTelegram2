@@ -20,7 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         board: 
-          - "uno"
           - "nodemcuv2"
           - "lolin32"
           - "nucleo_l152re"
