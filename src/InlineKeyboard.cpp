@@ -10,17 +10,25 @@ InlineKeyboard::~InlineKeyboard(){}
 
 bool InlineKeyboard::addRow()
 {
-  // if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  // DynamicJsonDocument doc(m_jsonSize + 128);	 // Current size + space for new row (empty)
-
-  StaticJsonDocument<BUFFER_MEDIUM> doc;
+  DynamicJsonDocument doc(BUFFER_BIG+BUFFER_MEDIUM);
   deserializeJson(doc, m_json);
+
+  // Deserialize the JSON document
+  DeserializationError error = deserializeJson(doc, m_json);
+
+  // Test if parsing succeeds.
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return false;
+  }
+
   JsonArray  rows = doc["inline_keyboard"];
   rows.createNestedArray();
   m_json = "";
+  doc.shrinkToFit();
   serializeJson(doc, m_json);
-  //doc.shrinkToFit();
-  m_jsonSize = doc.memoryUsage();
+
   return true;
 }
 
@@ -39,12 +47,15 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
   _lastButton = inlineButton;
   m_buttonsCounter++;
 
-  // As reccomended use local JsonDocument instead global
-  // inline keyboard json structure will be stored in a String var
-  //if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  // DynamicJsonDocument doc(m_jsonSize + 256);	 // Current size + space for new object (button)
-  StaticJsonDocument<BUFFER_MEDIUM> doc;
-  deserializeJson(doc, m_json);
+  DynamicJsonDocument doc(BUFFER_BIG+BUFFER_MEDIUM);
+  DeserializationError error = deserializeJson(doc, m_json);
+
+  // Test if parsing succeeds.
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return false;
+  }
 
   JsonArray  rows = doc["inline_keyboard"];
   JsonObject button = rows[rows.size()-1].createNestedObject();
@@ -57,10 +68,8 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
 
   // Store inline keyboard json structure
   m_json = "";
+  doc.shrinkToFit();
   serializeJson(doc, m_json);
-
-  //doc.shrinkToFit();
-  //m_jsonSize = doc.memoryUsage();
   return true;
 }
 
@@ -86,9 +95,6 @@ String InlineKeyboard::getJSON() const
 
 String InlineKeyboard::getJSONPretty() const
 {
-  //uint16_t jsonSize;
-  //if(m_jsonSize < BUFFER_SMALL) jsonSize = BUFFER_SMALL;
-  //DynamicJsonDocument doc(jsonSize + 128);	// Current size + space for new lines
   StaticJsonDocument<BUFFER_MEDIUM> doc;
   deserializeJson(doc, m_json);
 

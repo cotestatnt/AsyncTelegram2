@@ -131,7 +131,7 @@ bool AsyncTelegram2::getUpdates(){
         m_lastUpdateTime = millis();
 
         // If previuos reply from server was received (and parsed)
-        if( m_waitingReply == false && telegramClient->connected()) {
+        if( m_waitingReply == false ) {
             char payload[BUFFER_SMALL];
             snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
@@ -141,19 +141,26 @@ bool AsyncTelegram2::getUpdates(){
     if(telegramClient->connected() && telegramClient->available() && m_waitingReply) {
         // We have a message, parse data received
         bool close_connection = false;
-
+        uint16_t len = 0, pos = 0;
         // Skip headers
         while (telegramClient->connected()) {
             String line = telegramClient->readStringUntil('\n');
             if (line == "\r")  break;
-            if (line.indexOf("close") > -1)  close_connection = true;
+            if (line.indexOf("close") > -1) {
+                close_connection = true;
+            }
+            if (line.indexOf("Content-Length:") > -1) {
+                len = line.substring(strlen("Content-Length: ")).toInt();
+            }
         }
 
         // If there are incoming bytes available from the server, read them and store:
         m_rxbuffer = "";
-        while (telegramClient->available()) {
-            yield();
-            m_rxbuffer  += (char) telegramClient->read();
+        for ( uint32_t timeout = millis(); (millis() - timeout > 1000) || pos < len;) {
+            if (telegramClient->available()) {
+                m_rxbuffer += (char) telegramClient->read();
+                pos++;
+            }
         }
         m_waitingReply = false;
         m_lastmsg_timestamp = millis();
@@ -195,40 +202,48 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 
     // We have a message, parse data received
     if (getUpdates()) {
+        JsonVariant result;
+        {   // Add as scope in order to destroy updateDoc as soon as possible
+            #if defined(ESP8266)
+            DynamicJsonDocument updateDoc(ESP.getMaxFreeBlockSize() - BUFFER_MEDIUM);
+            #elif defined(ESP32)
+            DynamicJsonDocument updateDoc(ESP.getMaxAllocHeap());
+            #else
+            DynamicJsonDocument updateDoc(BUFFER_BIG);
+            #endif
 
-		DynamicJsonDocument updateDoc(BUFFER_BIG);
-		DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
-		if (err) {
-			log_error("deserializeJson() failed\n");
-			log_error("%s", err.c_str());
-			Serial.println();
-			Serial.println(m_rxbuffer);
-			// Skip this message id due to the impossibility to parse correctly
-			m_lastUpdateId = m_rxbuffer
-				.substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":"))
-				.toInt() + 1;
-			//int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
-			m_rxbuffer = "";
+            DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
+            if (err) {
+                log_error("deserializeJson() failed\n");
+                log_error("%s", err.c_str());
+                Serial.println();
+                Serial.println(m_rxbuffer);
+                // Skip this message id due to the impossibility to parse correctly
+                m_lastUpdateId = m_rxbuffer
+                    .substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":"))
+                    .toInt() + 1;
+                //int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
+                m_rxbuffer = "";
 
-			// Inform the user about parsing error (blocking)
-			//sendTo(chat_id, "[ERROR] - Your last message is too much long.");
-			return MessageNoData;
-		}
-		
-		m_rxbuffer = "";
-		updateDoc.shrinkToFit();
-		
-		if (!updateDoc.containsKey("result")) {
-			log_error("JSON data not expected");
-			serializeJsonPretty(updateDoc, Serial);
-			return MessageNoData;
-		}
-		
-		JsonVariant result = updateDoc["result"];		
-		if (result.is<JsonArray>()) {
-		  result = result[0];		  
-		}		
-		
+                // Inform the user about parsing error (blocking)
+                //sendTo(chat_id, "[ERROR] - Your last message is too much long.");
+                return MessageNoData;
+            }
+            updateDoc.shrinkToFit();
+            m_rxbuffer = "";
+
+            if (!updateDoc.containsKey("result")) {
+                log_error("JSON data not expected");
+                serializeJsonPretty(updateDoc, Serial);
+                return MessageNoData;
+            }
+
+            result = updateDoc["result"];
+            if (result.is<JsonArray>()) {
+                result = result[0];
+            }
+        }
+
 		// This a reply after send message
         if (result["message_id"]) {
             m_lastSentMsgId = result["message_id"];
@@ -236,14 +251,14 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
 
         uint32_t updateID = result["update_id"];
         if (updateID) {
-			m_lastUpdateId = updateID + 1;		
+			m_lastUpdateId = updateID + 1;
 		} else {
 			// In case of forwarded message reply, we need to get original text
 			// so don't skip parsing the reply to just sent forwarMessage command
 			if (!result["forward_from"])
-				return MessageNoData;		
+				return MessageNoData;
 		}
-			
+
         debugJson(result, Serial);
         if (result["callback_query"]["id"]) {
             // this is a callback query
@@ -266,12 +281,12 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 m_keyboards[i]->checkCallback(message);
         }
 		else if (result["forward_from"]) {
-			// this is a forwarded message from user or group		
+			// this is a forwarded message from user or group
 			message.sender.id         = result["forward_from"]["id"];
             message.sender.username   = result["forward_from"]["username"].as<String>();
             message.sender.firstName  = result["forward_from"]["first_name"].as<String>();
             message.sender.lastName   = result["forward_from"]["last_name"].as<String>();
-			
+
 			message.text        = result["text"].as<String>();
 			message.messageType = MessageForwarded;
 		}
@@ -283,7 +298,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
             message.sender.lastName   = result["message"]["from"]["last_name"].as<String>();
 
             message.messageID        = result["message"]["message_id"];
-            message.chatId           = result["message"]["chat"]["id"];            
+            message.chatId           = result["message"]["chat"]["id"];
             message.date             = result["message"]["date"];
 
             if (result["message"]["location"]) {
@@ -326,7 +341,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message )
                 message.text                  = result["message"]["caption"].as<String>();
                 message.document.file_exists  = getFile(message.document);
                 message.messageType           = MessageDocument;
-            }			
+            }
             else if (result["message"]["reply_to_message"]) {
                 // this is a reply to message
                 message.text        = result["message"]["text"].as<String>();
@@ -420,7 +435,8 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, cons
         root["disable_notification"] = true;
     if(keyboard != nullptr) {
         if (strlen(keyboard) || msg.force_reply) {
-            StaticJsonDocument<BUFFER_MEDIUM> doc;
+            //StaticJsonDocument<BUFFER_BIG> doc;
+            DynamicJsonDocument doc(BUFFER_BIG);
             deserializeJson(doc, keyboard);
             JsonObject myKeyb = doc.as<JsonObject>();
             root["reply_markup"] = myKeyb;

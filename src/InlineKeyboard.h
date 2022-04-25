@@ -54,12 +54,10 @@ public:
   String getJSON(void) const ;
   String getJSONPretty(void) const;
 
-
 private:
   friend class AsyncTelegram2;
   String 			m_json;
   String 			m_name;
-  size_t 			m_jsonSize = BUFFER_MEDIUM;
 
   uint8_t			m_buttonsCounter = 0;
   InlineButton 	*_firstButton = nullptr;
