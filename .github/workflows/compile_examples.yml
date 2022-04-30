@@ -24,9 +24,8 @@ jobs:
         - "examples/keyboards/keyboards.ino"
         - "examples/lightBot/lightBot.ino"
         - "examples/sendPhoto/sendPhoto.ino"
-
-        - "examples/ESP8266/OTA_password/OTA_password.ino"
-        - "examples/ESP8266/OTA_buttonQuery/OTA_buttonQuery.ino"
+        - "examples/ESP_OTA/WithPassword/WithPassword.ino"
+        - "examples/ESP_OTA/ButtonQuery/ButtonQuery.ino"
 
     steps:
     - uses: actions/checkout@v2
@@ -74,6 +73,8 @@ jobs:
         - "examples/lightBot/lightBot.ino"
         - "examples/sendPhoto/sendPhoto.ino"
         - "examples/Ethernet/Ethernet.ino"
+        - "examples/ESP_OTA/WithPassword/WithPassword.ino"
+        - "examples/ESP_OTA/ButtonQuery/ButtonQuery.ino"
         
         - "examples/ESP32/ESP32-CAM/ESP32-CAM.ino"
         - "examples/ESP32/ESP32-CAM-PIR/ESP32-CAM-PIR.ino"
