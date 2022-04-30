@@ -117,7 +117,7 @@ bool schedulerHandler(TBMessage &theMsg, AsyncTelegram2 &theBot) {
     waitState = WAIT_START;
 
     // received a callback query message
-    if (!strcmp (theMsg.callbackQueryData, SINGLE_DAY)) {
+    if (!strcmp (theMsg.callbackQueryData.c_str(), SINGLE_DAY)) {
       waitState = WAIT_DAY;
       theBot.endQuery(theMsg, SINGLE_DAY);
 
@@ -127,7 +127,7 @@ bool schedulerHandler(TBMessage &theMsg, AsyncTelegram2 &theBot) {
       theBot.sendMessage(theMsg, "Wich days?", weekdaysKbd);
       return true;
     }
-    else if (!strcmp (theMsg.callbackQueryData, ALL_DAYS)) {
+    else if (!strcmp (theMsg.callbackQueryData.c_str(), ALL_DAYS)) {
       Serial.println(ALL_DAYS);
       for (uint8_t i = 0; i < 7; i++) {
         bitSet(theEvent.days, i);
@@ -136,7 +136,7 @@ bool schedulerHandler(TBMessage &theMsg, AsyncTelegram2 &theBot) {
       theBot.sendMessage(theMsg, "Start time? (ex. 15:30)");
       return true;
     }
-    else if (!strcmp (theMsg.callbackQueryData, WORK_DAYS)) {
+    else if (!strcmp (theMsg.callbackQueryData.c_str(), WORK_DAYS)) {
       Serial.println(WORK_DAYS);
       for (uint8_t i = 0; i < 5; i++) {
         bitSet(theEvent.days, i);
@@ -145,7 +145,7 @@ bool schedulerHandler(TBMessage &theMsg, AsyncTelegram2 &theBot) {
       theBot.sendMessage(theMsg, "Start time? (ex. 15:30)");
       return true;
     }
-    else if (!strcmp (theMsg.callbackQueryData, WEEKEND)) {
+    else if (!strcmp (theMsg.callbackQueryData.c_str(), WEEKEND)) {
       Serial.println(WEEKEND);
       for (uint8_t i = 5; i < 7; i++) {
         bitSet(theEvent.days, i);
