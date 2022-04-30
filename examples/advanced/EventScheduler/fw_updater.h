@@ -37,7 +37,7 @@ bool updateHandler(TBMessage &theMsg, AsyncTelegram2 &theBot) {
           if ( theMsg.document.file_path.endsWith(".bin")) {
             char report [128];
             snprintf(report, 128, "Start firmware update\nFile name: %s\nFile size: %d",
-                     theMsg.document.file_name, theMsg.document.file_size);
+                     theMsg.document.file_name.c_str(), theMsg.document.file_size);
 
             // Inform user and query for flash confirmation with password
             theBot.sendMessage(theMsg, report, "");
