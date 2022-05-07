@@ -20,20 +20,22 @@ bool AsyncTelegram2::checkConnection()
     #endif
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected()) {
+		
+		/* 
         telegramClient->flush();
         telegramClient->clearWriteError();
-        telegramClient->stop();
-        telegramClient->stop();
-        // telegramClient->setHandshakeTimeout(30);
-        m_lastmsg_timestamp = millis();
-        log_debug("Start handshaking...");
+        telegramClient->stop();        
 
-		// ESP32 core version 2.0.2 workaround
+		// ESP32 core version 2.0.2 workaround - IT SEEMS FIXED WITH NEW RELEASE 2.0.3
 		// https://github.com/espressif/arduino-esp32/issues/6077
 		#if defined(ESP32)
 		WiFiClientSecure* _client =  static_cast<WiFiClientSecure*>(telegramClient);
 		_client->setHandshakeTimeout(30);
 		#endif
+		*/
+		
+		m_lastmsg_timestamp = millis();
+        log_debug("Start handshaking...");
 
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT)) {
             Serial.printf("\n\nUnable to connect to Telegram server\n");
@@ -138,7 +140,7 @@ bool AsyncTelegram2::getUpdates(){
         }
     }
 
-    if(telegramClient->connected() && telegramClient->available() && m_waitingReply) {
+    if(telegramClient->connected() && telegramClient->available()) {
         // We have a message, parse data received
         bool close_connection = false;
         uint16_t len = 0, pos = 0;
@@ -415,6 +417,7 @@ bool AsyncTelegram2::noNewMessage() {
 
 bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char* message, const char* keyboard, bool wait)
 {
+
     if (!strlen(message)) return false;
     m_waitSent = true;
     m_lastSentTime = millis();
