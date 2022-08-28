@@ -5,9 +5,9 @@
   Author:       Tolentino Cotesta <cotestatnt@yahoo.com>
   Description:  an example to show how send a picture from bot.
 
-  Note: 
+  Note:
   Sending image to Telegram take some time (as longer as bigger are picture files)
-    - with command /photofs, bot will send an example image stored in filesystem (or in an external SD)      
+    - with command /photofs, bot will send an example image stored in filesystem (or in an external SD)
     - with command /photoweb:<url>, bot will send a sendPhoto command passing the url provided
 */
 #include <FS.h>
@@ -17,42 +17,42 @@
 #include <time.h>
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
 
-/* 
-  Set true if you want use external library for SSL connection instead ESP32@WiFiClientSecure 
+/*
+  Set true if you want use external library for SSL connection instead ESP32@WiFiClientSecure
   For example https://github.com/OPEnSLab-OSU/SSLClient/ is very efficient BearSSL library.
   You can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet)
-*/ 
-#define USE_CLIENTSSL false  
+*/
+#define USE_CLIENTSSL false
 #define FORMAT_FS_IF_FAILED true
 
 #ifdef ESP8266
-  #include <ESP8266WiFi.h>
-  #include <LittleFS.h>
-  BearSSL::WiFiClientSecure client;
-  BearSSL::Session   session;
-  BearSSL::X509List  certificate(telegram_cert);
-  #define FILESYSTEM LittleFS      
+#include <ESP8266WiFi.h>
+#include <LittleFS.h>
+BearSSL::WiFiClientSecure client;
+BearSSL::Session   session;
+BearSSL::X509List  certificate(telegram_cert);
+#define FILESYSTEM LittleFS
 #elif defined(ESP32)
-  // Be sure to select the correct filesystem in IDE option 
-  #define USE_FFAT false
-  #if USE_FFAT
-    #include <FFat.h>           
-    #define FILESYSTEM FFat
-  #else
-    #include <SPIFFS.h>           
-    #define FILESYSTEM SPIFFS       
-  #endif
-  #include <WiFi.h>
-  #include <WiFiClient.h>
-  #if USE_CLIENTSSL
-    #include <SSLClient.h>      //https://github.com/OPEnSLab-OSU/SSLClient/
-    #include "tg_certificate.h"
-    WiFiClient base_client;
-    SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
-  #else
-    #include <WiFiClientSecure.h>
-    WiFiClientSecure client;    
-  #endif
+// Be sure to select the correct filesystem in IDE option
+#define USE_FFAT false
+#if USE_FFAT
+#include <FFat.h>
+#define FILESYSTEM FFat
+#else
+#include <SPIFFS.h>
+#define FILESYSTEM SPIFFS
+#endif
+#include <WiFi.h>
+#include <WiFiClient.h>
+#if USE_CLIENTSSL
+#include <SSLClient.h>      //https://github.com/OPEnSLab-OSU/SSLClient/
+#include "tg_certificate.h"
+WiFiClient base_client;
+SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
+#else
+#include <WiFiClientSecure.h>
+WiFiClientSecure client;
+#endif
 #endif
 
 AsyncTelegram2 myBot(client);
@@ -104,13 +104,13 @@ void printHeapStats() {
 #ifdef ESP32
     //heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
     Serial.printf("%02d:%02d:%02d - Total free: %6d - Max block: %6d\n",
-      tInfo.tm_hour, tInfo.tm_min, tInfo.tm_sec, heap_caps_get_free_size(0), heap_caps_get_largest_free_block(0) );
+                  tInfo.tm_hour, tInfo.tm_min, tInfo.tm_sec, heap_caps_get_free_size(0), heap_caps_get_largest_free_block(0) );
 #elif defined(ESP8266)
     uint32_t free;
     uint16_t max;
     ESP.getHeapStats(&free, &max, nullptr);
     Serial.printf("%02d:%02d:%02d - Total free: %5d - Max block: %5d\n",
-      tInfo.tm_hour, tInfo.tm_min, tInfo.tm_sec, free, max);
+                  tInfo.tm_hour, tInfo.tm_min, tInfo.tm_sec, free, max);
 #endif
   }
 }
@@ -136,10 +136,10 @@ void setup() {
   // Init filesystem (format if necessary)
   if (!FILESYSTEM.begin()) {
     Serial.println("\nFS Mount Failed.\nFilesystem will be formatted, please wait.");
-    #if FORMAT_FS_IF_FAILED
+#if FORMAT_FS_IF_FAILED
     FILESYSTEM.format();
     ESP.restart();
-    #endif
+#endif
   }
   listDir("/", 0);
 
@@ -153,9 +153,9 @@ void setup() {
 #elif defined(ESP32)
   // Sync time with NTP
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
-  #if USE_CLIENTSSL == false
-    client.setCACert(telegram_cert);
-  #endif
+#if USE_CLIENTSSL == false
+  client.setCACert(telegram_cert);
+#endif
 #endif
 
   // Set the Telegram bot properies
@@ -195,26 +195,29 @@ void loop() {
 
   // if there is an incoming message...
   if (myBot.getNewMessage(msg)) {
-    Serial.println("New message received: ");
     MessageType msgType = msg.messageType;
 
     // Received a text message
-    if (msgType == MessageText){
+    if (msgType == MessageText) {
       String msgText = msg.text;
-      Serial.print("\nText message received: ");
+      Serial.print("Text message received: ");
       Serial.println(msgText);
 
       // Send picture stored in filesystem passing only filename and filesystem type
       if (msgText.equalsIgnoreCase("/picfs1")) {
-        Serial.println("\nSending picture 1 from filesystem");
-        myBot.sendPhoto(msg, "/telegram-bot1.jpg", FILESYSTEM);
+        Serial.println(F("\nSending picture 1 from filesystem with caption"));
+
+        // sendPhoto(const TBMessage &msg, const char* filename, fs::FS &fs, const char* caption = nullptr)
+        myBot.sendPhoto(msg, "/telegram-bot1.jpg", FILESYSTEM, "telegram-bot1.jpg");
       }
 
       // Send picture stored in filesystem passing the stream
       // (File is a class derived from Stream)
       else if (msgText.equalsIgnoreCase("/picfs2")) {
-        Serial.println("\nSending picture 2 from filesystem");
+        Serial.println(F("\nSending picture 2 from filesystem"));
         File file = FILESYSTEM.open("/telegram-bot2.jpg", "r");
+
+        // sendPhoto(const TBMessage &msg, Stream &stream, size_t size, const char* caption = nullptr)
         myBot.sendPhoto(msg, file, file.size());
         file.close();
       }
@@ -224,8 +227,8 @@ void loop() {
         String url = msgText.substring(msgText.indexOf("/picweb ") + sizeof("/picweb "));
         Serial.print("\nSending picture from web: ");
         Serial.println(url);
-        if(url.length())
-            myBot.sendPhoto(msg, url, url);
+        if (url.length())
+          myBot.sendPhoto(msg, url, url);
       }
 
       else {
