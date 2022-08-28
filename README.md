@@ -60,3 +60,6 @@ Take a look at the examples provided in the [examples folder](https://github.com
 + 2.0.8   Bot will reply ever in the originates message chat (user or group), bug fixes in checking sent messages routines
 + 2.1.0   
 + 2.1.1
++ 2.1.2
++ 2.1.3
++ 2.1.4
