@@ -2,16 +2,16 @@
 #define ASYNCTELEGRAMV2
 
 // for using int_64 data
-#define ARDUINOJSON_USE_LONG_LONG 	1
-#define ARDUINOJSON_DECODE_UNICODE  1
+#define ARDUINOJSON_USE_LONG_LONG 1
+#define ARDUINOJSON_DECODE_UNICODE 1
 #include <ArduinoJson.h>
 
 #if defined(ESP32) || defined(ESP8266)
-    #define FS_SUPPORT true
-    #include <FS.h>
-    #include <WiFiClientSecure.h>
+#define FS_SUPPORT true
+#include <FS.h>
+#include <WiFiClientSecure.h>
 #else
-    #define FS_SUPPORT false
+#define FS_SUPPORT false
 #endif
 
 #ifndef LED_BUILTIN
@@ -22,12 +22,23 @@
 #include "time.h"
 
 #ifndef DEBUG_ENABLE
-    #define DEBUG_ENABLE    0
+#define DEBUG_ENABLE 0
 #endif
 
 #if DEBUG_ENABLE
-#define debugJson(X, Y)  { log_debug(); Serial.println(); serializeJsonPretty(X, Y); Serial.println();}
-#define errorJson(E)  { log_error(); Serial.println(); Serial.println(E);}
+#define debugJson(X, Y)            \
+    {                              \
+        log_debug();               \
+        Serial.println();          \
+        serializeJsonPretty(X, Y); \
+        Serial.println();          \
+    }
+#define errorJson(E)       \
+    {                      \
+        log_error();       \
+        Serial.println();  \
+        Serial.println(E); \
+    }
 #else
 #define debugJson(X, Y)
 #define errorJson(E)
@@ -38,21 +49,21 @@
     If you need more than MAX_INLINEKYB_CB distinct keybords with
     callback functions associated to buttons increase this value
 */
-#define MAX_INLINEKYB_CB    30
+#define MAX_INLINEKYB_CB 30
 
-#define SERVER_TIMEOUT      10000
-#define MIN_UPDATE_TIME     500
+#define SERVER_TIMEOUT 10000
+#define MIN_UPDATE_TIME 500
 
-#define BLOCK_SIZE          1436    //2872   // 2 * TCP_MSS
+#define BLOCK_SIZE 1436 // 2872   // 2 * TCP_MSS
 
 #include "DataStructures.h"
 #include "InlineKeyboard.h"
 #include "ReplyKeyboard.h"
 #include "serial_log.h"
 
-#define TELEGRAM_HOST  "api.telegram.org"
-#define TELEGRAM_IP    "149.154.167.220"
-#define TELEGRAM_PORT   443
+#define TELEGRAM_HOST "api.telegram.org"
+#define TELEGRAM_IP "149.154.167.220"
+#define TELEGRAM_PORT 443
 
 /* This is used with ESP8266 platform only */
 static const char telegram_cert[] PROGMEM = R"EOF(
@@ -82,13 +93,10 @@ ReYNnyicsbkqWletNw+vHX/bvZ8=
 -----END CERTIFICATE-----
 )EOF";
 
-
-
-
 class AsyncTelegram2
 {
 
-using SentCallback = std::function<void(bool sent)>;
+    using SentCallback = std::function<void(bool sent)>;
 
 public:
     // default constructor
@@ -109,13 +117,13 @@ public:
     // set the telegram token
     // params
     //   token: the telegram token
-    inline void setTelegramToken(const char* token) { m_token = (char*) token; }
+    inline void setTelegramToken(const char *token) { m_token = (char *)token; }
 
     // set the interval in milliseconds for polling
     // in order to Avoid query Telegram server to much often (ms)
     // params:
     //    pollingTime: interval time in milliseconds
-    void setUpdateTime(uint32_t pollingTime) { m_minUpdateTime = pollingTime;}
+    void setUpdateTime(uint32_t pollingTime) { m_minUpdateTime = pollingTime; }
 
     // Get file link and size by unique document ID
     // params
@@ -141,8 +149,8 @@ public:
     //   message : the message to send
     //   keyboard: the inline/reply keyboard (optional)
     //             (in json format or using the inlineKeyboard/ReplyKeyboard class helper)
-	//   wait:    true if method must be blocking
-    bool sendMessage(const TBMessage &msg, const char* message, const char* keyboard = nullptr, bool wait = false);
+    //   wait:    true if method must be blocking
+    bool sendMessage(const TBMessage &msg, const char *message, const char *keyboard = nullptr, bool wait = false);
 
     // sendMessage function overloads
     inline bool sendMessage(const TBMessage &msg, const String &message, String keyboard = "")
@@ -150,12 +158,13 @@ public:
         return sendMessage(msg, message.c_str(), keyboard.c_str());
     }
 
-    inline bool sendMessage(const TBMessage &msg, const char* message, InlineKeyboard &keyboard)
+    inline bool sendMessage(const TBMessage &msg, const char *message, InlineKeyboard &keyboard)
     {
         return sendMessage(msg, message, keyboard.getJSON().c_str());
     }
 
-    inline bool sendMessage(const TBMessage &msg, const char* message, ReplyKeyboard &keyboard) {
+    inline bool sendMessage(const TBMessage &msg, const char *message, ReplyKeyboard &keyboard)
+    {
         return sendMessage(msg, message, keyboard.getJSON().c_str());
     }
 
@@ -163,108 +172,132 @@ public:
     bool forwardMessage(const TBMessage &msg, const int64_t to_chatid);
 
     // Send message to a channel. This bot must be in the admin group
-    bool sendToChannel(const char* channel, const char* message, bool silent) ;
+    bool sendToChannel(const char *channel, const char *message, bool silent);
 
-    inline bool sendToChannel(const String& channel, const String& message, bool silent) {
-        return sendToChannel(channel.c_str(), message.c_str(), silent) ;
+    inline bool sendToChannel(const String &channel, const String &message, bool silent)
+    {
+        return sendToChannel(channel.c_str(), message.c_str(), silent);
     }
 
     // Send message to a specific user. In order to work properly two conditions is needed:
     //  - You have to find the userid (for example using the bot @JsonBumpBot  https://t.me/JsonDumpBot)
     //  - User has to start your bot in it's own client. For example send a message with @<your bot name>
-    inline bool sendTo(const int64_t userid, const char* message, const char*  keyboard = nullptr) {
+    inline bool sendTo(const int64_t userid, const char *message, const char *keyboard = nullptr)
+    {
         TBMessage msg;
         msg.chatId = userid;
         return sendMessage(msg, message, keyboard);
     }
 
-    inline bool sendTo(const int64_t userid, const String &message, String keyboard = "") {
-        return sendTo(userid, message.c_str(), keyboard.c_str() );
+    inline bool sendTo(const int64_t userid, const String &message, String keyboard = "")
+    {
+        return sendTo(userid, message.c_str(), keyboard.c_str());
     }
 
-	// Send a document passing a stream object
-    enum DocumentType { ZIP, PDF, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};
-    bool sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc);
+    // Send a document passing a stream object
+    enum DocumentType
+    {
+        ZIP,
+        PDF,
+        PHOTO,
+        ANIMATION,
+        AUDIO,
+        VOICE,
+        VIDEO
+    };
+    bool sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc, const char *caption = nullptr);
 
-    inline bool sendDocument(const TBMessage &msg, Stream &stream, size_t size, DocumentType doc) {
-        return sendDocument(msg.chatId, stream, size, doc);
+    inline bool sendDocument(const TBMessage &msg, Stream &stream, size_t size, DocumentType doc, const char *caption = nullptr)
+    {
+        return sendDocument(msg.chatId, stream, size, doc, caption);
     }
 
     // Send a picture passing the url
-    bool sendPhotoByUrl(const int64_t& chat_id,  const char* url, const char* caption);
+    bool sendPhotoByUrl(const int64_t &chat_id, const char *url, const char *caption);
 
-    inline bool sendPhoto(const int64_t& chat_id,  const char* url, const char* caption){
+    inline bool sendPhoto(const int64_t &chat_id, const char *url, const char *caption)
+    {
         return sendPhotoByUrl(chat_id, url, caption);
     }
 
-    inline bool sendPhoto(const int64_t& chat_id,  const String& url, const String& caption){
+    inline bool sendPhoto(const int64_t &chat_id, const String &url, const String &caption)
+    {
         return sendPhotoByUrl(chat_id, url.c_str(), caption.c_str());
     }
 
-    inline bool sendPhoto(const TBMessage &msg,  const String& url, const String& caption){
+    inline bool sendPhoto(const TBMessage &msg, const String &url, const String &caption)
+    {
         return sendPhotoByUrl(msg.chatId, url.c_str(), caption.c_str());
     }
 
     // Send a picture passing a stream object
-    inline bool sendPhoto(int64_t chat_id, Stream &stream, size_t size) {
-        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size);
+    inline bool sendPhoto(int64_t chat_id, Stream &stream, size_t size, const char *caption = nullptr)
+    {
+        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size, caption);
     }
 
-    inline bool sendPhoto(const TBMessage &msg, Stream &stream, size_t size) {
-        return sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", stream, size);
+    inline bool sendPhoto(const TBMessage &msg, Stream &stream, size_t size, const char *caption = nullptr)
+    {
+        return sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", stream, size, caption);
     }
 
-    #if FS_SUPPORT == true  // #support for <FS.h> is needed
+#if FS_SUPPORT == true // #support for <FS.h> is needed
     // Send a picture passing a file and relative filesystem
-    inline bool sendPhoto(int64_t chat_id, const char* filename, fs::FS &fs) {
+    inline bool sendPhoto(int64_t chat_id, const char *filename, fs::FS &fs, const char *caption = nullptr)
+    {
         File file = fs.open(filename, "r");
-        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size());
+        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size(), caption);
         file.close();
         return res;
     }
-    inline bool sendPhoto(const TBMessage &msg, const char* filename, fs::FS &fs) {
+    inline bool sendPhoto(const TBMessage &msg, const char *filename, fs::FS &fs, const char *caption = nullptr)
+    {
         File file = fs.open(filename, "r");
-        bool res = sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", file, file.size());
+        bool res = sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", file, file.size(), caption);
         file.close();
         return res;
     }
-    #endif
+#endif
 
     // Send a picture passing a raw buffer
-    inline bool sendPhoto(int64_t chat_id, uint8_t *data, size_t size) {
-        return sendBuffer(chat_id, "sendPhoto", "image/jpeg", "photo", data, size);
+    inline bool sendPhoto(int64_t chat_id, uint8_t *data, size_t size, const char *caption = nullptr)
+    {
+        return sendBuffer(chat_id, "sendPhoto", "image/jpeg", "photo", data, size, caption);
     }
 
-    inline bool sendPhoto(const TBMessage &msg, uint8_t *data, size_t size) {
-        return sendBuffer(msg.chatId, "sendPhoto", "image/jpeg", "photo", data, size);
+    inline bool sendPhoto(const TBMessage &msg, uint8_t *data, size_t size, const char *caption = nullptr)
+    {
+        return sendBuffer(msg.chatId, "sendPhoto", "image/jpeg", "photo", data, size, caption);
     }
-
 
     /////////////////////////////// Backward compatibility  ///////////////////////////////////////
 
-    inline bool sendPhotoByUrl(const int64_t& chat_id,  const String& url, const String& caption){
+    inline bool sendPhotoByUrl(const int64_t &chat_id, const String &url, const String &caption)
+    {
         return sendPhotoByUrl(chat_id, url.c_str(), caption.c_str());
     }
 
-    inline bool sendPhotoByUrl(const TBMessage &msg,  const String& url, const String& caption){
+    inline bool sendPhotoByUrl(const TBMessage &msg, const String &url, const String &caption)
+    {
         return sendPhotoByUrl(msg.chatId, url.c_str(), caption.c_str());
     }
 
-    inline bool sendPhotoByFile(int64_t chat_id, Stream *stream, size_t size) {
-        return sendStream(chat_id,"sendPhoto", "image/jpeg", "photo", *stream, size);
+    inline bool sendPhotoByFile(int64_t chat_id, Stream *stream, size_t size)
+    {
+        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", *stream, size, nullptr);
     }
 
-    #if FS_SUPPORT == true  // #support for <FS.h> is needed
-    inline bool sendPhotoByFile(int64_t chat_id, const char* filename, fs::FS &fs) {
+#if FS_SUPPORT == true // #support for <FS.h> is needed
+    inline bool sendPhotoByFile(int64_t chat_id, const char *filename, fs::FS &fs)
+    {
         File file = fs.open(filename, "r");
         Serial.println(file.size());
-        bool res = sendStream(chat_id,"sendPhoto", "image/jpeg", "photo", file, file.size());
+        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size(), nullptr);
         file.close();
         return res;
     }
-    #endif
+#endif
     /////////////////////////////////////////////////////////////////////////////////////////////
-
 
     // terminate a query started by pressing an inlineKeyboard button. The steps are:
     // 1) send a message with an inline keyboard
@@ -275,7 +308,7 @@ public:
     //   message  : an optional message
     //   alertMode: false -> a simply popup message
     //              true --> an alert message with ok button
-    bool endQuery(const TBMessage &msg, const char* message, bool alertMode = false);
+    bool endQuery(const TBMessage &msg, const char *message, bool alertMode = false);
 
     // remove an active reply keyboard for a selected user, sending a message
     // params:
@@ -286,12 +319,13 @@ public:
     //                       2) if the bot's message is a reply (has reply_to_message_id), sender of the original message
     // return:
     //   true if no error occurred
-    bool removeReplyKeyboard(const TBMessage &msg, const char* message, bool selective = false);
+    bool removeReplyKeyboard(const TBMessage &msg, const char *message, bool selective = false);
 
     // Get the current bot name
     // return:
     //   the bot name
-    inline const char* getBotName() {
+    inline const char *getBotName()
+    {
         return m_botusername.c_str();
     }
 
@@ -305,15 +339,16 @@ public:
     // If bot is a member of a group, return the id of group (negative number)
     // In order to be sure library is able to catch the id,
     // add bot to group while it is running, so the joining message can be parsed
-    inline int64_t getGroupId(const TBMessage &msg) {
-        if(msg.chatId < 0)
+    inline int64_t getGroupId(const TBMessage &msg)
+    {
+        if (msg.chatId < 0)
             return msg.chatId;
         return 0;
     }
 
     // keep track of defined inline keybaord in order to call cb function
     // params: pointer to inline keyboard
-    inline void addInlineKeyboard(InlineKeyboard* keyb)
+    inline void addInlineKeyboard(InlineKeyboard *keyb)
     {
         m_keyboards[m_keyboardCount++] = keyb;
     }
@@ -336,7 +371,6 @@ public:
     //   true if success
     bool deleteMyCommands();
 
-
     // Edit a previous sent message
     // params:
     //    chat_id: the iD of chat
@@ -345,65 +379,68 @@ public:
     //    keyboard: the new inline keyboard (if present)
     // return:
     //    true if success
-	bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, const String &keyboard);
+    bool editMessage(int32_t chat_id, int32_t message_id, const String &txt, const String &keyboard);
 
-    inline bool editMessage(const TBMessage &msg, const String& txt, const String &keyboard) {
-		return editMessage(msg.chatId, msg.messageID, txt, keyboard);
-	}
+    inline bool editMessage(const TBMessage &msg, const String &txt, const String &keyboard)
+    {
+        return editMessage(msg.chatId, msg.messageID, txt, keyboard);
+    }
 
-    inline bool editMessage(int32_t chat_id, int32_t message_id, const String& txt, InlineKeyboard &keyboard) {
+    inline bool editMessage(int32_t chat_id, int32_t message_id, const String &txt, InlineKeyboard &keyboard)
+    {
         return editMessage(chat_id, message_id, txt, keyboard.getJSON());
     }
 
-	inline bool editMessage(const TBMessage &msg, const String& txt, InlineKeyboard &keyboard) {
-		return editMessage(msg.chatId, msg.messageID, txt, keyboard.getJSON());
-	}
+    inline bool editMessage(const TBMessage &msg, const String &txt, InlineKeyboard &keyboard)
+    {
+        return editMessage(msg.chatId, msg.messageID, txt, keyboard.getJSON());
+    }
 
-	// check if connection with server is active
+    // check if connection with server is active
     // returns
     //   true on connected
     bool checkConnection();
 
-	// This callback function will be executed once the message was delivered succesfully
-	inline void addSentCallback(SentCallback sentcb, uint32_t timeout = 1000) {
-		if(sentcb != nullptr) {
-			m_sentCallback = sentcb;
-			m_sentTimeout = timeout;
-		}
-
-	}
+    // This callback function will be executed once the message was delivered succesfully
+    inline void addSentCallback(SentCallback sentcb, uint32_t timeout = 1000)
+    {
+        if (sentcb != nullptr)
+        {
+            m_sentCallback = sentcb;
+            m_sentTimeout = timeout;
+        }
+    }
 
 private:
-    Client*         telegramClient;
-    const char*     m_token;
-    String          m_rxbuffer;
-    String          m_botusername;      // Store only botname, instead TBUser struct
+    Client *telegramClient;
+    const char *m_token;
+    String m_rxbuffer;
+    String m_botusername; // Store only botname, instead TBUser struct
 
-    int32_t         m_lastUpdateId = 0;
-    uint32_t        m_lastUpdateTime;
-    uint32_t        m_minUpdateTime = MIN_UPDATE_TIME;
+    int32_t m_lastUpdateId = 0;
+    uint32_t m_lastUpdateTime;
+    uint32_t m_minUpdateTime = MIN_UPDATE_TIME;
 
-    uint32_t        m_lastmsg_timestamp;
-    bool            m_waitingReply;
+    uint32_t m_lastmsg_timestamp;
+    bool m_waitingReply;
 
-    InlineKeyboard* m_keyboards[10];
-    uint8_t         m_keyboardCount = 0;
+    InlineKeyboard *m_keyboards[10];
+    uint8_t m_keyboardCount = 0;
 
-    void setformData(int64_t chat_id, const char* cmd, const char* type, const char* propName, size_t size, String &formData, String& request);
-    bool sendStream( int64_t chat_id, const char* command, const char* contentType, const char* binaryPropertyName, Stream& stream, size_t size);
-    bool sendBuffer(int64_t chat_id, const char* cmd, const char* type, const char* propName, uint8_t *data, size_t size);
+    void setformData(int64_t chat_id, const char *cmd, const char *type, const char *propName, size_t size, String &formData, String &request, const char *caption);
+    bool sendStream(int64_t chat_id, const char *command, const char *contentType, const char *binaryPropertyName, Stream &stream, size_t size, const char *caption);
+    bool sendBuffer(int64_t chat_id, const char *cmd, const char *type, const char *propName, uint8_t *data, size_t size, const char *caption);
 
-	SentCallback 	m_sentCallback = nullptr;
-    bool 			m_waitSent = false;
-    uint32_t        m_sentTimeout;
-    uint32_t		m_lastSentTime;
-    uint32_t		m_lastSentMsgId;
+    SentCallback m_sentCallback = nullptr;
+    bool m_waitSent = false;
+    uint32_t m_sentTimeout;
+    uint32_t m_lastSentTime;
+    uint32_t m_lastSentMsgId;
 
-	uint32_t		testReconnectTime;
+    uint32_t testReconnectTime;
 
 protected:
-
-	// send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
+    // send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
     // params
     //   command   : the command to send, i.e. getMe
     //   parameters: optional parameters
@@ -411,12 +448,12 @@ protected:
     //   an empty string if error
     //   a string containing the Telegram JSON response
 
-    bool sendCommand(const char* command, const char* payload, bool blocking = false);
+    bool sendCommand(const char *command, const char *payload, bool blocking = false);
 
     // query server for new incoming messages
     // returns
     //   http response payload if no error occurred
-    //bool getUpdates(JsonDocument &doc);
+    // bool getUpdates(JsonDocument &doc);
 
     bool getUpdates();
 
@@ -426,7 +463,6 @@ protected:
     // returns
     //   true if no error occurred
     bool getMe();
-
 };
 
 #endif
