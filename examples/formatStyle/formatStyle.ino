@@ -197,7 +197,6 @@ void loop() {
         String replyMsg = "Welcome to the Async Telegram bot.\n\n";
         replyMsg += "Try command /html for a message formatted with HTML style.\n";
         replyMsg += "Try command /markdown for a message formatted with MarkdownV2 style.\n";
-        msg.isHTMLenabled = true;
         myBot.sendMessage(msg, replyMsg);
       }
 

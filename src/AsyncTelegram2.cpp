@@ -472,15 +472,16 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, cons
     root["chat_id"] = msg.chatId;
     root["text"] = message;
 
-    switch (m_formatType) {
-        case FormatStyle::NONE:
-            break;
-        case FormatStyle::HTML:
-            root["parse_mode"] = "HTML";
-            break;
-        case FormatStyle::MARKDOWN:
-            root["parse_mode"] = "MarkdownV2";
-            break;
+    switch (m_formatType)
+    {
+    case FormatStyle::NONE:
+        break;
+    case FormatStyle::HTML:
+        root["parse_mode"] = "HTML";
+        break;
+    case FormatStyle::MARKDOWN:
+        root["parse_mode"] = "MarkdownV2";
+        break;
     }
 
     // if (msg.isMarkdownEnabled)
@@ -564,15 +565,16 @@ bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, boo
     root["text"] = message;
     root["silent"] = silent ? "true" : "false";
 
-    switch (m_formatType) {
-        case FormatStyle::NONE:
-            break;
-        case FormatStyle::HTML:
-            root["parse_mode"] = "HTML";
-            break;
-        case FormatStyle::MARKDOWN:
-            root["parse_mode"] = "MarkdownV2";
-            break;
+    switch (m_formatType)
+    {
+    case FormatStyle::NONE:
+        break;
+    case FormatStyle::HTML:
+        root["parse_mode"] = "HTML";
+        break;
+    case FormatStyle::MARKDOWN:
+        root["parse_mode"] = "MarkdownV2";
+        break;
     }
 
     // char payload[BUFFER_MEDIUM];
@@ -583,9 +585,11 @@ bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, boo
     size_t len = measureJson(root);
     char payload[len];
     serializeJson(root, payload, len);
+    payload[len] = '\0';
+    log_debug("%s", payload);
 
     bool result = sendCommand("sendMessage", payload);
-    log_debug("%s", payload);
+
     return result;
 }
 
@@ -642,7 +646,8 @@ void AsyncTelegram2::setformData(int64_t chat_id, const char *cmd, const char *t
     formData = "--" BOUNDARY "\r\nContent-disposition: form-data; name=\"chat_id\"\r\n\r\n";
     formData += int64_buf;
 
-    if (caption != nullptr) {
+    if (caption != nullptr)
+    {
         formData += "\r\n--" BOUNDARY "\r\nContent-disposition: form-data; name=\"caption\"\r\n\r\n";
         formData += caption;
     }
