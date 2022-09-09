@@ -235,7 +235,7 @@ void printHeapStats() {
     uint16_t max;
     ESP.getHeapStats(&free, &max, nullptr);
     Serial.printf("%02d:%02d:%02d - Total free: %5d - Max block: %5d\n",
-      tInfo.tm_hour, tInfo.tm_min, tInfo.tm_sec, free, max);
+      sysTime.tm_hour, sysTime.tm_min, sysTime.tm_sec, free, max);
 #endif
   }
 }
