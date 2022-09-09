@@ -472,10 +472,21 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, cons
     root["chat_id"] = msg.chatId;
     root["text"] = message;
 
-    if (msg.isMarkdownEnabled)
-        root["parse_mode"] = "MarkdownV2";
-    else if (msg.isHTMLenabled)
-        root["parse_mode"] = "HTML";
+    switch (m_formatType) {
+        case FormatStyle::NONE:
+            break;
+        case FormatStyle::HTML:
+            root["parse_mode"] = "HTML";
+            break;
+        case FormatStyle::MARKDOWN:
+            root["parse_mode"] = "MarkdownV2";
+            break;
+    }
+
+    // if (msg.isMarkdownEnabled)
+    //     root["parse_mode"] = "MarkdownV2";
+    // else if (msg.isHTMLenabled)
+    //     root["parse_mode"] = "HTML";
 
     if (msg.disable_notification)
         root["disable_notification"] = true;
@@ -548,10 +559,30 @@ bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, boo
     if (!strlen(message))
         return false;
 
-    char payload[BUFFER_MEDIUM];
-    snprintf(payload, BUFFER_MEDIUM,
-             "{\"chat_id\":\"%s\",\"text\":\"%s\",\"silent\":%s}",
-             channel, message, silent ? "true" : "false");
+    DynamicJsonDocument root(BUFFER_BIG);
+    root["chat_id"] = channel;
+    root["text"] = message;
+    root["silent"] = silent ? "true" : "false";
+
+    switch (m_formatType) {
+        case FormatStyle::NONE:
+            break;
+        case FormatStyle::HTML:
+            root["parse_mode"] = "HTML";
+            break;
+        case FormatStyle::MARKDOWN:
+            root["parse_mode"] = "MarkdownV2";
+            break;
+    }
+
+    // char payload[BUFFER_MEDIUM];
+    // snprintf(payload, BUFFER_MEDIUM,
+    //          "{\"chat_id\":\"%s\",\"text\":\"%s\",\"silent\":%s}",
+    //          channel, message, silent ? "true" : "false");
+
+    size_t len = measureJson(root);
+    char payload[len];
+    serializeJson(root, payload, len);
 
     bool result = sendCommand("sendMessage", payload);
     log_debug("%s", payload);

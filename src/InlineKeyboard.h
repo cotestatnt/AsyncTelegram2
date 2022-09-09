@@ -54,6 +54,10 @@ public:
   String getJSON(void) const ;
   String getJSONPretty(void) const;
 
+  inline void clear() {
+    m_json = "";
+  }
+
 private:
   friend class AsyncTelegram2;
   String 			m_json;

@@ -53,6 +53,11 @@ public:
   //   the JSON of the inline keyboard
   String getJSON(void) const;
   String getJSONPretty() const;
+
+
+  inline void clear() {
+    m_json = "";
+  }
 };
 
 #endif

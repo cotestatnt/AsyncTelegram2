@@ -172,7 +172,7 @@ public:
     bool forwardMessage(const TBMessage &msg, const int64_t to_chatid);
 
     // Send message to a channel. This bot must be in the admin group
-    bool sendToChannel(const char *channel, const char *message, bool silent);
+    bool sendToChannel(const char *channel, const char *message, bool silent = false);
 
     inline bool sendToChannel(const String &channel, const String &message, bool silent)
     {
@@ -411,6 +411,20 @@ public:
         }
     }
 
+    // Set the default text formatting option (https://core.telegram.org/bots/api#formatting-options)
+    // params:
+    //    format: the type of formatting text of sent messages. No formatting, HTML style (default), MarkdownV2 style
+    // return:
+    //    void
+    enum FormatStyle {
+        NONE,
+        HTML,
+        MARKDOWN
+    };
+    inline void setFormattingStyle(uint8_t format) {
+        m_formatType = format;
+    }
+
 private:
     Client *telegramClient;
     const char *m_token;
@@ -438,6 +452,8 @@ private:
     uint32_t m_lastSentMsgId;
 
     uint32_t testReconnectTime;
+
+    uint8_t m_formatType = HTML;
 
 protected:
     // send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
