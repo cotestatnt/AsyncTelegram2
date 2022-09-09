@@ -45,6 +45,13 @@ AsyncTelegram2 myBot(client);
 ```c++
 myBot.setTelegramToken("myTelegramBotToken");
 ```
+
+Set the default [formatting style](https://core.telegram.org/bots/api#formatting-options) (none, HTML, MarkdownV2)
+```c++
+myBot.setFormattingStyle(AsyncTelegram2::FormatStyle::HTML /* MARKDOWN */);
+...
+```
+
 In order to receive messages, declare a `TBMessage` variable...
 ```c++
 TBMessage msg;
@@ -103,6 +110,12 @@ myBot.addInlineKeyboard(&kbd);
 Once finished, send the inline keyboard using the `sendMessage` method:
 ```c++
 myBot.sendMessage(<msg>, "message", kbd);
+...
+```
+
+To clear keyboard JSON content:
+```c++
+myBot.clear();
 ...
 ```
 [back to TOC](#table-of-contents)
