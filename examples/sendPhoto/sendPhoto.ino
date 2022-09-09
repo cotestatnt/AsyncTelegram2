@@ -79,8 +79,10 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   // Init filesystem (format if necessary)
-  if (!LittleFS.begin(FORMAT_FS_IF_FAILED)) {
+  if (!LittleFS.begin()) {
     Serial.println("\nFS Mount Failed.\nFilesystem will be formatted, please wait.");
+	LittleFS.format();
+	delay(1000);
     ESP.restart();
   }
   listDir("/", 0);
