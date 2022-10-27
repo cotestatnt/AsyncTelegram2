@@ -38,8 +38,8 @@ bool AsyncTelegram2::checkConnection()
         log_debug("Start handshaking...");
 
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT))
-        {
-            Serial.printf("\n\nUnable to connect to Telegram server\n");
+        {   
+            Serial.println("\n\nUnable to connect to Telegram server");
         }
 #if DEBUG_ENABLE
         else
@@ -531,7 +531,7 @@ bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chati
 {
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%d}",
+             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%ld}",
              to_chatid, msg.chatId, msg.messageID);
 
     bool result = sendCommand("forwardMessage", payload);
@@ -691,8 +691,8 @@ bool AsyncTelegram2::sendStream(int64_t chat_id, const char *cmd, const char *ty
         telegramClient->print(formData);
 
         uint8_t data[BLOCK_SIZE];
-        int n_block = trunc(size / BLOCK_SIZE);
-        int lastBytes = size - (n_block * BLOCK_SIZE);
+        uint16_t n_block = trunc(size / BLOCK_SIZE);
+        uint16_t lastBytes = size - (n_block * BLOCK_SIZE);
 
         for (uint16_t pos = 0; pos < n_block; pos++)
         {
@@ -741,8 +741,8 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char *cmd, const char *ty
 
         // Serial.println(telegramClient->write((const uint8_t *) data, size));
         uint16_t pos = 0;
-        int n_block = trunc(size / BLOCK_SIZE);
-        int lastBytes = size - (n_block * BLOCK_SIZE);
+        uint16_t n_block = trunc(size / BLOCK_SIZE);
+        uint16_t lastBytes = size - (n_block * BLOCK_SIZE);
 
         for (pos = 0; pos < n_block; pos++)
         {
