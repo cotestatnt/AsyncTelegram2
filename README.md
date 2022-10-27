@@ -64,3 +64,4 @@ Take a look at the examples provided in the [examples folder](https://github.com
 + 2.1.3
 + 2.1.4
 + 2.1.5
++ 2.1.6  WiFiNINA testing
