@@ -55,7 +55,7 @@ public:
   String getJSONPretty(void) const;
 
   inline void clear() {
-    m_json = "";
+    m_json = "{\"inline_keyboard\":[[]]}\"";
   }
 
 private:

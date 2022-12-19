@@ -5,6 +5,12 @@
 #define ARDUINOJSON_USE_LONG_LONG 1
 #define ARDUINOJSON_DECODE_UNICODE 1
 #include <ArduinoJson.h>
+#include "Client.h"
+#include "time.h"
+
+#ifndef DEBUG_ENABLE
+#define DEBUG_ENABLE 0
+#endif
 
 #if defined(ESP32) || defined(ESP8266)
 #define FS_SUPPORT true
@@ -15,33 +21,16 @@
 #endif
 
 #ifndef LED_BUILTIN
+#if defined(ESP32)
 #define LED_BUILTIN 2
 #endif
-
-#include "Client.h"
-#include "time.h"
-
-#ifndef DEBUG_ENABLE
-#define DEBUG_ENABLE 0
 #endif
 
-#if DEBUG_ENABLE
-#define debugJson(X, Y)            \
-    {                              \
-        log_debug();               \
-        Serial.println();          \
-        serializeJsonPretty(X, Y); \
-        Serial.println();          \
-    }
-#define errorJson(E)       \
-    {                      \
-        log_error();       \
-        Serial.println();  \
-        Serial.println(E); \
-    }
+// int 32 bit long, (eg. ESP32 platform)
+#if INT_MAX == 2147483647
+    #define INT32 "d"
 #else
-#define debugJson(X, Y)
-#define errorJson(E)
+   #define INT32 "ld"
 #endif
 
 /*
@@ -426,6 +415,10 @@ public:
         m_formatType = format;
     }
 
+    inline void setJsonBufferSize(uint32_t jsonBufferSize){
+        m_JsonBufferSize = jsonBufferSize;
+    }
+
 private:
     Client *telegramClient;
     const char *m_token;
@@ -455,6 +448,7 @@ private:
     uint32_t testReconnectTime;
 
     uint8_t m_formatType = HTML;
+    uint32_t m_JsonBufferSize = BUFFER_BIG;
 
 protected:
     // send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api

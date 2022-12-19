@@ -21,7 +21,7 @@ bool ReplyKeyboard::addRow()
   DeserializationError err = deserializeJson(doc, m_json);
   if (err)
   {
-    log_error("deserializeJson() failed: %s\n", err.c_str());
+    log_debug("deserializeJson() failed: %s\n", err.c_str());
     return false;
   }
 
@@ -53,7 +53,7 @@ bool ReplyKeyboard::addButton(const char *text, ReplyKeyboardButtonType buttonTy
   DeserializationError err = deserializeJson(doc, m_json);
   if (err)
   {
-    log_error("deserializeJson() failed: %s\n", err.c_str());
+    log_debug("deserializeJson() failed: %s\n", err.c_str());
     return false;
   }
 
@@ -150,7 +150,7 @@ void ReplyKeyboard::enableResize()
   DeserializationError err = deserializeJson(doc, m_json);
   if (err)
   {
-    log_error("deserializeJson() failed: %s\n", err.c_str());
+    log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
 
   doc["resize_keyboard"] = true;
@@ -181,7 +181,7 @@ void ReplyKeyboard::enableOneTime()
   DeserializationError err = deserializeJson(doc, m_json);
   if (err)
   {
-    log_error("deserializeJson() failed: %s\n", err.c_str());
+    log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
 
   doc["one_time_keyboard"] = true;
@@ -210,7 +210,7 @@ void ReplyKeyboard::enableSelective()
   DeserializationError err = deserializeJson(doc, m_json);
   if (err)
   {
-    log_error("deserializeJson() failed: %s\n", err.c_str());
+    log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
 
   doc["selective"] = true;
@@ -245,7 +245,7 @@ String ReplyKeyboard::getJSONPretty() const
   DeserializationError err = deserializeJson(doc, m_json);
   if (err)
   {
-    log_error("deserializeJson() failed: %s\n", err.c_str());
+    log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
 
   String serialized;

@@ -14,36 +14,21 @@ AsyncTelegram2::~AsyncTelegram2(){};
 
 bool AsyncTelegram2::checkConnection()
 {
-#if DEBUG_ENABLE
-    static uint32_t lastCTime;
-#endif
     // Start connection with Telegramn server (if necessary)
     if (!telegramClient->connected())
     {
-
-        /*
-        telegramClient->flush();
-        telegramClient->clearWriteError();
-        telegramClient->stop();
-
-        // ESP32 core version 2.0.2 workaround - IT SEEMS FIXED WITH NEW RELEASE 2.0.3
-        // https://github.com/espressif/arduino-esp32/issues/6077
-        #if defined(ESP32)
-        WiFiClientSecure* _client =  static_cast<WiFiClientSecure*>(telegramClient);
-        _client->setHandshakeTimeout(30);
-        #endif
-        */
-
         m_lastmsg_timestamp = millis();
-        log_debug("Start handshaking...");
+        log_info("Start handshaking...");
 
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT))
-        {   
+        {
             Serial.println("\n\nUnable to connect to Telegram server");
+            reset();
         }
 #if DEBUG_ENABLE
         else
         {
+	    static uint32_t lastCTime;
             log_debug("Connected using Telegram hostname\n"
                       "Last connection was %d seconds ago\n",
                       (int)(millis() - lastCTime) / 1000);
@@ -62,7 +47,7 @@ bool AsyncTelegram2::begin()
 
 bool AsyncTelegram2::reset(void)
 {
-    log_debug("Restart Telegram connection\n");
+    log_info("Restart Telegram connection\n");
     telegramClient->stop();
     m_lastmsg_timestamp = millis();
     m_waitingReply = false;
@@ -119,17 +104,6 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
 
 bool AsyncTelegram2::getUpdates()
 {
-
-    /*
-    if(millis() - testReconnectTime > 30000) {
-        testReconnectTime = millis();
-        m_lastmsg_timestamp = millis();
-        telegramClient->stop();
-        log_debug("Connection closed for test reasons");
-        checkConnection();
-    }
-    */
-
     // No response from Telegram server for a long time
     if (millis() - m_lastmsg_timestamp > 10 * m_minUpdateTime)
     {
@@ -145,7 +119,7 @@ bool AsyncTelegram2::getUpdates()
         if (m_waitingReply == false)
         {
             char payload[BUFFER_SMALL];
-            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%" INT32 "}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
         }
     }
@@ -187,7 +161,7 @@ bool AsyncTelegram2::getUpdates()
         if (close_connection)
         {
             telegramClient->stop();
-            log_debug("Connection closed from server");
+            log_info("Connection closed from server");
         }
 
         if (m_rxbuffer.indexOf("\"ok\":true") > -1)
@@ -204,7 +178,7 @@ bool AsyncTelegram2::getUpdates()
         }
         else
         {
-            log_error("%s", m_rxbuffer.c_str());
+            log_debug("%s", m_rxbuffer.c_str());
             if (m_sentCallback != nullptr && m_waitSent)
             {
                 m_waitSent = false;
@@ -233,28 +207,21 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
     {
         JsonVariant result;
         { // Add as scope in order to destroy updateDoc as soon as possible
-#if defined(ESP8266)
-            DynamicJsonDocument updateDoc(ESP.getMaxFreeBlockSize() - BUFFER_MEDIUM);
-#elif defined(ESP32)
-            DynamicJsonDocument updateDoc(ESP.getMaxAllocHeap());
-#else
-            DynamicJsonDocument updateDoc(BUFFER_BIG);
-#endif
-
+            DynamicJsonDocument updateDoc(m_JsonBufferSize);
             DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
             if (err)
             {
                 log_error("deserializeJson() failed\n");
-                log_error("%s", err.c_str());
-                Serial.println();
-                Serial.println(m_rxbuffer);
+                log_debug("%s", err.c_str());
+                log_error();
+                log_error(m_rxbuffer);
                 // Skip this message id due to the impossibility to parse correctly
                 m_lastUpdateId = m_rxbuffer.substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":")).toInt() + 1;
                 // int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
                 m_rxbuffer = "";
 
                 // Inform the user about parsing error (blocking)
-                // sendTo(chat_id, "[ERROR] - Your last message is too much long.");
+                sendTo(message.chatId, "[ERROR] - No memory: inrease buffer size with \"setJsonBufferSize(buf_size)\" method");
                 return MessageNoData;
             }
             updateDoc.shrinkToFit();
@@ -328,72 +295,74 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
         }
         else if (result["message"]["message_id"])
         {
+            JsonObject msgObj = result["message"];
+
             // this is a message
-            message.sender.id = result["message"]["from"]["id"];
-            message.sender.username = result["message"]["from"]["username"].as<String>();
-            message.sender.firstName = result["message"]["from"]["first_name"].as<String>();
-            message.sender.lastName = result["message"]["from"]["last_name"].as<String>();
+            message.sender.id = msgObj["from"]["id"];
+            message.sender.username = msgObj["from"]["username"].as<String>();
+            message.sender.firstName = msgObj["from"]["first_name"].as<String>();
+            message.sender.lastName = msgObj["from"]["last_name"].as<String>();
 
-            message.messageID = result["message"]["message_id"];
-            message.chatId = result["message"]["chat"]["id"];
-            message.date = result["message"]["date"];
+            message.messageID = msgObj["message_id"];
+            message.chatId = msgObj["chat"]["id"];
+            message.date = msgObj["date"];
 
-            if (result["message"]["location"])
+            if (msgObj["location"])
             {
                 // this is a location message
-                message.location.longitude = result["message"]["location"]["longitude"];
-                message.location.latitude = result["message"]["location"]["latitude"];
+                message.location.longitude = msgObj["location"]["longitude"];
+                message.location.latitude = msgObj["location"]["latitude"];
                 message.messageType = MessageLocation;
             }
-            else if (result["message"]["contact"])
+            else if (msgObj["contact"])
             {
                 // this is a contact message
-                message.contact.id = result["message"]["contact"]["user_id"];
-                message.contact.firstName = result["message"]["contact"]["first_name"].as<String>();
-                message.contact.lastName = result["message"]["contact"]["last_name"].as<String>();
-                message.contact.phoneNumber = result["message"]["contact"]["phone_number"].as<String>();
-                message.contact.vCard = result["message"]["contact"]["vcard"].as<String>();
+                message.contact.id = msgObj["contact"]["user_id"];
+                message.contact.firstName = msgObj["contact"]["first_name"].as<String>();
+                message.contact.lastName = msgObj["contact"]["last_name"].as<String>();
+                message.contact.phoneNumber = msgObj["contact"]["phone_number"].as<String>();
+                message.contact.vCard = msgObj["contact"]["vcard"].as<String>();
                 message.messageType = MessageContact;
             }
-            else if (result["message"]["new_chat_member"])
+            else if (msgObj["new_chat_member"])
             {
                 // this is a add member message
-                message.member.isBot = result["message"]["new_chat_member"]["is_bot"];
-                message.member.id = result["message"]["new_chat_member"]["id"];
-                message.member.firstName = result["message"]["new_chat_member"]["first_name"].as<String>();
-                message.member.lastName = result["message"]["new_chat_member"]["last_name"].as<String>();
-                message.member.username = result["message"]["new_chat_member"]["username"].as<String>();
+                message.member.isBot = msgObj["new_chat_member"]["is_bot"];
+                message.member.id = msgObj["new_chat_member"]["id"];
+                message.member.firstName = msgObj["new_chat_member"]["first_name"].as<String>();
+                message.member.lastName = msgObj["new_chat_member"]["last_name"].as<String>();
+                message.member.username = msgObj["new_chat_member"]["username"].as<String>();
                 message.messageType = MessageNewMember;
             }
-            else if (result["message"]["left_chat_member"])
+            else if (msgObj["left_chat_member"])
             {
                 // this is a left member message
-                message.member.isBot = result["message"]["new_chat_member"]["is_bot"];
-                message.member.id = result["message"]["new_chat_member"]["id"];
-                message.member.firstName = result["message"]["new_chat_member"]["first_name"].as<String>();
-                message.member.lastName = result["message"]["new_chat_member"]["last_name"].as<String>();
-                message.member.username = result["message"]["new_chat_member"]["username"].as<String>();
+                message.member.isBot = msgObj["new_chat_member"]["is_bot"];
+                message.member.id = msgObj["new_chat_member"]["id"];
+                message.member.firstName = msgObj["new_chat_member"]["first_name"].as<String>();
+                message.member.lastName = msgObj["new_chat_member"]["last_name"].as<String>();
+                message.member.username = msgObj["new_chat_member"]["username"].as<String>();
                 message.messageType = MessageLeftMember;
             }
-            else if (result["message"]["document"])
+            else if (msgObj["document"])
             {
                 // this is a document message
-                message.document.file_id = result["message"]["document"]["file_id"].as<String>();
-                message.document.file_name = result["message"]["document"]["file_name"].as<String>();
-                message.text = result["message"]["caption"].as<String>();
+                message.document.file_id = msgObj["document"]["file_id"].as<String>();
+                message.document.file_name = msgObj["document"]["file_name"].as<String>();
+                message.text = msgObj["caption"].as<String>();
                 message.document.file_exists = getFile(message.document);
                 message.messageType = MessageDocument;
             }
-            else if (result["message"]["reply_to_message"])
+            else if (msgObj["reply_to_message"])
             {
                 // this is a reply to message
-                message.text = result["message"]["text"].as<String>();
+                message.text = msgObj["text"].as<String>();
                 message.messageType = MessageReply;
             }
-            else if (result["message"]["text"])
+            else if (msgObj["text"])
             {
                 // this is a text message
-                message.text = result["message"]["text"].as<String>();
+                message.text = msgObj["text"].as<String>();
                 message.messageType = MessageText;
             }
         }
@@ -453,7 +422,7 @@ bool AsyncTelegram2::noNewMessage()
         // if(millis() - startTime > 10000UL)
         //     break;
     }
-    log_debug("\n");
+    log_info("\n");
     return true;
 }
 
@@ -484,11 +453,6 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, cons
         break;
     }
 
-    // if (msg.isMarkdownEnabled)
-    //     root["parse_mode"] = "MarkdownV2";
-    // else if (msg.isHTMLenabled)
-    //     root["parse_mode"] = "HTML";
-
     if (msg.disable_notification)
         root["disable_notification"] = true;
 
@@ -496,15 +460,7 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, cons
     {
         if (strlen(keyboard) || msg.force_reply)
         {
-            // DynamicJsonDocument doc(BUFFER_BIG);
-
-#if defined(ESP8266)
-            DynamicJsonDocument doc(ESP.getMaxFreeBlockSize() - BUFFER_MEDIUM);
-#elif defined(ESP32)
-            DynamicJsonDocument doc(ESP.getMaxAllocHeap());
-#else
-            DynamicJsonDocument doc(BUFFER_BIG);
-#endif
+            DynamicJsonDocument doc(m_JsonBufferSize);
 
             deserializeJson(doc, keyboard);
             JsonObject myKeyb = doc.as<JsonObject>();
@@ -531,7 +487,7 @@ bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chati
 {
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%ld}",
+             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%" INT32 "}",
              to_chatid, msg.chatId, msg.messageID);
 
     bool result = sendCommand("forwardMessage", payload);
