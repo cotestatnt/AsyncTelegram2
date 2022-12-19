@@ -295,74 +295,73 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
         }
         else if (result["message"]["message_id"])
         {
-            JsonObject msgObj = result["message"];
 
             // this is a message
-            message.sender.id = msgObj["from"]["id"];
-            message.sender.username = msgObj["from"]["username"].as<String>();
-            message.sender.firstName = msgObj["from"]["first_name"].as<String>();
-            message.sender.lastName = msgObj["from"]["last_name"].as<String>();
+            message.sender.id = result["message"]["from"]["id"];
+            message.sender.username = result["message"]["from"]["username"].as<String>();
+            message.sender.firstName = result["message"]["from"]["first_name"].as<String>();
+            message.sender.lastName = result["message"]["from"]["last_name"].as<String>();
 
-            message.messageID = msgObj["message_id"];
-            message.chatId = msgObj["chat"]["id"];
-            message.date = msgObj["date"];
+            message.messageID = result["message"]["message_id"];
+            message.chatId = result["message"]["chat"]["id"];
+            message.date = result["message"]["date"];
 
-            if (msgObj["location"])
+            if (result["message"]["location"])
             {
                 // this is a location message
-                message.location.longitude = msgObj["location"]["longitude"];
-                message.location.latitude = msgObj["location"]["latitude"];
+                message.location.longitude = result["message"]["location"]["longitude"];
+                message.location.latitude = result["message"]["location"]["latitude"];
                 message.messageType = MessageLocation;
             }
-            else if (msgObj["contact"])
+            else if (result["message"]["contact"])
             {
                 // this is a contact message
-                message.contact.id = msgObj["contact"]["user_id"];
-                message.contact.firstName = msgObj["contact"]["first_name"].as<String>();
-                message.contact.lastName = msgObj["contact"]["last_name"].as<String>();
-                message.contact.phoneNumber = msgObj["contact"]["phone_number"].as<String>();
-                message.contact.vCard = msgObj["contact"]["vcard"].as<String>();
+                message.contact.id = result["message"]["contact"]["user_id"];
+                message.contact.firstName = result["message"]["contact"]["first_name"].as<String>();
+                message.contact.lastName = result["message"]["contact"]["last_name"].as<String>();
+                message.contact.phoneNumber = result["message"]["contact"]["phone_number"].as<String>();
+                message.contact.vCard = result["message"]["contact"]["vcard"].as<String>();
                 message.messageType = MessageContact;
             }
-            else if (msgObj["new_chat_member"])
+            else if (result["message"]["new_chat_member"])
             {
                 // this is a add member message
-                message.member.isBot = msgObj["new_chat_member"]["is_bot"];
-                message.member.id = msgObj["new_chat_member"]["id"];
-                message.member.firstName = msgObj["new_chat_member"]["first_name"].as<String>();
-                message.member.lastName = msgObj["new_chat_member"]["last_name"].as<String>();
-                message.member.username = msgObj["new_chat_member"]["username"].as<String>();
+                message.member.isBot = result["message"]["new_chat_member"]["is_bot"];
+                message.member.id = result["message"]["new_chat_member"]["id"];
+                message.member.firstName = result["message"]["new_chat_member"]["first_name"].as<String>();
+                message.member.lastName = result["message"]["new_chat_member"]["last_name"].as<String>();
+                message.member.username = result["message"]["new_chat_member"]["username"].as<String>();
                 message.messageType = MessageNewMember;
             }
-            else if (msgObj["left_chat_member"])
+            else if (result["message"]["left_chat_member"])
             {
                 // this is a left member message
-                message.member.isBot = msgObj["new_chat_member"]["is_bot"];
-                message.member.id = msgObj["new_chat_member"]["id"];
-                message.member.firstName = msgObj["new_chat_member"]["first_name"].as<String>();
-                message.member.lastName = msgObj["new_chat_member"]["last_name"].as<String>();
-                message.member.username = msgObj["new_chat_member"]["username"].as<String>();
+                message.member.isBot = result["message"]["new_chat_member"]["is_bot"];
+                message.member.id = result["message"]["new_chat_member"]["id"];
+                message.member.firstName = result["message"]["new_chat_member"]["first_name"].as<String>();
+                message.member.lastName = result["message"]["new_chat_member"]["last_name"].as<String>();
+                message.member.username = result["message"]["new_chat_member"]["username"].as<String>();
                 message.messageType = MessageLeftMember;
             }
-            else if (msgObj["document"])
+            else if (result["message"]["document"])
             {
                 // this is a document message
-                message.document.file_id = msgObj["document"]["file_id"].as<String>();
-                message.document.file_name = msgObj["document"]["file_name"].as<String>();
-                message.text = msgObj["caption"].as<String>();
+                message.document.file_id = result["message"]["document"]["file_id"].as<String>();
+                message.document.file_name = result["message"]["document"]["file_name"].as<String>();
+                message.text = result["message"]["caption"].as<String>();
                 message.document.file_exists = getFile(message.document);
                 message.messageType = MessageDocument;
             }
-            else if (msgObj["reply_to_message"])
+            else if (result["message"]["reply_to_message"])
             {
                 // this is a reply to message
-                message.text = msgObj["text"].as<String>();
+                message.text = result["message"]["text"].as<String>();
                 message.messageType = MessageReply;
             }
-            else if (msgObj["text"])
+            else if (result["message"]["text"])
             {
                 // this is a text message
-                message.text = msgObj["text"].as<String>();
+                message.text = result["message"]["text"].as<String>();
                 message.messageType = MessageText;
             }
         }
