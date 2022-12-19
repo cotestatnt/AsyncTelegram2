@@ -5,7 +5,7 @@
 #define ARDUINOJSON_USE_LONG_LONG 	1
 #define ARDUINOJSON_DECODE_UNICODE  1
 #include <ArduinoJson.h>
-#include <functional>
+// #include <functional>
 #include "DataStructures.h"
 
 enum InlineKeyboardButtonType {
@@ -16,8 +16,8 @@ enum InlineKeyboardButtonType {
 
 class InlineKeyboard
 {
-
-using CallbackType = std::function<void(const TBMessage &msg)>;
+ typedef void(*CallbackType)(const TBMessage &msg);
+//using CallbackType = std::function<void(const TBMessage &msg)>;
 
 struct InlineButton{
   char 		*btnName;
