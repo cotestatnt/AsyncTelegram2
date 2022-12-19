@@ -96,8 +96,7 @@ ReYNnyicsbkqWletNw+vHX/bvZ8=
 class AsyncTelegram2
 {
 
-    //using SentCallback = std::function<void(bool sent)>;
-    typedef void(*SentCallback)(bool sent);
+    using SentCallback = std::function<void(bool sent)>;
 
 public:
     // default constructor
