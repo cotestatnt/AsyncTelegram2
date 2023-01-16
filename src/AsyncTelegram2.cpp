@@ -20,6 +20,11 @@ bool AsyncTelegram2::checkConnection()
         m_lastmsg_timestamp = millis();
         log_info("Start handshaking...");
 
+        // ESP8266 Soft watch dog reset issue
+        #ifdef ESP8266
+        ESP.wdtDisable();
+        *((volatile uint32_t*) 0x60000900) &= ~(1); // Hardware WDT OFF
+        #endif
         if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT))
         {
             Serial.println("\n\nUnable to connect to Telegram server");
@@ -36,6 +41,8 @@ bool AsyncTelegram2::checkConnection()
         }
 #endif
     }
+    ESP.wdtEnable(10000);
+    *((volatile uint32_t*) 0x60000900) |= 1; // Hardware WDT ON
     return telegramClient->connected();
 }
 
@@ -47,11 +54,15 @@ bool AsyncTelegram2::begin()
 
 bool AsyncTelegram2::reset(void)
 {
-    log_info("Restart Telegram connection\n");
-    telegramClient->stop();
-    m_lastmsg_timestamp = millis();
-    m_waitingReply = false;
-    return checkConnection();
+    static uint32_t lastResetTime;
+    if (millis() - lastResetTime > 5000) {
+        lastResetTime = millis();
+        log_info("Restart Telegram connection\n");
+        telegramClient->stop();
+        m_lastmsg_timestamp = millis();
+        m_waitingReply = false;
+    }
+    return telegramClient->connected();
 }
 
 bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool blocking)
