@@ -65,3 +65,5 @@ Take a look at the examples provided in the [examples folder](https://github.com
 + 2.1.4
 + 2.1.5
 + 2.1.6  WiFiNINA testing
++ 2.1.7  Bug fixes
++ 2.1.8  SendDocument() and example

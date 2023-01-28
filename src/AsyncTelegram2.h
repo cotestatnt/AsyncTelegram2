@@ -5,6 +5,19 @@
 #define ARDUINOJSON_USE_LONG_LONG 1
 #define ARDUINOJSON_DECODE_UNICODE 1
 #include <ArduinoJson.h>
+
+#if defined(ESP32) || defined(ESP8266)
+#define FS_SUPPORT true
+#include <FS.h>
+#include <WiFiClientSecure.h>
+#else
+#define FS_SUPPORT false
+#endif
+
+#ifndef LED_BUILTIN
+#define LED_BUILTIN 2
+#endif
+
 #include "Client.h"
 #include "time.h"
 
@@ -18,19 +31,6 @@
 #include <WiFiClientSecure.h>
 #else
 #define FS_SUPPORT false
-#endif
-
-#ifndef LED_BUILTIN
-#if defined(ESP32)
-#define LED_BUILTIN 2
-#endif
-#endif
-
-// int 32 bit long, (eg. ESP32 platform)
-#if INT_MAX == 2147483647
-    #define INT32 "d"
-#else
-   #define INT32 "ld"
 #endif
 
 /*
@@ -85,8 +85,7 @@ ReYNnyicsbkqWletNw+vHX/bvZ8=
 class AsyncTelegram2
 {
 
-    //using SentCallback = std::function<void(bool sent)>;
-    typedef void(*SentCallback)(bool sent);
+    using SentCallback = std::function<void(bool sent)>;
 
 public:
     // default constructor
@@ -193,13 +192,17 @@ public:
         ANIMATION,
         AUDIO,
         VOICE,
-        VIDEO
+        VIDEO,
+        CSV,
+        JSON
     };
-    bool sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc, const char *caption = nullptr);
+    bool sendDocument(int64_t chat_id, Stream &stream, size_t size,
+                        DocumentType doc, const char *filename, const char *caption = nullptr);
 
-    inline bool sendDocument(const TBMessage &msg, Stream &stream, size_t size, DocumentType doc, const char *caption = nullptr)
+    inline bool sendDocument(const TBMessage &msg, Stream &stream, size_t size,
+                                DocumentType doc, const char *filename, const char *caption = nullptr)
     {
-        return sendDocument(msg.chatId, stream, size, doc, caption);
+        return sendDocument(msg.chatId, stream, size, doc, filename, caption);
     }
 
     // Send a picture passing the url
@@ -221,14 +224,14 @@ public:
     }
 
     // Send a picture passing a stream object
-    inline bool sendPhoto(int64_t chat_id, Stream &stream, size_t size, const char *caption = nullptr)
+    inline bool sendPhoto(int64_t chat_id, Stream &stream, size_t size, const char *filename = nullptr, const char *caption = nullptr)
     {
-        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size, caption);
+        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size, filename, caption);
     }
 
-    inline bool sendPhoto(const TBMessage &msg, Stream &stream, size_t size, const char *caption = nullptr)
+    inline bool sendPhoto(const TBMessage &msg, Stream &stream, size_t size, const char *filename, const char *caption = nullptr)
     {
-        return sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", stream, size, caption);
+        return sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", stream, size, filename, caption);
     }
 
 #if FS_SUPPORT == true // #support for <FS.h> is needed
@@ -236,14 +239,14 @@ public:
     inline bool sendPhoto(int64_t chat_id, const char *filename, fs::FS &fs, const char *caption = nullptr)
     {
         File file = fs.open(filename, "r");
-        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size(), caption);
+        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size(), file.name(), caption);
         file.close();
         return res;
     }
     inline bool sendPhoto(const TBMessage &msg, const char *filename, fs::FS &fs, const char *caption = nullptr)
     {
         File file = fs.open(filename, "r");
-        bool res = sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", file, file.size(), caption);
+        bool res = sendStream(msg.chatId, "sendPhoto", "image/jpeg", "photo", file, file.size(), file.name(), caption);
         file.close();
         return res;
     }
@@ -274,7 +277,7 @@ public:
 
     inline bool sendPhotoByFile(int64_t chat_id, Stream *stream, size_t size)
     {
-        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", *stream, size, nullptr);
+        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", *stream, size, nullptr, nullptr);
     }
 
 #if FS_SUPPORT == true // #support for <FS.h> is needed
@@ -282,7 +285,7 @@ public:
     {
         File file = fs.open(filename, "r");
         Serial.println(file.size());
-        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size(), nullptr);
+        bool res = sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", file, file.size(), file.name(), nullptr);
         file.close();
         return res;
     }
@@ -415,7 +418,7 @@ public:
         m_formatType = format;
     }
 
-    inline void setJsonBufferSize(uint32_t jsonBufferSize){
+	inline void setJsonBufferSize(uint32_t jsonBufferSize){
         m_JsonBufferSize = jsonBufferSize;
     }
 
@@ -435,8 +438,10 @@ private:
     InlineKeyboard *m_keyboards[10];
     uint8_t m_keyboardCount = 0;
 
-    void setformData(int64_t chat_id, const char *cmd, const char *type, const char *propName, size_t size, String &formData, String &request, const char *caption);
-    bool sendStream(int64_t chat_id, const char *command, const char *contentType, const char *binaryPropertyName, Stream &stream, size_t size, const char *caption);
+    void setformData(int64_t chat_id, const char *cmd, const char *type, const char *propName, size_t size,
+        String &formData, String &request, const char *filename, const char *caption);
+    bool sendStream(int64_t chat_id, const char *command, const char *contentType, const char *binaryPropertyName,
+        Stream &stream, size_t size, const char *filename, const char *caption);
     bool sendBuffer(int64_t chat_id, const char *cmd, const char *type, const char *propName, uint8_t *data, size_t size, const char *caption);
 
     SentCallback m_sentCallback = nullptr;

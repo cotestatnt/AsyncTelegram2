@@ -62,23 +62,23 @@ const uint8_t LED = 4;
 // Callback functions definition for inline keyboard buttons
 void onPressed(const TBMessage &queryMsg){
   digitalWrite(LED, HIGH);
-  Serial.printf("\nON button pressed (callback);\nQueryId: %lld\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nON button pressed (callback);\nQueryId: %s\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "Light on", true);
 }
 
 void offPressed(const TBMessage &queryMsg){
   digitalWrite(LED, LOW);
-  Serial.printf("\nOFF button pressed (callback); \nQueryId: %lld\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nOFF button pressed (callback); \nQueryId: %s\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "Light on", false);
 }
 
 void button1Pressed(const TBMessage &queryMsg){
-  Serial.printf("\nButton 1 pressed (callback); \nQueryId: %lld\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nButton 1 pressed (callback); \nQueryId: %s\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "You pressed Button 1", true);
 }
 
 void button2Pressed(const TBMessage &queryMsg){
-  Serial.printf("\nButton 2 pressed (callback); \nQueryId: %lld\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nButton 2 pressed (callback); \nQueryId: %s\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "You pressed Button 2", false);
 }
 

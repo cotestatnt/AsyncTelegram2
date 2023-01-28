@@ -6,7 +6,6 @@
 #define ARDUINOJSON_DECODE_UNICODE  1
 #include <ArduinoJson.h>
 #include "DataStructures.h"
-#include "serial_log.h"
 
 enum ReplyKeyboardButtonType {
   KeyboardButtonSimple   = 1,
@@ -57,7 +56,7 @@ public:
 
 
   inline void clear() {
-    m_json = "{\"keyboard\":[[]]}\"";
+    m_json = "";
   }
 };
 

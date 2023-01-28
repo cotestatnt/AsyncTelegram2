@@ -41,8 +41,11 @@ bool AsyncTelegram2::checkConnection()
         }
 #endif
     }
+    #ifdef ESP8266
     ESP.wdtEnable(10000);
     *((volatile uint32_t*) 0x60000900) |= 1; // Hardware WDT ON
+    #endif
+
     return telegramClient->connected();
 }
 
@@ -115,6 +118,7 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
 
 bool AsyncTelegram2::getUpdates()
 {
+
     // No response from Telegram server for a long time
     if (millis() - m_lastmsg_timestamp > 10 * m_minUpdateTime)
     {
@@ -130,7 +134,7 @@ bool AsyncTelegram2::getUpdates()
         if (m_waitingReply == false)
         {
             char payload[BUFFER_SMALL];
-            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%" INT32 "}", m_lastUpdateId);
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%d}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
         }
     }
@@ -189,7 +193,7 @@ bool AsyncTelegram2::getUpdates()
         }
         else
         {
-            log_debug("%s", m_rxbuffer.c_str());
+            log_error(m_rxbuffer.c_str());
             if (m_sentCallback != nullptr && m_waitSent)
             {
                 m_waitSent = false;
@@ -382,6 +386,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
     return MessageNoData; // waiting for reply from server
 }
 
+
 // Blocking getMe function (we wait for a reply from Telegram server)
 bool AsyncTelegram2::getMe()
 {
@@ -432,7 +437,7 @@ bool AsyncTelegram2::noNewMessage()
         // if(millis() - startTime > 10000UL)
         //     break;
     }
-    log_info("\n");
+    // log_debug("\n");
     return true;
 }
 
@@ -470,7 +475,15 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, cons
     {
         if (strlen(keyboard) || msg.force_reply)
         {
-            DynamicJsonDocument doc(m_JsonBufferSize);
+            // DynamicJsonDocument doc(BUFFER_BIG);
+
+#if defined(ESP8266)
+            DynamicJsonDocument doc(ESP.getMaxFreeBlockSize() - BUFFER_MEDIUM);
+#elif defined(ESP32)
+            DynamicJsonDocument doc(ESP.getMaxAllocHeap());
+#else
+            DynamicJsonDocument doc(BUFFER_BIG);
+#endif
 
             deserializeJson(doc, keyboard);
             JsonObject myKeyb = doc.as<JsonObject>();
@@ -497,7 +510,7 @@ bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chati
 {
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%" INT32 "}",
+             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%d}",
              to_chatid, msg.chatId, msg.messageID);
 
     bool result = sendCommand("forwardMessage", payload);
@@ -543,11 +556,6 @@ bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, boo
         break;
     }
 
-    // char payload[BUFFER_MEDIUM];
-    // snprintf(payload, BUFFER_MEDIUM,
-    //          "{\"chat_id\":\"%s\",\"text\":\"%s\",\"silent\":%s}",
-    //          channel, message, silent ? "true" : "false");
-
     size_t len = measureJson(root);
     char payload[len];
     serializeJson(root, payload, len);
@@ -565,7 +573,7 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool al
         return false;
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-             "{\"callback_query_id\":%lld,\"text\":\"%s\",\"cache_time\":5,\"show_alert\":%s}",
+             "{\"callback_query_id\":%lld,\"text\":\"%s\",\"cache_time\":2,\"show_alert\":%s}",
              msg.callbackQueryID, message, alertMode ? "true" : "false");
     bool result = sendCommand("answerCallbackQuery", payload, true);
     return result;
@@ -581,26 +589,33 @@ bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char *messa
 }
 
 // enum DocumentType { DOCUMENT, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};
-bool AsyncTelegram2::sendDocument(int64_t chat_id, Stream &stream, size_t size, DocumentType doc, const char *caption)
+bool AsyncTelegram2::sendDocument(int64_t chat_id, Stream &stream, size_t size,
+                                    DocumentType doc, const char *filename, const char *caption)
 {
     switch (doc)
     {
+    case JSON:
+        return sendStream(chat_id, "sendDocument", "application/json", "document", stream, size, filename, caption);
+    case CSV:
+        return sendStream(chat_id, "sendDocument", "text/csv", "document", stream, size, filename, caption);
     case ZIP:
-        return sendStream(chat_id, "sendDocument", "application/zip", "zip", stream, size, caption);
+        return sendStream(chat_id, "sendDocument", "application/zip", "document", stream, size, filename, caption);
     case PDF:
-        return sendStream(chat_id, "sendDocument", "application/pdf", "pdf", stream, size, caption);
+        return sendStream(chat_id, "sendDocument", "application/pdf", "document", stream, size, filename, caption);
     case PHOTO:
-        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size, caption);
+        return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size, filename, caption);
     case AUDIO:
-        return sendStream(chat_id, "sendPhoto", "audio/mp3", "audio", stream, size, caption);
+        return sendStream(chat_id, "sendDocument", "audio/mp3", "audio", stream, size, filename, caption);
     default:
-        break;
+        return sendStream(chat_id, "sendDocument", "text/plain", "document", stream, size, filename, caption);
     }
+
     return false;
 }
 
 void AsyncTelegram2::setformData(int64_t chat_id, const char *cmd, const char *type,
-                                 const char *propName, size_t size, String &formData, String &request, const char *caption)
+                                 const char *propName, size_t size, String &formData,
+                                 String &request,const char *filename, const char *caption)
 {
 
 #define BOUNDARY "----WebKitFormBoundary7MA4YWxkTrZu0gW"
@@ -620,7 +635,9 @@ void AsyncTelegram2::setformData(int64_t chat_id, const char *cmd, const char *t
 
     formData += "\r\n--" BOUNDARY "\r\nContent-disposition: form-data; name=\"";
     formData += propName;
-    formData += "\"; filename=\"image.jpg\"\r\nContent-Type: ";
+    formData += "\"; filename=\"";
+    formData += filename != nullptr ? filename : "image.jpg";
+    formData += "\"\r\nContent-Type: ";
     formData += type;
     formData += "\"\r\n\r\n";
     int contentLength = size + formData.length() + strlen(END_BOUNDARY);
@@ -634,7 +651,8 @@ void AsyncTelegram2::setformData(int64_t chat_id, const char *cmd, const char *t
     request += "\r\nContent-Type: multipart/form-data; boundary=" BOUNDARY "\r\n";
 }
 
-bool AsyncTelegram2::sendStream(int64_t chat_id, const char *cmd, const char *type, const char *propName, Stream &stream, size_t size, const char *caption)
+bool AsyncTelegram2::sendStream(int64_t chat_id, const char *cmd, const char *type, const char *propName,
+                                    Stream &stream, size_t size, const char *filename,const char *caption)
 {
     bool res = false;
     if (checkConnection())
@@ -644,7 +662,7 @@ bool AsyncTelegram2::sendStream(int64_t chat_id, const char *cmd, const char *ty
         formData.reserve(512);
         String request;
         request.reserve(256);
-        setformData(chat_id, cmd, type, propName, size, formData, request, caption);
+        setformData(chat_id, cmd, type, propName, size, formData, request, filename, caption);
 
 #if DEBUG_ENABLE
         uint32_t t1 = millis();
@@ -657,8 +675,8 @@ bool AsyncTelegram2::sendStream(int64_t chat_id, const char *cmd, const char *ty
         telegramClient->print(formData);
 
         uint8_t data[BLOCK_SIZE];
-        uint16_t n_block = trunc(size / BLOCK_SIZE);
-        uint16_t lastBytes = size - (n_block * BLOCK_SIZE);
+        int n_block = trunc(size / BLOCK_SIZE);
+        int lastBytes = size - (n_block * BLOCK_SIZE);
 
         for (uint16_t pos = 0; pos < n_block; pos++)
         {
@@ -695,7 +713,7 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char *cmd, const char *ty
         formData.reserve(512);
         String request;
         request.reserve(256);
-        setformData(chat_id, cmd, type, propName, size, formData, request, caption);
+        setformData(chat_id, cmd, type, propName, size, formData, request, caption, caption);
 
 #if DEBUG_ENABLE
         uint32_t t1 = millis();
@@ -707,8 +725,8 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char *cmd, const char *ty
 
         // Serial.println(telegramClient->write((const uint8_t *) data, size));
         uint16_t pos = 0;
-        uint16_t n_block = trunc(size / BLOCK_SIZE);
-        uint16_t lastBytes = size - (n_block * BLOCK_SIZE);
+        int n_block = trunc(size / BLOCK_SIZE);
+        int lastBytes = size - (n_block * BLOCK_SIZE);
 
         for (pos = 0; pos < n_block; pos++)
         {
