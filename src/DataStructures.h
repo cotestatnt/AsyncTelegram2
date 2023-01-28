@@ -3,7 +3,7 @@
 #define DATA_STRUCTURES
 
 #define BUFFER_BIG          2048 		// json parser buffer size (ArduinoJson v6)
-#define BUFFER_MEDIUM     	1028 		// json parser buffer size (ArduinoJson v6)
+#define BUFFER_MEDIUM     	1024 		// json parser buffer size (ArduinoJson v6)
 #define BUFFER_SMALL      	512 		// json parser buffer size (ArduinoJson v6)
 
 enum MessageType {

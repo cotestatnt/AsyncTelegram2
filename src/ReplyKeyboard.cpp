@@ -157,7 +157,7 @@ void ReplyKeyboard::enableResize()
   m_json = "";
   serializeJson(doc, m_json);
 
-  // Serial.println(m_json);
+  Serial.println(m_json);
 }
 
 void ReplyKeyboard::enableOneTime()
