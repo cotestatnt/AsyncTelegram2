@@ -534,6 +534,21 @@ bool AsyncTelegram2::sendPhotoByUrl(const int64_t &chat_id, const char *url, con
     return result;
 }
 
+bool AsyncTelegram2::sendAnimationByUrl(const int64_t &chat_id, const char *url, const char *caption)
+{
+    if (!strlen(url))
+        return false;
+
+    char payload[BUFFER_SMALL];
+    snprintf(payload, BUFFER_SMALL,
+             "{\"chat_id\":%lld,\"video\":\"%s\",\"caption\":\"%s\"}",
+             chat_id, url, caption);
+
+    bool result = sendCommand("sendVideo", payload);
+    log_debug("%s", payload);
+    return result;
+}
+
 bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, bool silent)
 {
     if (!strlen(message))

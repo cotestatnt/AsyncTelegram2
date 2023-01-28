@@ -216,6 +216,9 @@ public:
     // Send a picture passing the url
     bool sendPhotoByUrl(const int64_t &chat_id, const char *url, const char *caption);
 
+    // Send an animation/gif passing the url
+    bool sendAnimationByUrl(const int64_t &chat_id, const char *url, const char *caption);
+
     inline bool sendPhoto(const int64_t &chat_id, const char *url, const char *caption)
     {
         return sendPhotoByUrl(chat_id, url, caption);
