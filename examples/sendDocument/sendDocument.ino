@@ -13,7 +13,6 @@ WiFiClientSecure client;
   X509List  certificate(telegram_cert);
 #endif
 
-
 const uint8_t LED = LED_BUILTIN;
 
 AsyncTelegram2 myBot(client);
@@ -25,16 +24,10 @@ const char* token =  "xxxxxxxx";  // Telegram token
 // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
 int64_t userid = 123456789;
 
-
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
-
-  rst_info *resetInfo;
-  resetInfo = ESP.getResetInfoPtr();
-  Serial.print("Reset reason: ");
-  Serial.println(resetInfo->reason);
 
   WiFi.setAutoConnect(true);
   WiFi.mode(WIFI_STA);
@@ -83,8 +76,8 @@ void setup() {
   // Send a welcome message to user when ready
   char welcome_msg[128];
   snprintf(welcome_msg, sizeof(welcome_msg),
-          "BOT @%s online.\n/help for command list.\nLast reset reason: %d",
-          myBot.getBotName(), resetInfo->reason);
+          "BOT @%s online.\n/help for command list.\n",
+          myBot.getBotName());
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
