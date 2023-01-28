@@ -510,7 +510,7 @@ bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chati
 {
     char payload[BUFFER_SMALL];
     snprintf(payload, BUFFER_SMALL,
-             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%d}",
+             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%" INT32 "}",
              to_chatid, msg.chatId, msg.messageID);
 
     bool result = sendCommand("forwardMessage", payload);
