@@ -744,20 +744,6 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char *cmd, const char *ty
         t1 = millis();
 #endif
 
-        // Handle reply with getUpdates() method
-
-        // // Read server reply
-        // while (telegramClient->connected()) {
-        //     if (telegramClient->find((char*)"{\"ok\":true")) {
-        //         res = true;
-        //         break;
-        //     }
-        // }
-        // log_debug("Read reply time: %lums\n", millis() - t1);
-        // telegramClient->stop();
-        // m_lastmsg_timestamp = millis();
-        // m_waitingReply = false;
-        // return res;
     }
     else
         Serial.println("\nError: client not connected");
