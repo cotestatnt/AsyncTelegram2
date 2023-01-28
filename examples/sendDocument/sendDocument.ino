@@ -17,13 +17,13 @@ WiFiClientSecure client;
 const uint8_t LED = LED_BUILTIN;
 
 AsyncTelegram2 myBot(client);
-const char* ssid  =  "PuccosNET";     // SSID WiFi network
-const char* pass  =  "Tole76tnt";     // Password  WiFi network
-const char* token =  "5946605585:AAHBcK0DCVMftM3lRHtr800v3GEz9OCzre4";  // Telegram token
+const char* ssid  =  "xxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxx";  // Telegram token
 
 // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
 // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-int64_t userid = 5631852587;
+int64_t userid = 123456789;
 
 
 void setup() {
