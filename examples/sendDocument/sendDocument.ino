@@ -13,21 +13,29 @@ WiFiClientSecure client;
   X509List  certificate(telegram_cert);
 #endif
 
+
 const uint8_t LED = LED_BUILTIN;
 
 AsyncTelegram2 myBot(client);
-const char* ssid  =  "xxxxxx";     // SSID WiFi network
-const char* pass  =  "xxxxxx";     // Password  WiFi network
-const char* token =  "xxxxxxxx";  // Telegram token
+
+const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxx:xxxxxxxxxxxxx";  // Telegram token
 
 // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
 // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
 int64_t userid = 123456789;
 
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
+
+  rst_info *resetInfo;
+  resetInfo = ESP.getResetInfoPtr();
+  Serial.print("Reset reason: ");
+  Serial.println(resetInfo->reason);
 
   WiFi.setAutoConnect(true);
   WiFi.mode(WIFI_STA);
@@ -76,8 +84,8 @@ void setup() {
   // Send a welcome message to user when ready
   char welcome_msg[128];
   snprintf(welcome_msg, sizeof(welcome_msg),
-          "BOT @%s online.\n/help for command list.\n",
-          myBot.getBotName());
+          "BOT @%s online.\n/help for command list.\nLast reset reason: %d",
+          myBot.getBotName(), resetInfo->reason);
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
@@ -127,7 +135,7 @@ void loop() {
           myBot.sendDocument(msg, file, file.size(), AsyncTelegram2::DocumentType::CSV, file.name());
           file.close();
         }
-        else 
+        else
           Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
       }
 
@@ -138,7 +146,7 @@ void loop() {
           myBot.sendDocument(msg, file, file.size(), AsyncTelegram2::DocumentType::ZIP, file.name(), "A zip file");
           file.close();
         }
-        else 
+        else
           Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
       }
 
@@ -149,18 +157,7 @@ void loop() {
           myBot.sendDocument(msg, file, file.size(), AsyncTelegram2::DocumentType::PDF, file.name(), "A pdf file");
           file.close();
         }
-        else 
-          Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
-      }
-
-      else if (msgText.indexOf("/audio") > -1) {
-        Serial.println("\nSending a ogg file from filesystem");
-        File file = LittleFS.open("/audio.ogg", "r");
-        if (file) {
-          myBot.sendDocument(msg, file, file.size(), AsyncTelegram2::DocumentType::AUDIO, file.name(), "Play me!");
-          file.close();
-        }
-        else 
+        else
           Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
       }
 
