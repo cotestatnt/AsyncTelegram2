@@ -1,0 +1,86 @@
+\hypertarget{serial__log_8h}{}\doxysection{src/serial\+\_\+log.h File Reference}
+\label{serial__log_8h}\index{src/serial\_log.h@{src/serial\_log.h}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+Include dependency graph for serial\+\_\+log.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{log\+\_\+debug}}(format, ...)
+\item 
+\#define \mbox{\hyperlink{serial__log_8h_aedd9ecc335f8cced4a69f9f8329130e1}{log\+\_\+warning}}(args)
+\item 
+\#define \mbox{\hyperlink{serial__log_8h_a8b581e655c12106bd78a636d1d107651}{log\+\_\+info}}(x)
+\item 
+\#define \mbox{\hyperlink{serial__log_8h_a194d3ac058ef1c1146f12cc5ba1be3d3}{log\+\_\+error}}(x)
+\item 
+\#define \mbox{\hyperlink{serial__log_8h_a34ec07116f1ed1ab676f439fb382cb5b}{debug\+Json}}(X,  Y)
+\item 
+\#define \mbox{\hyperlink{serial__log_8h_a991ba594d4a025d40d8ca312fdc8f2a7}{error\+Json}}(E)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{serial__log_8h_a34ec07116f1ed1ab676f439fb382cb5b}\label{serial__log_8h_a34ec07116f1ed1ab676f439fb382cb5b}} 
+\index{serial\_log.h@{serial\_log.h}!debugJson@{debugJson}}
+\index{debugJson@{debugJson}!serial\_log.h@{serial\_log.h}}
+\doxysubsubsection{\texorpdfstring{debugJson}{debugJson}}
+{\footnotesize\ttfamily \#define debug\+Json(\begin{DoxyParamCaption}\item[{}]{X,  }\item[{}]{Y }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{serial__log_8h_source_l00049}{49}} of file \mbox{\hyperlink{serial__log_8h_source}{serial\+\_\+log.\+h}}.
+
+\mbox{\Hypertarget{serial__log_8h_a991ba594d4a025d40d8ca312fdc8f2a7}\label{serial__log_8h_a991ba594d4a025d40d8ca312fdc8f2a7}} 
+\index{serial\_log.h@{serial\_log.h}!errorJson@{errorJson}}
+\index{errorJson@{errorJson}!serial\_log.h@{serial\_log.h}}
+\doxysubsubsection{\texorpdfstring{errorJson}{errorJson}}
+{\footnotesize\ttfamily \#define error\+Json(\begin{DoxyParamCaption}\item[{}]{E }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{serial__log_8h_source_l00050}{50}} of file \mbox{\hyperlink{serial__log_8h_source}{serial\+\_\+log.\+h}}.
+
+\mbox{\Hypertarget{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}\label{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}} 
+\index{serial\_log.h@{serial\_log.h}!log\_debug@{log\_debug}}
+\index{log\_debug@{log\_debug}!serial\_log.h@{serial\_log.h}}
+\doxysubsubsection{\texorpdfstring{log\_debug}{log\_debug}}
+{\footnotesize\ttfamily \#define log\+\_\+debug(\begin{DoxyParamCaption}\item[{}]{format,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{serial__log_8h_source_l00044}{44}} of file \mbox{\hyperlink{serial__log_8h_source}{serial\+\_\+log.\+h}}.
+
+\mbox{\Hypertarget{serial__log_8h_a194d3ac058ef1c1146f12cc5ba1be3d3}\label{serial__log_8h_a194d3ac058ef1c1146f12cc5ba1be3d3}} 
+\index{serial\_log.h@{serial\_log.h}!log\_error@{log\_error}}
+\index{log\_error@{log\_error}!serial\_log.h@{serial\_log.h}}
+\doxysubsubsection{\texorpdfstring{log\_error}{log\_error}}
+{\footnotesize\ttfamily \#define log\+\_\+error(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{serial__log_8h_source_l00047}{47}} of file \mbox{\hyperlink{serial__log_8h_source}{serial\+\_\+log.\+h}}.
+
+\mbox{\Hypertarget{serial__log_8h_a8b581e655c12106bd78a636d1d107651}\label{serial__log_8h_a8b581e655c12106bd78a636d1d107651}} 
+\index{serial\_log.h@{serial\_log.h}!log\_info@{log\_info}}
+\index{log\_info@{log\_info}!serial\_log.h@{serial\_log.h}}
+\doxysubsubsection{\texorpdfstring{log\_info}{log\_info}}
+{\footnotesize\ttfamily \#define log\+\_\+info(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{serial__log_8h_source_l00046}{46}} of file \mbox{\hyperlink{serial__log_8h_source}{serial\+\_\+log.\+h}}.
+
+\mbox{\Hypertarget{serial__log_8h_aedd9ecc335f8cced4a69f9f8329130e1}\label{serial__log_8h_aedd9ecc335f8cced4a69f9f8329130e1}} 
+\index{serial\_log.h@{serial\_log.h}!log\_warning@{log\_warning}}
+\index{log\_warning@{log\_warning}!serial\_log.h@{serial\_log.h}}
+\doxysubsubsection{\texorpdfstring{log\_warning}{log\_warning}}
+{\footnotesize\ttfamily \#define log\+\_\+warning(\begin{DoxyParamCaption}\item[{}]{args }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{serial__log_8h_source_l00045}{45}} of file \mbox{\hyperlink{serial__log_8h_source}{serial\+\_\+log.\+h}}.
+

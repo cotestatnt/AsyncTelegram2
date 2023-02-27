@@ -25,7 +25,7 @@ char str[30]; strftime(str, sizeof(str), "%c", &t); Serial.print(str);}
 
 
 #define PRINT_FILE_LINE() {PRINT_TIME() Serial.print(" [");Serial.print(__FILE_NAME__); \
-Serial.print(":");Serial.print(__LINE__);Serial.print(" "); Serial.print(__FUNCTION__); Serial.print("()]");}
+Serial.print(":");Serial.print(__LINE__);Serial.print(" "); Serial.print(__FUNCTION__); Serial.print("()]\t");}
 #if defined(ESP32) || defined(ESP8266)
 #define log_debug(format, args...) { PRINT_FILE_LINE() Serial.printf(format, args); Serial.println();}
 #else

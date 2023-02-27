@@ -1,0 +1,39 @@
+\hypertarget{_async_telegram2_8cpp}{}\doxysection{src/\+Async\+Telegram2.cpp File Reference}
+\label{_async_telegram2_8cpp}\index{src/AsyncTelegram2.cpp@{src/AsyncTelegram2.cpp}}
+{\ttfamily \#include \char`\"{}Async\+Telegram2.\+h\char`\"{}}\newline
+Include dependency graph for Async\+Telegram2.\+cpp\+:
+% FIG 0
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_async_telegram2_8cpp_ad52684f7aaf665e4e3a804865854635a}{HEADERS\+\_\+\+END}}~\char`\"{}\textbackslash{}r\textbackslash{}n\textbackslash{}r\textbackslash{}n\char`\"{}
+\item 
+\#define \mbox{\hyperlink{_async_telegram2_8cpp_a985bae7b67bcb96c5565a24a5f6d4cba}{BOUNDARY}}~\char`\"{}-\/-\/-\/-\/Web\+Kit\+Form\+Boundary7\+MA4\+YWxk\+Tr\+Zu0g\+W\char`\"{}
+\item 
+\#define \mbox{\hyperlink{_async_telegram2_8cpp_a24a813330ce8132f9870ebfff57cb601}{END\+\_\+\+BOUNDARY}}~\char`\"{}\textbackslash{}r\textbackslash{}n-\/-\/\char`\"{} BOUNDARY \char`\"{}-\/-\/\textbackslash{}r\textbackslash{}n\char`\"{}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_async_telegram2_8cpp_a985bae7b67bcb96c5565a24a5f6d4cba}\label{_async_telegram2_8cpp_a985bae7b67bcb96c5565a24a5f6d4cba}} 
+\index{AsyncTelegram2.cpp@{AsyncTelegram2.cpp}!BOUNDARY@{BOUNDARY}}
+\index{BOUNDARY@{BOUNDARY}!AsyncTelegram2.cpp@{AsyncTelegram2.cpp}}
+\doxysubsubsection{\texorpdfstring{BOUNDARY}{BOUNDARY}}
+{\footnotesize\ttfamily \#define BOUNDARY~\char`\"{}-\/-\/-\/-\/Web\+Kit\+Form\+Boundary7\+MA4\+YWxk\+Tr\+Zu0g\+W\char`\"{}}
+
+\mbox{\Hypertarget{_async_telegram2_8cpp_a24a813330ce8132f9870ebfff57cb601}\label{_async_telegram2_8cpp_a24a813330ce8132f9870ebfff57cb601}} 
+\index{AsyncTelegram2.cpp@{AsyncTelegram2.cpp}!END\_BOUNDARY@{END\_BOUNDARY}}
+\index{END\_BOUNDARY@{END\_BOUNDARY}!AsyncTelegram2.cpp@{AsyncTelegram2.cpp}}
+\doxysubsubsection{\texorpdfstring{END\_BOUNDARY}{END\_BOUNDARY}}
+{\footnotesize\ttfamily \#define END\+\_\+\+BOUNDARY~\char`\"{}\textbackslash{}r\textbackslash{}n-\/-\/\char`\"{} BOUNDARY \char`\"{}-\/-\/\textbackslash{}r\textbackslash{}n\char`\"{}}
+
+\mbox{\Hypertarget{_async_telegram2_8cpp_ad52684f7aaf665e4e3a804865854635a}\label{_async_telegram2_8cpp_ad52684f7aaf665e4e3a804865854635a}} 
+\index{AsyncTelegram2.cpp@{AsyncTelegram2.cpp}!HEADERS\_END@{HEADERS\_END}}
+\index{HEADERS\_END@{HEADERS\_END}!AsyncTelegram2.cpp@{AsyncTelegram2.cpp}}
+\doxysubsubsection{\texorpdfstring{HEADERS\_END}{HEADERS\_END}}
+{\footnotesize\ttfamily \#define HEADERS\+\_\+\+END~\char`\"{}\textbackslash{}r\textbackslash{}n\textbackslash{}r\textbackslash{}n\char`\"{}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00003}{3}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+

@@ -1,0 +1,83 @@
+\hypertarget{_inline_keyboard_8h_source}{}\doxysection{Inline\+Keyboard.\+h}
+\label{_inline_keyboard_8h_source}\index{src/InlineKeyboard.h@{src/InlineKeyboard.h}}
+\mbox{\hyperlink{_inline_keyboard_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00001}00001\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00002}00002\ \textcolor{preprocessor}{\#ifndef\ INLINE\_KEYBOARD}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00003}00003\ \textcolor{preprocessor}{\#define\ INLINE\_KEYBOARD}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00005}\mbox{\hyperlink{_inline_keyboard_8h_ad04364871efb11788ea94d5f5417072c}{00005}}\ \textcolor{preprocessor}{\#define\ ARDUINOJSON\_USE\_LONG\_LONG\ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00006}\mbox{\hyperlink{_inline_keyboard_8h_a335b842b5c1d56001f7bb14a0da46990}{00006}}\ \textcolor{preprocessor}{\#define\ ARDUINOJSON\_DECODE\_UNICODE\ \ 1}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <ArduinoJson.h>}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00008}00008\ \textcolor{comment}{//\ \#include\ <functional>}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_data_structures_8h}{DataStructures.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00011}\mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137}{00011}}\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137}{InlineKeyboardButtonType}}\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00012}\mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a992d422c593357352cbd0c428cd21f86}{00012}}\ \ \ \mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a992d422c593357352cbd0c428cd21f86}{KeyboardButtonURL}}\ \ \ \ =\ 1,}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00013}00013\ \ \ \mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a1ec2de53fb0d0aaeb6edb9c835dc8e85}{KeyboardButtonQuery}}\ \ =\ 2}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00014}\mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a1ec2de53fb0d0aaeb6edb9c835dc8e85}{00014}}\ \};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00017}\mbox{\hyperlink{class_inline_keyboard}{00017}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_inline_keyboard}{InlineKeyboard}}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00019}00019\ \ \textcolor{keyword}{typedef}\ void(*CallbackType)(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00020}00020\ \textcolor{comment}{//using\ CallbackType\ =\ std::function<void(const\ TBMessage\ \&msg)>;}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00022}00022\ \textcolor{keyword}{struct\ }InlineButton\{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00023}00023\ \ \ \textcolor{keywordtype}{char}\ \ \ \ \ \ *btnName;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00024}00024\ \ \ CallbackType\ argCallback;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00025}00025\ \ \ InlineButton\ *nextButton;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00026}00026\ \}\ ;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00028}00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00029}00029\ \ \ \mbox{\hyperlink{class_inline_keyboard_ae8ef8cb1a2bc3c77ba84ea01792691b9}{InlineKeyboard}}();}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00030}\mbox{\hyperlink{class_inline_keyboard_a421b5ff7326ed4afcef668b01322bf67}{00030}}\ \ \ \mbox{\hyperlink{class_inline_keyboard_a421b5ff7326ed4afcef668b01322bf67}{InlineKeyboard}}(\textcolor{keyword}{const}\ String\&\ keyboard);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00031}00031\ \ \ \mbox{\hyperlink{class_inline_keyboard_a19f17c90991eaa9bbac9ac230e7a3590}{\string~InlineKeyboard}}();}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00033}00033\ \ \ \textcolor{comment}{//\ Get\ total\ number\ of\ keyboard\ buttons}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00034}00034\ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_inline_keyboard_aeb603b92da619f62815e3dbf5229ab55}{getButtonsNumber}}()\ ;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00036}00036\ \ \ \textcolor{comment}{//\ add\ a\ new\ empty\ row\ of\ buttons}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00037}00037\ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00038}00038\ \ \ \textcolor{comment}{//\ \ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00039}00039\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_inline_keyboard_a39885c6fb2a210ad103f2f7f601d7068}{addRow}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00041}00041\ \ \ \textcolor{comment}{//\ add\ a\ button\ in\ the\ current\ row}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00042}00042\ \ \ \textcolor{comment}{//\ params:}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00043}00043\ \ \ \textcolor{comment}{//\ \ \ text\ \ \ :\ the\ text\ displayed\ as\ button\ label}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00044}00044\ \ \ \textcolor{comment}{//\ \ \ command:\ URL\ (if\ buttonType\ is\ CTBotKeyboardButtonURL)}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00045}00045\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ callback\ query\ data\ (if\ buttonType\ is\ CTBotKeyboardButtonQuery)}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00046}00046\ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00047}00047\ \ \ \textcolor{comment}{//\ \ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00048}00048\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_inline_keyboard_a1451827b7fa83562282e797767eacd1b}{addButton}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ text,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ command,\ \mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137}{InlineKeyboardButtonType}}\ buttonType,\ CallbackType\ onClick\ =\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00050}00050\ \ \ \textcolor{comment}{//\ generate\ a\ string\ that\ contains\ the\ inline\ keyboard\ formatted\ in\ a\ JSON\ structure.}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00051}00051\ \ \ \textcolor{comment}{//\ Useful\ for\ CTBot::sendMessage()}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00052}00052\ \ \ \textcolor{comment}{//\ returns:}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00053}00053\ \ \ \textcolor{comment}{//\ \ \ the\ JSON\ of\ the\ inline\ keyboard}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00054}00054\ \ \ String\ \mbox{\hyperlink{class_inline_keyboard_af533b314d9647a83f6d92e17e6d93e4a}{getJSON}}(\textcolor{keywordtype}{void})\ \textcolor{keyword}{const}\ ;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00055}00055\ \ \ String\ \mbox{\hyperlink{class_inline_keyboard_afe7ddbc6793104840a41cea239a0d380}{getJSONPretty}}(\textcolor{keywordtype}{void})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00057}\mbox{\hyperlink{class_inline_keyboard_a9ada3c44cb384f8ce8db8d4fdfba60e9}{00057}}\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_inline_keyboard_a9ada3c44cb384f8ce8db8d4fdfba60e9}{clear}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00058}00058\ \ \ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}\{\(\backslash\)"{}inline\_keyboard\(\backslash\)"{}:[[]]\}\(\backslash\)"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00059}00059\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00061}00061\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00062}\mbox{\hyperlink{class_inline_keyboard_a92dfb3d8c63f36b84acc8554de69dfab}{00062}}\ \ \ \textcolor{keyword}{friend}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_async_telegram2}{AsyncTelegram2}};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00063}00063\ \ \ String\ \ \ \ \ \ \ \ \ \ \ \ m\_json;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00064}00064\ \ \ String\ \ \ \ \ \ \ \ \ \ \ \ m\_name;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00066}00066\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ m\_buttonsCounter\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00067}00067\ \ \ InlineButton\ \ *\_firstButton\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00068}00068\ \ \ InlineButton\ \ *\_lastButton\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00070}00070\ \ \ \textcolor{comment}{//\ Check\ if\ a\ callback\ function\ has\ to\ be\ called\ for\ a\ button\ query\ reply\ message}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00071}00071\ \ \ \textcolor{keywordtype}{void}\ checkCallback(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg)\ ;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00073}00073\ \};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8h_source_l00077}00077\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

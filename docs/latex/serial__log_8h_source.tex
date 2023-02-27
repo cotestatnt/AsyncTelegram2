@@ -1,0 +1,64 @@
+\hypertarget{serial__log_8h_source}{}\doxysection{serial\+\_\+log.\+h}
+\label{serial__log_8h_source}\index{src/serial\_log.h@{src/serial\_log.h}}
+\mbox{\hyperlink{serial__log_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00001}00001\ \textcolor{preprocessor}{\#ifndef\ \_\_LOG\_H\_\_}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00002}00002\ \textcolor{preprocessor}{\#define\ \_\_LOG\_H\_\_}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00004}00004\ \textcolor{preprocessor}{\#include\ <stdio.h>}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00005}00005\ \textcolor{preprocessor}{\#include\ <string.h>}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00007}00007\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00008}00008\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00009}00009\ \{}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00010}00010\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00012}00012\ \textcolor{comment}{//\ \#define\ \_LOG\_FORMAT(letter,\ format)\ \ "{}\(\backslash\)n["{}\ \#letter\ "{}][\%s:\%u]\ \%s():\(\backslash\)t"{}\ format,\ \_\_FILE\_NAME\_\_,\ \_\_LINE\_\_,\ \_\_FUNCTION\_\_}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00014}00014\ \textcolor{preprocessor}{\#if\ DEBUG\_ENABLE}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00015}00015\ \textcolor{comment}{//\ Windows}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00016}00016\ \textcolor{preprocessor}{\#define\ \_\_FILE\_NAME\_\_\ (strrchr(\_\_FILE\_\_,\ '\(\backslash\)\(\backslash\)')\ ?\ strrchr(\_\_FILE\_\_,\ '\(\backslash\)\(\backslash\)')\ +\ 1\ :\ \_\_FILE\_\_)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00017}00017\ \textcolor{comment}{//\ Linux,\ Mac}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00018}00018\ \textcolor{comment}{//\ \#define\ \_\_FILE\_NAME\_\_\ (strrchr(\_\_FILE\_\_,\ '/')\ ?\ strrchr(\_\_FILE\_\_,\ '/')\ +\ 1\ :\ \_\_FILE\_\_)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00019}00019\ \textcolor{preprocessor}{\#if\ defined(ESP32)\ ||\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00020}00020\ \textcolor{preprocessor}{\#define\ PRINT\_TIME()\ \{struct\ tm\ t;\ time\_t\ now\ =\ time(nullptr);\ t\ =\ *localtime(\&now);\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00021}00021\ \textcolor{preprocessor}{char\ str[30];\ strftime(str,\ sizeof(str),\ "{}\%c"{}},\ \&t);\ Serial.print(str);\}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00022}00022\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00023}00023\ \textcolor{preprocessor}{\#define\ PRINT\_TIME()\ Serial.print(millis());}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00024}00024\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00027}00027\ \textcolor{preprocessor}{\#define\ PRINT\_FILE\_LINE()\ \{PRINT\_TIME()\ Serial.print("{}\ ["{}});Serial.print(\_\_FILE\_NAME\_\_);\ \(\backslash\)}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00028}00028\ Serial.print("{}:"{});Serial.print(\_\_LINE\_\_);Serial.print("{}\ "{});\ Serial.print(\_\_FUNCTION\_\_);\ Serial.print("{}()]\(\backslash\)t"{});\}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00029}00029\ \textcolor{preprocessor}{\#if\ defined(ESP32)\ ||\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00030}00030\ \textcolor{preprocessor}{\#define\ log\_debug(format,\ args...)\ \{\ PRINT\_FILE\_LINE()\ Serial.printf(format,\ args);\ Serial.println();\}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00031}00031\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00032}00032\ \textcolor{preprocessor}{\#define\ log\_debug(format,\ args...)\ \{\ PRINT\_FILE\_LINE()\ char\ buf[250];\ \ \ sprintf(buf,\ format,\ args);\ Serial.println(buf);\}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00033}00033\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00035}00035\ \textcolor{preprocessor}{\#define\ log\_error(x)\ \{PRINT\_FILE\_LINE()\ Serial.println(x);\}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00036}00036\ \textcolor{preprocessor}{\#define\ log\_info(x)\ \{\ PRINT\_FILE\_LINE()\ Serial.println(x);\}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00037}00037\ \textcolor{preprocessor}{\#define\ log\_warning(args)\ \{\ PRINT\_FILE\_LINE()\ Serial.print("{}-\/W-\/"{}});\ Serial.println(args);\}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00038}00038\ \textcolor{comment}{//\ \#define\ log\_debug(format,\ ...)\ Serial.printf(\_LOG\_FORMAT(D,\ format),\ \#\#\_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00039}00039\ \textcolor{comment}{//\ \#define\ log\_error(format,\ ...)\ \{\ Serial.println();\ Serial.printf(\_LOG\_FORMAT(E,\ format),\ \#\#\_\_VA\_ARGS\_\_);\ \}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00040}00040\ \textcolor{preprocessor}{\#define\ debugJson(X,\ Y)\ \{\ PRINT\_FILE\_LINE()\ Serial.println();\ serializeJsonPretty(X,\ Y);\ Serial.println();\}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00041}00041\ \textcolor{preprocessor}{\#define\ errorJson(E)\ \{\ PRINT\_FILE\_LINE()\ Serial.println();\ Serial.println(E);\ \}}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00043}00043\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00044}\mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{00044}}\ \textcolor{preprocessor}{\#define\ log\_debug(format,\ ...)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00045}\mbox{\hyperlink{serial__log_8h_aedd9ecc335f8cced4a69f9f8329130e1}{00045}}\ \textcolor{preprocessor}{\#define\ log\_warning(args)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00046}\mbox{\hyperlink{serial__log_8h_a8b581e655c12106bd78a636d1d107651}{00046}}\ \textcolor{preprocessor}{\#define\ log\_info(x)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00047}\mbox{\hyperlink{serial__log_8h_a194d3ac058ef1c1146f12cc5ba1be3d3}{00047}}\ \textcolor{preprocessor}{\#define\ log\_error(x)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00049}\mbox{\hyperlink{serial__log_8h_a34ec07116f1ed1ab676f439fb382cb5b}{00049}}\ \textcolor{preprocessor}{\#define\ debugJson(X,\ Y)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00050}\mbox{\hyperlink{serial__log_8h_a991ba594d4a025d40d8ca312fdc8f2a7}{00050}}\ \textcolor{preprocessor}{\#define\ errorJson(E)}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00051}00051\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00054}00054\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00055}00055\ \}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00056}00056\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{serial__log_8h_source_l00058}00058\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

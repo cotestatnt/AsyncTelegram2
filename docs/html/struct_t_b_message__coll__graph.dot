@@ -1,0 +1,16 @@
+digraph "TBMessage"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  Node1 [label="TBMessage",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="darkorchid3",style="dashed",label=" member\nsender" ];
+  Node2 [label="TBUser",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$struct_t_b_user.html",tooltip=" "];
+  Node3 -> Node1 [dir="back",color="darkorchid3",style="dashed",label=" location" ];
+  Node3 [label="TBLocation",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$struct_t_b_location.html",tooltip=" "];
+  Node4 -> Node1 [dir="back",color="darkorchid3",style="dashed",label=" contact" ];
+  Node4 [label="TBContact",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$struct_t_b_contact.html",tooltip=" "];
+  Node5 -> Node1 [dir="back",color="darkorchid3",style="dashed",label=" document" ];
+  Node5 [label="TBDocument",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$struct_t_b_document.html",tooltip=" "];
+}

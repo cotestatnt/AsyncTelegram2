@@ -1,0 +1,740 @@
+\hypertarget{class_async_telegram2}{}\doxysection{Async\+Telegram2 Class Reference}
+\label{class_async_telegram2}\index{AsyncTelegram2@{AsyncTelegram2}}
+
+
+{\ttfamily \#include $<$Async\+Telegram2.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{Document\+Type}} \{ \newline
+\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea4f97963b62fbe2bcf52de140b710c820}{ZIP}}
+, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cead3436454c890ced213ecbb35a7efd17b}{PDF}}
+, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5d559fa70b6ab890b18ad16f71b18462}{PHOTO}}
+, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea6324e6c44aca79c415ab660fce156c9f}{ANIMATION}}
+, \newline
+\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea67c24f091f3223c581ebd5ec87fa8f63}{AUDIO}}
+, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5980b573df9dcb42fd086e93c56d438c}{VOICE}}
+, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea1e60136ec171b132b49ce682a209d21d}{VIDEO}}
+, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea2388288943109c405b9ee7f18936d5d9}{CSV}}
+, \newline
+\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea9dac12e3c50154c1bdf2878c8c116ca9}{JSON}}
+ \}
+\item 
+enum \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10}{Format\+Style}} \{ \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10a30e126b7c8e791e3c14a0de4aa6db7b8}{NONE}}
+, \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abcff4774f8b4c305dcb53e7e5782415c}{HTML}}
+, \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abe53632e1a588b53f88ca5785ad107f0}{MARKDOWN}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_async_telegram2_aa2da6b68a537f30474f2e0540f895372}{Async\+Telegram2}} (Client \&client, uint32\+\_\+t buffer\+Size=\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\+\_\+\+BIG}})
+\item 
+\mbox{\hyperlink{class_async_telegram2_a72bda6fec7f854f4668019ffa7529395}{$\sim$\+Async\+Telegram2}} ()
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a30f85b610901712f91ff48432d8ff5e8}{begin}} (void)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a7c66734e475862fe039748724afbd7f8}{reset}} (void)
+\item 
+void \mbox{\hyperlink{class_async_telegram2_aa249d7056da53a09706c1a24f1f6c892}{set\+Telegram\+Token}} (const char $\ast$token)
+\item 
+void \mbox{\hyperlink{class_async_telegram2_abe5cc4cf9cf7e92c7a4e662fccc2c83d}{set\+Update\+Time}} (uint32\+\_\+t polling\+Time)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a427a550eb618a3f4383b51a3756e7a8b}{get\+File}} (\mbox{\hyperlink{struct_t_b_document}{TBDocument}} \&doc)
+\item 
+\mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} \mbox{\hyperlink{class_async_telegram2_a79915206e619151282347de69c1c715d}{get\+New\+Message}} (\mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&message)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}{send\+Message}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const char $\ast$message, const char $\ast$keyboard=nullptr, bool wait=false)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a7e41b708d91be89b6fb4ecba16f0e48c}{send\+Message}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const String \&message, String keyboard=\char`\"{}\char`\"{})
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a8e23f21b44eb40bec140091cd4590798}{send\+Message}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const char $\ast$message, \mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} \&keyboard)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ab464ecfbea296e32590e09c55fdf7550}{send\+Message}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const char $\ast$message, \mbox{\hyperlink{class_reply_keyboard}{Reply\+Keyboard}} \&keyboard)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ae25e548e6abd3972b442b6d4d14a9a49}{forward\+Message}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const int64\+\_\+t to\+\_\+chatid)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_aa081b4af5340bd5a0dcc492d66540768}{send\+To\+Channel}} (const char $\ast$channel, const char $\ast$message, bool silent=false)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ab27c01a9d59862b9de630a52432b5800}{send\+To\+Channel}} (const String \&channel, const String \&message, bool silent)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a46f9dc85d1e8226a06b53755e9455914}{send\+To}} (const int64\+\_\+t userid, const char $\ast$message, const char $\ast$keyboard=nullptr)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_abe43332c64ac73ec078092f53279d1f0}{send\+To}} (const int64\+\_\+t userid, const String \&message, String keyboard=\char`\"{}\char`\"{})
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a78eed6d82d6cca9e3869dedf061590d0}{send\+Document}} (int64\+\_\+t chat\+\_\+id, Stream \&stream, size\+\_\+t size, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{Document\+Type}} doc, const char $\ast$filename, const char $\ast$caption=nullptr)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_aed00b2014187fce21551c67c16fa7e65}{send\+Document}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, Stream \&stream, size\+\_\+t size, \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{Document\+Type}} doc, const char $\ast$filename, const char $\ast$caption=nullptr)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}{send\+Photo\+By\+Url}} (const int64\+\_\+t \&chat\+\_\+id, const char $\ast$url, const char $\ast$caption)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a0e6caf66c0341e5a68fa7f7edfe213f2}{send\+Animation\+By\+Url}} (const int64\+\_\+t \&chat\+\_\+id, const char $\ast$url, const char $\ast$caption)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ad18d53227f670ba4523a7232148b62a9}{send\+Photo}} (const int64\+\_\+t \&chat\+\_\+id, const char $\ast$url, const char $\ast$caption)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a3236aefd94c0e90f2e045183362e462b}{send\+Photo}} (const int64\+\_\+t \&chat\+\_\+id, const String \&url, const String \&caption)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a9f0265ed86397a2c7965af009f3938c3}{send\+Photo}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const String \&url, const String \&caption)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_adb3bdd31300a50b5b687c123b06e8d91}{send\+Photo}} (int64\+\_\+t chat\+\_\+id, Stream \&stream, size\+\_\+t size, const char $\ast$filename=nullptr, const char $\ast$caption=nullptr)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ae9991040d1a8f089cd14c203da99d9e3}{send\+Photo}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, Stream \&stream, size\+\_\+t size, const char $\ast$filename, const char $\ast$caption=nullptr)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a229bc4a406a6380d750e76641339889c}{send\+Photo}} (int64\+\_\+t chat\+\_\+id, uint8\+\_\+t $\ast$data, size\+\_\+t size, const char $\ast$caption=nullptr)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ad562e66058afc9f16f8b3b3394a4be0c}{send\+Photo}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, uint8\+\_\+t $\ast$data, size\+\_\+t size, const char $\ast$caption=nullptr)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a2d0a0affe7559b2e6193cffe8a883d61}{send\+Photo\+By\+Url}} (const int64\+\_\+t \&chat\+\_\+id, const String \&url, const String \&caption)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ac7d93fc1919248f9457ec811abeb81d7}{send\+Photo\+By\+Url}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const String \&url, const String \&caption)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a7b803024488ebd1835aacbc2046babed}{send\+Photo\+By\+File}} (int64\+\_\+t chat\+\_\+id, Stream $\ast$stream, size\+\_\+t size)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a4e7d5186ea63a6e342503394189cf1c8}{end\+Query}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const char $\ast$message, bool alert\+Mode=false)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_aca60e039d76f080c3123cb329b18e831}{remove\+Reply\+Keyboard}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const char $\ast$message, bool selective=false)
+\item 
+const char $\ast$ \mbox{\hyperlink{class_async_telegram2_a70e697d61940abe3c26020b02634dfb1}{get\+Bot\+Name}} ()
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_aaec5ad8e68a7409c21ae629545407fad}{no\+New\+Message}} ()
+\item 
+int64\+\_\+t \mbox{\hyperlink{class_async_telegram2_a4dc70dbb80911d3253a95ea4a19daa21}{get\+Group\+Id}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg)
+\item 
+void \mbox{\hyperlink{class_async_telegram2_a4b412a4052949ecad188e5eef0034f6f}{add\+Inline\+Keyboard}} (\mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} $\ast$keyb)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a0a0c361a02fc19d233ae6136ccf781b3}{set\+My\+Commands}} (const String \&cmd, const String \&desc)
+\item 
+void \mbox{\hyperlink{class_async_telegram2_a14dc64422808c51a7a14dd3261be575d}{get\+My\+Commands}} (String \&cmd\+List)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a4ec850e59adae8852c90ced61d3845de}{delete\+My\+Commands}} ()
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_af5c03f30c18df9051ffb8052587f7372}{edit\+Message}} (int32\+\_\+t chat\+\_\+id, int32\+\_\+t message\+\_\+id, const String \&txt, const String \&keyboard)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ac2ad70a33b6449e4ed6efd446ef03c28}{edit\+Message}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const String \&txt, const String \&keyboard)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ab590a7bd09691493c91425f53518fa18}{edit\+Message}} (int32\+\_\+t chat\+\_\+id, int32\+\_\+t message\+\_\+id, const String \&txt, \mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} \&keyboard)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_adf270e109514f7b55b46e3fb07fa8c0b}{edit\+Message}} (const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&msg, const String \&txt, \mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} \&keyboard)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a4cc01b5f954e7a6decb3e330fedab3ec}{check\+Connection}} ()
+\item 
+void \mbox{\hyperlink{class_async_telegram2_a657bb83c9330fa6082b57e66f192a190}{add\+Sent\+Callback}} (Sent\+Callback sentcb, uint32\+\_\+t timeout=1000)
+\item 
+void \mbox{\hyperlink{class_async_telegram2_a7fec1e5ad7e45987d88b540a3dabf556}{set\+Formatting\+Style}} (uint8\+\_\+t format)
+\item 
+void \mbox{\hyperlink{class_async_telegram2_a50c5f09c5f492d255b4f14d5078f7e15}{set\+Json\+Buffer\+Size}} (uint32\+\_\+t json\+Buffer\+Size)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a79af0c98ff15bf120375cee7a1d820e5}{send\+Command}} (const char $\ast$command, const char $\ast$payload, bool blocking=false)
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_a6a8e63acbda809e800b7be0ad08d3d87}{get\+Updates}} ()
+\item 
+bool \mbox{\hyperlink{class_async_telegram2_ad4395d7cd810db616b083529ff434ae6}{get\+Me}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00093}{93}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!DocumentType@{DocumentType}}
+\index{DocumentType@{DocumentType}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{DocumentType}{DocumentType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{Async\+Telegram2\+::\+Document\+Type}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ZIP@{ZIP}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!ZIP@{ZIP}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea4f97963b62fbe2bcf52de140b710c820}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea4f97963b62fbe2bcf52de140b710c820}} 
+ZIP&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PDF@{PDF}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!PDF@{PDF}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cead3436454c890ced213ecbb35a7efd17b}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cead3436454c890ced213ecbb35a7efd17b}} 
+PDF&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PHOTO@{PHOTO}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!PHOTO@{PHOTO}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5d559fa70b6ab890b18ad16f71b18462}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5d559fa70b6ab890b18ad16f71b18462}} 
+PHOTO&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ANIMATION@{ANIMATION}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!ANIMATION@{ANIMATION}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea6324e6c44aca79c415ab660fce156c9f}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea6324e6c44aca79c415ab660fce156c9f}} 
+ANIMATION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{AUDIO@{AUDIO}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!AUDIO@{AUDIO}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea67c24f091f3223c581ebd5ec87fa8f63}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea67c24f091f3223c581ebd5ec87fa8f63}} 
+AUDIO&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VOICE@{VOICE}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!VOICE@{VOICE}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5980b573df9dcb42fd086e93c56d438c}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5980b573df9dcb42fd086e93c56d438c}} 
+VOICE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VIDEO@{VIDEO}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!VIDEO@{VIDEO}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea1e60136ec171b132b49ce682a209d21d}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea1e60136ec171b132b49ce682a209d21d}} 
+VIDEO&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CSV@{CSV}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!CSV@{CSV}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea2388288943109c405b9ee7f18936d5d9}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea2388288943109c405b9ee7f18936d5d9}} 
+CSV&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{JSON@{JSON}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!JSON@{JSON}}}\mbox{\Hypertarget{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea9dac12e3c50154c1bdf2878c8c116ca9}\label{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea9dac12e3c50154c1bdf2878c8c116ca9}} 
+JSON&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00196}{196}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10}\label{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!FormatStyle@{FormatStyle}}
+\index{FormatStyle@{FormatStyle}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{FormatStyle}{FormatStyle}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10}{Async\+Telegram2\+::\+Format\+Style}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NONE@{NONE}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!NONE@{NONE}}}\mbox{\Hypertarget{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10a30e126b7c8e791e3c14a0de4aa6db7b8}\label{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10a30e126b7c8e791e3c14a0de4aa6db7b8}} 
+NONE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HTML@{HTML}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!HTML@{HTML}}}\mbox{\Hypertarget{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abcff4774f8b4c305dcb53e7e5782415c}\label{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abcff4774f8b4c305dcb53e7e5782415c}} 
+HTML&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MARKDOWN@{MARKDOWN}!AsyncTelegram2@{AsyncTelegram2}}\index{AsyncTelegram2@{AsyncTelegram2}!MARKDOWN@{MARKDOWN}}}\mbox{\Hypertarget{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abe53632e1a588b53f88ca5785ad107f0}\label{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abe53632e1a588b53f88ca5785ad107f0}} 
+MARKDOWN&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00424}{424}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_async_telegram2_aa2da6b68a537f30474f2e0540f895372}\label{class_async_telegram2_aa2da6b68a537f30474f2e0540f895372}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!AsyncTelegram2@{AsyncTelegram2}}
+\index{AsyncTelegram2@{AsyncTelegram2}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{AsyncTelegram2()}{AsyncTelegram2()}}
+{\footnotesize\ttfamily Async\+Telegram2\+::\+Async\+Telegram2 (\begin{DoxyParamCaption}\item[{Client \&}]{client,  }\item[{uint32\+\_\+t}]{buffer\+Size = {\ttfamily \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\+\_\+\+BIG}}} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00005}{5}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a72bda6fec7f854f4668019ffa7529395}\label{class_async_telegram2_a72bda6fec7f854f4668019ffa7529395}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!````~AsyncTelegram2@{$\sim$AsyncTelegram2}}
+\index{````~AsyncTelegram2@{$\sim$AsyncTelegram2}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{$\sim$AsyncTelegram2()}{~AsyncTelegram2()}}
+{\footnotesize\ttfamily Async\+Telegram2\+::$\sim$\+Async\+Telegram2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00013}{13}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_async_telegram2_a4b412a4052949ecad188e5eef0034f6f}\label{class_async_telegram2_a4b412a4052949ecad188e5eef0034f6f}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!addInlineKeyboard@{addInlineKeyboard}}
+\index{addInlineKeyboard@{addInlineKeyboard}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{addInlineKeyboard()}{addInlineKeyboard()}}
+{\footnotesize\ttfamily void Async\+Telegram2\+::add\+Inline\+Keyboard (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} $\ast$}]{keyb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00356}{356}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a657bb83c9330fa6082b57e66f192a190}\label{class_async_telegram2_a657bb83c9330fa6082b57e66f192a190}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!addSentCallback@{addSentCallback}}
+\index{addSentCallback@{addSentCallback}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{addSentCallback()}{addSentCallback()}}
+{\footnotesize\ttfamily void Async\+Telegram2\+::add\+Sent\+Callback (\begin{DoxyParamCaption}\item[{Sent\+Callback}]{sentcb,  }\item[{uint32\+\_\+t}]{timeout = {\ttfamily 1000} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00410}{410}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a30f85b610901712f91ff48432d8ff5e8}\label{class_async_telegram2_a30f85b610901712f91ff48432d8ff5e8}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!begin@{begin}}
+\index{begin@{begin}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::begin (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00052}{52}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a4cc01b5f954e7a6decb3e330fedab3ec}\label{class_async_telegram2_a4cc01b5f954e7a6decb3e330fedab3ec}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!checkConnection@{checkConnection}}
+\index{checkConnection@{checkConnection}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{checkConnection()}{checkConnection()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::check\+Connection (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00015}{15}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a4ec850e59adae8852c90ced61d3845de}\label{class_async_telegram2_a4ec850e59adae8852c90ced61d3845de}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!deleteMyCommands@{deleteMyCommands}}
+\index{deleteMyCommands@{deleteMyCommands}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{deleteMyCommands()}{deleteMyCommands()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::delete\+My\+Commands (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00786}{786}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ac2ad70a33b6449e4ed6efd446ef03c28}\label{class_async_telegram2_ac2ad70a33b6449e4ed6efd446ef03c28}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!editMessage@{editMessage}}
+\index{editMessage@{editMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{editMessage()}{editMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::edit\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const String \&}]{txt,  }\item[{const String \&}]{keyboard }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00389}{389}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_adf270e109514f7b55b46e3fb07fa8c0b}\label{class_async_telegram2_adf270e109514f7b55b46e3fb07fa8c0b}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!editMessage@{editMessage}}
+\index{editMessage@{editMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{editMessage()}{editMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::edit\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const String \&}]{txt,  }\item[{\mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} \&}]{keyboard }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00399}{399}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_af5c03f30c18df9051ffb8052587f7372}\label{class_async_telegram2_af5c03f30c18df9051ffb8052587f7372}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!editMessage@{editMessage}}
+\index{editMessage@{editMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{editMessage()}{editMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::edit\+Message (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{chat\+\_\+id,  }\item[{int32\+\_\+t}]{message\+\_\+id,  }\item[{const String \&}]{txt,  }\item[{const String \&}]{keyboard }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00838}{838}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ab590a7bd09691493c91425f53518fa18}\label{class_async_telegram2_ab590a7bd09691493c91425f53518fa18}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!editMessage@{editMessage}}
+\index{editMessage@{editMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{editMessage()}{editMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::edit\+Message (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{chat\+\_\+id,  }\item[{int32\+\_\+t}]{message\+\_\+id,  }\item[{const String \&}]{txt,  }\item[{\mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} \&}]{keyboard }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00394}{394}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a4e7d5186ea63a6e342503394189cf1c8}\label{class_async_telegram2_a4e7d5186ea63a6e342503394189cf1c8}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!endQuery@{endQuery}}
+\index{endQuery@{endQuery}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{endQuery()}{endQuery()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::end\+Query (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const char $\ast$}]{message,  }\item[{bool}]{alert\+Mode = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00585}{585}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ae25e548e6abd3972b442b6d4d14a9a49}\label{class_async_telegram2_ae25e548e6abd3972b442b6d4d14a9a49}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!forwardMessage@{forwardMessage}}
+\index{forwardMessage@{forwardMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{forwardMessage()}{forwardMessage()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::forward\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const int64\+\_\+t}]{to\+\_\+chatid }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00509}{509}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a70e697d61940abe3c26020b02634dfb1}\label{class_async_telegram2_a70e697d61940abe3c26020b02634dfb1}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!getBotName@{getBotName}}
+\index{getBotName@{getBotName}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{getBotName()}{getBotName()}}
+{\footnotesize\ttfamily const char $\ast$ Async\+Telegram2\+::get\+Bot\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00332}{332}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a427a550eb618a3f4383b51a3756e7a8b}\label{class_async_telegram2_a427a550eb618a3f4383b51a3756e7a8b}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!getFile@{getFile}}
+\index{getFile@{getFile}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{getFile()}{getFile()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::get\+File (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_t_b_document}{TBDocument}} \&}]{doc }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00406}{406}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a4dc70dbb80911d3253a95ea4a19daa21}\label{class_async_telegram2_a4dc70dbb80911d3253a95ea4a19daa21}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!getGroupId@{getGroupId}}
+\index{getGroupId@{getGroupId}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{getGroupId()}{getGroupId()}}
+{\footnotesize\ttfamily int64\+\_\+t Async\+Telegram2\+::get\+Group\+Id (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00347}{347}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ad4395d7cd810db616b083529ff434ae6}\label{class_async_telegram2_ad4395d7cd810db616b083529ff434ae6}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!getMe@{getMe}}
+\index{getMe@{getMe}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{getMe()}{getMe()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::get\+Me (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00391}{391}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a14dc64422808c51a7a14dd3261be575d}\label{class_async_telegram2_a14dc64422808c51a7a14dd3261be575d}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!getMyCommands@{getMyCommands}}
+\index{getMyCommands@{getMyCommands}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{getMyCommands()}{getMyCommands()}}
+{\footnotesize\ttfamily void Async\+Telegram2\+::get\+My\+Commands (\begin{DoxyParamCaption}\item[{String \&}]{cmd\+List }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00768}{768}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a79915206e619151282347de69c1c715d}\label{class_async_telegram2_a79915206e619151282347de69c1c715d}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!getNewMessage@{getNewMessage}}
+\index{getNewMessage@{getNewMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{getNewMessage()}{getNewMessage()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} Async\+Telegram2\+::get\+New\+Message (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{message }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00209}{209}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a6a8e63acbda809e800b7be0ad08d3d87}\label{class_async_telegram2_a6a8e63acbda809e800b7be0ad08d3d87}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!getUpdates@{getUpdates}}
+\index{getUpdates@{getUpdates}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{getUpdates()}{getUpdates()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::get\+Updates (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00119}{119}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_aaec5ad8e68a7409c21ae629545407fad}\label{class_async_telegram2_aaec5ad8e68a7409c21ae629545407fad}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!noNewMessage@{noNewMessage}}
+\index{noNewMessage@{noNewMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{noNewMessage()}{noNewMessage()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::no\+New\+Message (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00428}{428}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_aca60e039d76f080c3123cb329b18e831}\label{class_async_telegram2_aca60e039d76f080c3123cb329b18e831}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!removeReplyKeyboard@{removeReplyKeyboard}}
+\index{removeReplyKeyboard@{removeReplyKeyboard}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{removeReplyKeyboard()}{removeReplyKeyboard()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::remove\+Reply\+Keyboard (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const char $\ast$}]{message,  }\item[{bool}]{selective = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00597}{597}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a7c66734e475862fe039748724afbd7f8}\label{class_async_telegram2_a7c66734e475862fe039748724afbd7f8}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!reset@{reset}}
+\index{reset@{reset}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::reset (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00058}{58}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a0e6caf66c0341e5a68fa7f7edfe213f2}\label{class_async_telegram2_a0e6caf66c0341e5a68fa7f7edfe213f2}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendAnimationByUrl@{sendAnimationByUrl}}
+\index{sendAnimationByUrl@{sendAnimationByUrl}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendAnimationByUrl()}{sendAnimationByUrl()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Animation\+By\+Url (\begin{DoxyParamCaption}\item[{const int64\+\_\+t \&}]{chat\+\_\+id,  }\item[{const char $\ast$}]{url,  }\item[{const char $\ast$}]{caption }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00537}{537}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a79af0c98ff15bf120375cee7a1d820e5}\label{class_async_telegram2_a79af0c98ff15bf120375cee7a1d820e5}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendCommand@{sendCommand}}
+\index{sendCommand@{sendCommand}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendCommand()}{sendCommand()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Command (\begin{DoxyParamCaption}\item[{const char $\ast$}]{command,  }\item[{const char $\ast$}]{payload,  }\item[{bool}]{blocking = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00071}{71}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_aed00b2014187fce21551c67c16fa7e65}\label{class_async_telegram2_aed00b2014187fce21551c67c16fa7e65}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendDocument@{sendDocument}}
+\index{sendDocument@{sendDocument}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendDocument()}{sendDocument()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Document (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{Stream \&}]{stream,  }\item[{size\+\_\+t}]{size,  }\item[{\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{Document\+Type}}}]{doc,  }\item[{const char $\ast$}]{filename,  }\item[{const char $\ast$}]{caption = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00211}{211}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a78eed6d82d6cca9e3869dedf061590d0}\label{class_async_telegram2_a78eed6d82d6cca9e3869dedf061590d0}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendDocument@{sendDocument}}
+\index{sendDocument@{sendDocument}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendDocument()}{sendDocument()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Document (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{chat\+\_\+id,  }\item[{Stream \&}]{stream,  }\item[{size\+\_\+t}]{size,  }\item[{\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{Document\+Type}}}]{doc,  }\item[{const char $\ast$}]{filename,  }\item[{const char $\ast$}]{caption = {\ttfamily nullptr} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00607}{607}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}\label{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const char $\ast$}]{message,  }\item[{const char $\ast$}]{keyboard = {\ttfamily nullptr},  }\item[{bool}]{wait = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00444}{444}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a8e23f21b44eb40bec140091cd4590798}\label{class_async_telegram2_a8e23f21b44eb40bec140091cd4590798}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const char $\ast$}]{message,  }\item[{\mbox{\hyperlink{class_inline_keyboard}{Inline\+Keyboard}} \&}]{keyboard }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00159}{159}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ab464ecfbea296e32590e09c55fdf7550}\label{class_async_telegram2_ab464ecfbea296e32590e09c55fdf7550}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const char $\ast$}]{message,  }\item[{\mbox{\hyperlink{class_reply_keyboard}{Reply\+Keyboard}} \&}]{keyboard }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00164}{164}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a7e41b708d91be89b6fb4ecba16f0e48c}\label{class_async_telegram2_a7e41b708d91be89b6fb4ecba16f0e48c}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Message (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const String \&}]{message,  }\item[{String}]{keyboard = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00154}{154}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ad18d53227f670ba4523a7232148b62a9}\label{class_async_telegram2_ad18d53227f670ba4523a7232148b62a9}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhoto@{sendPhoto}}
+\index{sendPhoto@{sendPhoto}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhoto()}{sendPhoto()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo (\begin{DoxyParamCaption}\item[{const int64\+\_\+t \&}]{chat\+\_\+id,  }\item[{const char $\ast$}]{url,  }\item[{const char $\ast$}]{caption }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00223}{223}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a3236aefd94c0e90f2e045183362e462b}\label{class_async_telegram2_a3236aefd94c0e90f2e045183362e462b}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhoto@{sendPhoto}}
+\index{sendPhoto@{sendPhoto}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhoto()}{sendPhoto()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo (\begin{DoxyParamCaption}\item[{const int64\+\_\+t \&}]{chat\+\_\+id,  }\item[{const String \&}]{url,  }\item[{const String \&}]{caption }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00228}{228}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a9f0265ed86397a2c7965af009f3938c3}\label{class_async_telegram2_a9f0265ed86397a2c7965af009f3938c3}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhoto@{sendPhoto}}
+\index{sendPhoto@{sendPhoto}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhoto()}{sendPhoto()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const String \&}]{url,  }\item[{const String \&}]{caption }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00233}{233}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ae9991040d1a8f089cd14c203da99d9e3}\label{class_async_telegram2_ae9991040d1a8f089cd14c203da99d9e3}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhoto@{sendPhoto}}
+\index{sendPhoto@{sendPhoto}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhoto()}{sendPhoto()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{Stream \&}]{stream,  }\item[{size\+\_\+t}]{size,  }\item[{const char $\ast$}]{filename,  }\item[{const char $\ast$}]{caption = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00244}{244}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ad562e66058afc9f16f8b3b3394a4be0c}\label{class_async_telegram2_ad562e66058afc9f16f8b3b3394a4be0c}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhoto@{sendPhoto}}
+\index{sendPhoto@{sendPhoto}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhoto()}{sendPhoto()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{uint8\+\_\+t $\ast$}]{data,  }\item[{size\+\_\+t}]{size,  }\item[{const char $\ast$}]{caption = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00273}{273}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_adb3bdd31300a50b5b687c123b06e8d91}\label{class_async_telegram2_adb3bdd31300a50b5b687c123b06e8d91}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhoto@{sendPhoto}}
+\index{sendPhoto@{sendPhoto}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhoto()}{sendPhoto()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{chat\+\_\+id,  }\item[{Stream \&}]{stream,  }\item[{size\+\_\+t}]{size,  }\item[{const char $\ast$}]{filename = {\ttfamily nullptr},  }\item[{const char $\ast$}]{caption = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00239}{239}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a229bc4a406a6380d750e76641339889c}\label{class_async_telegram2_a229bc4a406a6380d750e76641339889c}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhoto@{sendPhoto}}
+\index{sendPhoto@{sendPhoto}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhoto()}{sendPhoto()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{chat\+\_\+id,  }\item[{uint8\+\_\+t $\ast$}]{data,  }\item[{size\+\_\+t}]{size,  }\item[{const char $\ast$}]{caption = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00268}{268}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a7b803024488ebd1835aacbc2046babed}\label{class_async_telegram2_a7b803024488ebd1835aacbc2046babed}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhotoByFile@{sendPhotoByFile}}
+\index{sendPhotoByFile@{sendPhotoByFile}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhotoByFile()}{sendPhotoByFile()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo\+By\+File (\begin{DoxyParamCaption}\item[{int64\+\_\+t}]{chat\+\_\+id,  }\item[{Stream $\ast$}]{stream,  }\item[{size\+\_\+t}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00290}{290}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}\label{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhotoByUrl@{sendPhotoByUrl}}
+\index{sendPhotoByUrl@{sendPhotoByUrl}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhotoByUrl()}{sendPhotoByUrl()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo\+By\+Url (\begin{DoxyParamCaption}\item[{const int64\+\_\+t \&}]{chat\+\_\+id,  }\item[{const char $\ast$}]{url,  }\item[{const char $\ast$}]{caption }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00522}{522}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a2d0a0affe7559b2e6193cffe8a883d61}\label{class_async_telegram2_a2d0a0affe7559b2e6193cffe8a883d61}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhotoByUrl@{sendPhotoByUrl}}
+\index{sendPhotoByUrl@{sendPhotoByUrl}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhotoByUrl()}{sendPhotoByUrl()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo\+By\+Url (\begin{DoxyParamCaption}\item[{const int64\+\_\+t \&}]{chat\+\_\+id,  }\item[{const String \&}]{url,  }\item[{const String \&}]{caption }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00280}{280}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ac7d93fc1919248f9457ec811abeb81d7}\label{class_async_telegram2_ac7d93fc1919248f9457ec811abeb81d7}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendPhotoByUrl@{sendPhotoByUrl}}
+\index{sendPhotoByUrl@{sendPhotoByUrl}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendPhotoByUrl()}{sendPhotoByUrl()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+Photo\+By\+Url (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_t_b_message}{TBMessage}} \&}]{msg,  }\item[{const String \&}]{url,  }\item[{const String \&}]{caption }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00285}{285}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a46f9dc85d1e8226a06b53755e9455914}\label{class_async_telegram2_a46f9dc85d1e8226a06b53755e9455914}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendTo@{sendTo}}
+\index{sendTo@{sendTo}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendTo()}{sendTo()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+To (\begin{DoxyParamCaption}\item[{const int64\+\_\+t}]{userid,  }\item[{const char $\ast$}]{message,  }\item[{const char $\ast$}]{keyboard = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00183}{183}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_abe43332c64ac73ec078092f53279d1f0}\label{class_async_telegram2_abe43332c64ac73ec078092f53279d1f0}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendTo@{sendTo}}
+\index{sendTo@{sendTo}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendTo()}{sendTo()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+To (\begin{DoxyParamCaption}\item[{const int64\+\_\+t}]{userid,  }\item[{const String \&}]{message,  }\item[{String}]{keyboard = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00190}{190}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_aa081b4af5340bd5a0dcc492d66540768}\label{class_async_telegram2_aa081b4af5340bd5a0dcc492d66540768}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendToChannel@{sendToChannel}}
+\index{sendToChannel@{sendToChannel}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendToChannel()}{sendToChannel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+To\+Channel (\begin{DoxyParamCaption}\item[{const char $\ast$}]{channel,  }\item[{const char $\ast$}]{message,  }\item[{bool}]{silent = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00552}{552}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_ab27c01a9d59862b9de630a52432b5800}\label{class_async_telegram2_ab27c01a9d59862b9de630a52432b5800}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!sendToChannel@{sendToChannel}}
+\index{sendToChannel@{sendToChannel}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{sendToChannel()}{sendToChannel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::send\+To\+Channel (\begin{DoxyParamCaption}\item[{const String \&}]{channel,  }\item[{const String \&}]{message,  }\item[{bool}]{silent }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00175}{175}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a7fec1e5ad7e45987d88b540a3dabf556}\label{class_async_telegram2_a7fec1e5ad7e45987d88b540a3dabf556}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!setFormattingStyle@{setFormattingStyle}}
+\index{setFormattingStyle@{setFormattingStyle}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{setFormattingStyle()}{setFormattingStyle()}}
+{\footnotesize\ttfamily void Async\+Telegram2\+::set\+Formatting\+Style (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{format }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00429}{429}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a50c5f09c5f492d255b4f14d5078f7e15}\label{class_async_telegram2_a50c5f09c5f492d255b4f14d5078f7e15}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!setJsonBufferSize@{setJsonBufferSize}}
+\index{setJsonBufferSize@{setJsonBufferSize}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{setJsonBufferSize()}{setJsonBufferSize()}}
+{\footnotesize\ttfamily void Async\+Telegram2\+::set\+Json\+Buffer\+Size (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{json\+Buffer\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00433}{433}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_a0a0c361a02fc19d233ae6136ccf781b3}\label{class_async_telegram2_a0a0c361a02fc19d233ae6136ccf781b3}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!setMyCommands@{setMyCommands}}
+\index{setMyCommands@{setMyCommands}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{setMyCommands()}{setMyCommands()}}
+{\footnotesize\ttfamily bool Async\+Telegram2\+::set\+My\+Commands (\begin{DoxyParamCaption}\item[{const String \&}]{cmd,  }\item[{const String \&}]{desc }\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8cpp_source_l00796}{796}} of file \mbox{\hyperlink{_async_telegram2_8cpp_source}{Async\+Telegram2.\+cpp}}.
+
+\mbox{\Hypertarget{class_async_telegram2_aa249d7056da53a09706c1a24f1f6c892}\label{class_async_telegram2_aa249d7056da53a09706c1a24f1f6c892}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!setTelegramToken@{setTelegramToken}}
+\index{setTelegramToken@{setTelegramToken}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{setTelegramToken()}{setTelegramToken()}}
+{\footnotesize\ttfamily void Async\+Telegram2\+::set\+Telegram\+Token (\begin{DoxyParamCaption}\item[{const char $\ast$}]{token }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00118}{118}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+\mbox{\Hypertarget{class_async_telegram2_abe5cc4cf9cf7e92c7a4e662fccc2c83d}\label{class_async_telegram2_abe5cc4cf9cf7e92c7a4e662fccc2c83d}} 
+\index{AsyncTelegram2@{AsyncTelegram2}!setUpdateTime@{setUpdateTime}}
+\index{setUpdateTime@{setUpdateTime}!AsyncTelegram2@{AsyncTelegram2}}
+\doxysubsubsection{\texorpdfstring{setUpdateTime()}{setUpdateTime()}}
+{\footnotesize\ttfamily void Async\+Telegram2\+::set\+Update\+Time (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{polling\+Time }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{_async_telegram2_8h_source_l00124}{124}} of file \mbox{\hyperlink{_async_telegram2_8h_source}{Async\+Telegram2.\+h}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{_async_telegram2_8h}{Async\+Telegram2.\+h}}\item 
+src/\mbox{\hyperlink{_async_telegram2_8cpp}{Async\+Telegram2.\+cpp}}\end{DoxyCompactItemize}

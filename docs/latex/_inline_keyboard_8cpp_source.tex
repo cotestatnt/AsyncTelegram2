@@ -1,0 +1,111 @@
+\hypertarget{_inline_keyboard_8cpp_source}{}\doxysection{Inline\+Keyboard.\+cpp}
+\label{_inline_keyboard_8cpp_source}\index{src/InlineKeyboard.cpp@{src/InlineKeyboard.cpp}}
+\mbox{\hyperlink{_inline_keyboard_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00001}00001\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_inline_keyboard_8h}{InlineKeyboard.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00004}\mbox{\hyperlink{class_inline_keyboard_ae8ef8cb1a2bc3c77ba84ea01792691b9}{00004}}\ \mbox{\hyperlink{class_inline_keyboard_ae8ef8cb1a2bc3c77ba84ea01792691b9}{InlineKeyboard::InlineKeyboard}}()}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00005}00005\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00006}00006\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}\{\(\backslash\)"{}inline\_keyboard\(\backslash\)"{}:[[]]\}\(\backslash\)"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00007}00007\ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00009}\mbox{\hyperlink{class_inline_keyboard_a19f17c90991eaa9bbac9ac230e7a3590}{00009}}\ \mbox{\hyperlink{class_inline_keyboard_a19f17c90991eaa9bbac9ac230e7a3590}{InlineKeyboard::\string~InlineKeyboard}}()\{\}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00011}\mbox{\hyperlink{class_inline_keyboard_a39885c6fb2a210ad103f2f7f601d7068}{00011}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_inline_keyboard_a39885c6fb2a210ad103f2f7f601d7068}{InlineKeyboard::addRow}}()}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00013}00013\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}}+\mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00014}00014\ \ \ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00016}00016\ \ \ \textcolor{comment}{//\ Deserialize\ the\ JSON\ document}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00017}00017\ \ \ DeserializationError\ error\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00019}00019\ \ \ \textcolor{comment}{//\ Test\ if\ parsing\ succeeds.}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00020}00020\ \ \ \textcolor{keywordflow}{if}\ (error)\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00021}00021\ \ \ \ \ Serial.print(F(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ "{}}));}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00022}00022\ \ \ \ \ Serial.println(error.f\_str());}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00023}00023\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00024}00024\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00026}00026\ \ \ JsonArray\ \ rows\ =\ doc[\textcolor{stringliteral}{"{}inline\_keyboard"{}}];}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00027}00027\ \ \ rows.createNestedArray();}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00028}00028\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00029}00029\ \ \ doc.shrinkToFit();}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00030}00030\ \ \ serializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00032}00032\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00033}00033\ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00035}\mbox{\hyperlink{class_inline_keyboard_a1451827b7fa83562282e797767eacd1b}{00035}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_inline_keyboard_a1451827b7fa83562282e797767eacd1b}{InlineKeyboard::addButton}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ text,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ command,\ \mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137}{InlineKeyboardButtonType}}\ buttonType,\ CallbackType\ onClick)}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00036}00036\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00037}00037\ \ \ \textcolor{keywordflow}{if}\ ((buttonType\ !=\ \mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a992d422c593357352cbd0c428cd21f86}{KeyboardButtonURL}})\ \&\&\ (buttonType\ !=\ \mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a1ec2de53fb0d0aaeb6edb9c835dc8e85}{KeyboardButtonQuery}}))}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00038}00038\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00040}00040\ \ \ InlineButton\ *inlineButton\ =\ \textcolor{keyword}{new}\ InlineButton();}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00041}00041\ \ \ \textcolor{keywordflow}{if}\ (\_firstButton\ ==\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00042}00042\ \ \ \ \ \_firstButton\ =\ inlineButton;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00043}00043\ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00044}00044\ \ \ \ \ \_lastButton-\/>nextButton\ =\ inlineButton;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00045}00045\ \ \ inlineButton-\/>argCallback\ =\ onClick;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00046}00046\ \ \ inlineButton-\/>btnName\ =\ (\textcolor{keywordtype}{char}*)command;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00047}00047\ \ \ \_lastButton\ =\ inlineButton;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00048}00048\ \ \ m\_buttonsCounter++;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00050}00050\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}}+\mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00051}00051\ \ \ DeserializationError\ error\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00053}00053\ \ \ \textcolor{comment}{//\ Test\ if\ parsing\ succeeds.}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00054}00054\ \ \ \textcolor{keywordflow}{if}\ (error)\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00055}00055\ \ \ \ \ Serial.print(F(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ "{}}));}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00056}00056\ \ \ \ \ Serial.println(error.f\_str());}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00057}00057\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00058}00058\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00060}00060\ \ \ JsonArray\ \ rows\ =\ doc[\textcolor{stringliteral}{"{}inline\_keyboard"{}}];}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00061}00061\ \ \ JsonObject\ button\ =\ rows[rows.size()-\/1].createNestedObject();}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00063}00063\ \ \ button[\textcolor{stringliteral}{"{}text"{}}]\ =\ text\ ;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00064}00064\ \ \ \textcolor{keywordflow}{if}(\mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a992d422c593357352cbd0c428cd21f86}{KeyboardButtonURL}}\ ==\ buttonType)}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00065}00065\ \ \ \ \ button[\textcolor{stringliteral}{"{}url"{}}]\ =\ command;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00066}00066\ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{_inline_keyboard_8h_ac3a8fd74b895df15832c7a4f7b7e8137a1ec2de53fb0d0aaeb6edb9c835dc8e85}{KeyboardButtonQuery}}\ ==\ buttonType)}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00067}00067\ \ \ \ \ button[\textcolor{stringliteral}{"{}callback\_data"{}}]\ =\ command;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00069}00069\ \ \ \textcolor{comment}{//\ Store\ inline\ keyboard\ json\ structure}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00070}00070\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00071}00071\ \ \ doc.shrinkToFit();}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00072}00072\ \ \ serializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00073}00073\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00074}00074\ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00076}00076\ \textcolor{comment}{//\ Check\ if\ a\ callback\ function\ has\ to\ be\ called\ for\ this\ button\ query\ message}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00077}00077\ \textcolor{keywordtype}{void}\ InlineKeyboard::checkCallback(\ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg)\ \ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00078}00078\ \ \ \textcolor{keywordflow}{for}(InlineButton\ *\_button\ =\ \_firstButton;\ \_button\ !=\ \textcolor{keyword}{nullptr};\ \_button\ =\ \_button-\/>nextButton)\{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00079}00079\ \ \ \ \ \textcolor{keywordflow}{if}(\ msg.\mbox{\hyperlink{struct_t_b_message_a8c6cd2c1bcde0342b0ac0b8092d982ae}{callbackQueryData}}.equals(\_button-\/>btnName)\ \&\&\ \_button-\/>argCallback\ !=\ \textcolor{keyword}{nullptr})\{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00080}00080\ \ \ \ \ \ \ \_button-\/>argCallback(msg);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00081}00081\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00082}00082\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00083}00083\ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00085}00085\ \textcolor{comment}{//\ Get\ total\ number\ of\ keyboard\ buttons}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00086}\mbox{\hyperlink{class_inline_keyboard_aeb603b92da619f62815e3dbf5229ab55}{00086}}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_inline_keyboard_aeb603b92da619f62815e3dbf5229ab55}{InlineKeyboard::getButtonsNumber}}()}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00087}00087\ \{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00088}00088\ \ \ \textcolor{keywordflow}{return}\ m\_buttonsCounter;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00089}00089\ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00091}\mbox{\hyperlink{class_inline_keyboard_af533b314d9647a83f6d92e17e6d93e4a}{00091}}\ String\ \mbox{\hyperlink{class_inline_keyboard_af533b314d9647a83f6d92e17e6d93e4a}{InlineKeyboard::getJSON}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00092}00092\ \textcolor{keyword}{}\{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00093}00093\ \ \ \textcolor{keywordflow}{return}\ m\_json;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00094}00094\ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00096}\mbox{\hyperlink{class_inline_keyboard_afe7ddbc6793104840a41cea239a0d380}{00096}}\ String\ \mbox{\hyperlink{class_inline_keyboard_afe7ddbc6793104840a41cea239a0d380}{InlineKeyboard::getJSONPretty}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00097}00097\ \textcolor{keyword}{}\{}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00098}00098\ \ \ StaticJsonDocument<BUFFER\_MEDIUM>\ doc;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00099}00099\ \ \ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00101}00101\ \ \ String\ serialized;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00102}00102\ \ \ serializeJsonPretty(doc,\ serialized);}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00103}00103\ \ \ \textcolor{keywordflow}{return}\ serialized;}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00104}00104\ \}}
+\DoxyCodeLine{\Hypertarget{_inline_keyboard_8cpp_source_l00105}00105\ }
+
+\end{DoxyCode}

@@ -1,0 +1,500 @@
+\hypertarget{_async_telegram2_8h_source}{}\doxysection{Async\+Telegram2.\+h}
+\label{_async_telegram2_8h_source}\index{src/AsyncTelegram2.h@{src/AsyncTelegram2.h}}
+\mbox{\hyperlink{_async_telegram2_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00001}00001\ \textcolor{preprocessor}{\#ifndef\ ASYNCTELEGRAMV2}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00002}00002\ \textcolor{preprocessor}{\#define\ ASYNCTELEGRAMV2}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00004}00004\ \textcolor{comment}{//\ for\ using\ int\_64\ data}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00005}\mbox{\hyperlink{_async_telegram2_8h_ad04364871efb11788ea94d5f5417072c}{00005}}\ \textcolor{preprocessor}{\#define\ ARDUINOJSON\_USE\_LONG\_LONG\ 1}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00006}\mbox{\hyperlink{_async_telegram2_8h_a335b842b5c1d56001f7bb14a0da46990}{00006}}\ \textcolor{preprocessor}{\#define\ ARDUINOJSON\_DECODE\_UNICODE\ 1}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <ArduinoJson.h>}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00009}00009\ \textcolor{preprocessor}{\#if\ defined(ESP32)\ ||\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00010}00010\ \textcolor{preprocessor}{\#define\ FS\_SUPPORT\ true}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <FS.h>}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <WiFiClientSecure.h>}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00013}00013\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00014}00014\ \textcolor{preprocessor}{\#define\ FS\_SUPPORT\ false}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00015}00015\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00017}00017\ \textcolor{preprocessor}{\#ifndef\ LED\_BUILTIN}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00018}\mbox{\hyperlink{_async_telegram2_8h_a450a7c16ead7b3c7b882536b08f30a00}{00018}}\ \textcolor{preprocessor}{\#define\ LED\_BUILTIN\ 2}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00019}00019\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}Client.h"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}time.h"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00024}00024\ \textcolor{preprocessor}{\#ifndef\ DEBUG\_ENABLE}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00025}\mbox{\hyperlink{_async_telegram2_8h_a92f1452fef4b184124fa2334beb53a60}{00025}}\ \textcolor{preprocessor}{\#define\ DEBUG\_ENABLE\ 0}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00026}00026\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00028}00028\ \textcolor{preprocessor}{\#if\ defined(ESP32)\ ||\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00029}00029\ \textcolor{preprocessor}{\#define\ FS\_SUPPORT\ true}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00030}00030\ \textcolor{preprocessor}{\#include\ <FS.h>}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00031}00031\ \textcolor{preprocessor}{\#include\ <WiFiClientSecure.h>}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00032}00032\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00033}\mbox{\hyperlink{_async_telegram2_8h_a92cd06ad9805f9c211ecc118697985d2}{00033}}\ \textcolor{preprocessor}{\#define\ FS\_SUPPORT\ false}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00034}00034\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00037}00037\ \textcolor{comment}{//\ int\ 32\ bit\ long,\ (eg.\ ESP32\ platform)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00038}00038\ \textcolor{preprocessor}{\#if\ INT\_MAX\ ==\ 2147483647}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00039}00039\ \textcolor{preprocessor}{\ \ \ \ \#define\ INT32\ "{}d"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00040}00040\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00041}\mbox{\hyperlink{_async_telegram2_8h_aac92c5ec332dafe0abb24688dad1b795}{00041}}\ \textcolor{preprocessor}{\ \ \ \#define\ INT32\ "{}ld"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00042}00042\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00044}00044\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00045}00045\ \textcolor{comment}{\ \ \ \ This\ affect\ only\ inline\ keyboard\ with\ at\ least\ one\ callback\ function\ defined.}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00046}00046\ \textcolor{comment}{\ \ \ \ If\ you\ need\ more\ than\ MAX\_INLINEKYB\_CB\ distinct\ keybords\ with}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00047}00047\ \textcolor{comment}{\ \ \ \ callback\ functions\ associated\ to\ buttons\ increase\ this\ value}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00048}00048\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00049}\mbox{\hyperlink{_async_telegram2_8h_a85de2cafcff35d732ec228bd96634080}{00049}}\ \textcolor{preprocessor}{\#define\ MAX\_INLINEKYB\_CB\ 30}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00051}\mbox{\hyperlink{_async_telegram2_8h_a2533774d0ba0505b1b90502bdf8b0c9c}{00051}}\ \textcolor{preprocessor}{\#define\ SERVER\_TIMEOUT\ 10000}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00052}\mbox{\hyperlink{_async_telegram2_8h_a96ea578243c3f7e4a5f527b26d4b486b}{00052}}\ \textcolor{preprocessor}{\#define\ MIN\_UPDATE\_TIME\ 500}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00054}\mbox{\hyperlink{_async_telegram2_8h_ad51ded0bbd705f02f73fc60c0b721ced}{00054}}\ \textcolor{preprocessor}{\#define\ BLOCK\_SIZE\ 1436\ }\textcolor{comment}{//\ 2872\ \ \ //\ 2\ *\ TCP\_MSS}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00056}00056\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_data_structures_8h}{DataStructures.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00057}00057\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_inline_keyboard_8h}{InlineKeyboard.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00058}00058\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_reply_keyboard_8h}{ReplyKeyboard.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00059}00059\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{serial__log_8h}{serial\_log.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00061}\mbox{\hyperlink{_async_telegram2_8h_ae085db1a0ead459849445d9aaa10a2fe}{00061}}\ \textcolor{preprocessor}{\#define\ TELEGRAM\_HOST\ "{}api.telegram.org"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00062}\mbox{\hyperlink{_async_telegram2_8h_a16be0cc7d608f81bbbe9beeb9edee3a6}{00062}}\ \textcolor{preprocessor}{\#define\ TELEGRAM\_IP\ "{}149.154.167.220"{}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00063}\mbox{\hyperlink{_async_telegram2_8h_a5d9b7639c33143f4e89890029153ffcf}{00063}}\ \textcolor{preprocessor}{\#define\ TELEGRAM\_PORT\ 443}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00065}00065\ \textcolor{comment}{/*\ This\ is\ used\ with\ ESP8266\ platform\ only\ */}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00066}00066\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ telegram\_cert[]\ PROGMEM\ =\ R\textcolor{stringliteral}{"{}EOF(}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00067}00067\ \textcolor{stringliteral}{-\/-\/-\/-\/-\/BEGIN\ CERTIFICATE-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00068}00068\ \textcolor{stringliteral}{MIIEADCCAuigAwIBAgIBADANBgkqhkiG9w0BAQUFADBjMQswCQYDVQQGEwJVUzEh}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00069}00069\ \textcolor{stringliteral}{MB8GA1UEChMYVGhlIEdvIERhZGR5IEdyb3VwLCBJbmMuMTEwLwYDVQQLEyhHbyBE}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00070}00070\ \textcolor{stringliteral}{YWRkeSBDbGFzcyAyIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA0MDYyOTE3}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00071}00071\ \textcolor{stringliteral}{MDYyMFoXDTM0MDYyOTE3MDYyMFowYzELMAkGA1UEBhMCVVMxITAfBgNVBAoTGFRo}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00072}00072\ \textcolor{stringliteral}{ZSBHbyBEYWRkeSBHcm91cCwgSW5jLjExMC8GA1UECxMoR28gRGFkZHkgQ2xhc3Mg}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00073}00073\ \textcolor{stringliteral}{MiBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTCCASAwDQYJKoZIhvcNAQEBBQADggEN}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00074}00074\ \textcolor{stringliteral}{ADCCAQgCggEBAN6d1+pXGEmhW+vXX0iG6r7d/+TvZxz0ZWizV3GgXne77ZtJ6XCA}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00075}00075\ \textcolor{stringliteral}{PVYYYwhv2vLM0D9/AlQiVBDYsoHUwHU9S3/Hd8M+eKsaA7Ugay9qK7HFiH7Eux6w}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00076}00076\ \textcolor{stringliteral}{wdhFJ2+qN1j3hybX2C32qRe3H3I2TqYXP2WYktsqbl2i/ojgC95/5Y0V4evLOtXi}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00077}00077\ \textcolor{stringliteral}{EqITLdiOr18SPaAIBQi2XKVlOARFmR6jYGB0xUGlcmIbYsUfb18aQr4CUWWoriMY}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00078}00078\ \textcolor{stringliteral}{avx4A6lNf4DD+qta/KFApMoZFv6yyO9ecw3ud72a9nmYvLEHZ6IVDd2gWMZEewo+}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00079}00079\ \textcolor{stringliteral}{YihfukEHU1jPEX44dMX4/7VpkI+EdOqXG68CAQOjgcAwgb0wHQYDVR0OBBYEFNLE}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00080}00080\ \textcolor{stringliteral}{sNKR1EwRcbNhyz2h/t2oatTjMIGNBgNVHSMEgYUwgYKAFNLEsNKR1EwRcbNhyz2h}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00081}00081\ \textcolor{stringliteral}{/t2oatTjoWekZTBjMQswCQYDVQQGEwJVUzEhMB8GA1UEChMYVGhlIEdvIERhZGR5}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00082}00082\ \textcolor{stringliteral}{IEdyb3VwLCBJbmMuMTEwLwYDVQQLEyhHbyBEYWRkeSBDbGFzcyAyIENlcnRpZmlj}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00083}00083\ \textcolor{stringliteral}{YXRpb24gQXV0aG9yaXR5ggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQAD}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00084}00084\ \textcolor{stringliteral}{ggEBADJL87LKPpH8EsahB4yOd6AzBhRckB4Y9wimPQoZ+YeAEW5p5JYXMP80kWNy}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00085}00085\ \textcolor{stringliteral}{OO7MHAGjHZQopDH2esRU1/blMVgDoszOYtuURXO1v0XJJLXVggKtI3lpjbi2Tc7P}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00086}00086\ \textcolor{stringliteral}{TMozI+gciKqdi0FuFskg5YmezTvacPd+mSYgFFQlq25zheabIZ0KbIIOqPjCDPoQ}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00087}00087\ \textcolor{stringliteral}{HmyW74cNxA9hi63ugyuV+I6ShHI56yDqg+2DzZduCLzrTia2cyvk0/ZM/iZx4mER}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00088}00088\ \textcolor{stringliteral}{dEr/VxqHD3VILs9RaRegAhJhldXRQLIQTO7ErBBDpqWeCtWVYpoNz4iCxTIM5Cuf}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00089}00089\ \textcolor{stringliteral}{ReYNnyicsbkqWletNw+vHX/bvZ8=}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00090}00090\ \textcolor{stringliteral}{-\/-\/-\/-\/-\/END\ CERTIFICATE-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00091}00091\ \textcolor{stringliteral}{)EOF"{};}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00092}00092\ \textcolor{stringliteral}{}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00093}\mbox{\hyperlink{class_async_telegram2}{00093}}\ \textcolor{stringliteral}{}\textcolor{keyword}{class\ }\mbox{\hyperlink{class_async_telegram2}{AsyncTelegram2}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00094}00094\ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00096}00096\ \ \ \ \ \textcolor{comment}{//\ using\ SentCallback\ =\ std::function<void(bool\ sent)>;}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00097}00097\ \ \ \ \ \textcolor{keyword}{typedef}\ void(*SentCallback)(\textcolor{keywordtype}{bool}\ sent);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00099}00099\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ default\ constructor}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00101}00101\ \ \ \ \ \mbox{\hyperlink{class_async_telegram2}{AsyncTelegram2}}(Client\ \&client,\ uint32\_t\ bufferSize\ =\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00102}00102\ \ \ \ \ \textcolor{comment}{//\ default\ destructor}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00103}00103\ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a72bda6fec7f854f4668019ffa7529395}{\string~AsyncTelegram2}}();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ test\ the\ connection\ between\ ESP8266\ and\ the\ telegram\ server}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00106}00106\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00107}00107\ \ \ \ \ \textcolor{comment}{//\ \ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00108}00108\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a30f85b610901712f91ff48432d8ff5e8}{begin}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00110}00110\ \ \ \ \ \textcolor{comment}{//\ reset\ the\ connection\ between\ ESP8266\ and\ the\ telegram\ server\ (ex.\ when\ connection\ was\ lost)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00111}00111\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00112}00112\ \ \ \ \ \textcolor{comment}{//\ \ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00113}00113\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a7c66734e475862fe039748724afbd7f8}{reset}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00115}00115\ \ \ \ \ \textcolor{comment}{//\ set\ the\ telegram\ token}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00116}00116\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00117}00117\ \ \ \ \ \textcolor{comment}{//\ \ \ token:\ the\ telegram\ token}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00118}\mbox{\hyperlink{class_async_telegram2_aa249d7056da53a09706c1a24f1f6c892}{00118}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_async_telegram2_aa249d7056da53a09706c1a24f1f6c892}{setTelegramToken}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *token)\ \{\ m\_token\ =\ (\textcolor{keywordtype}{char}\ *)token;\ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00120}00120\ \ \ \ \ \textcolor{comment}{//\ set\ the\ interval\ in\ milliseconds\ for\ polling}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00121}00121\ \ \ \ \ \textcolor{comment}{//\ in\ order\ to\ Avoid\ query\ Telegram\ server\ to\ much\ often\ (ms)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00122}00122\ \ \ \ \ \textcolor{comment}{//\ params:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00123}00123\ \ \ \ \ \textcolor{comment}{//\ \ \ \ pollingTime:\ interval\ time\ in\ milliseconds}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00124}\mbox{\hyperlink{class_async_telegram2_abe5cc4cf9cf7e92c7a4e662fccc2c83d}{00124}}\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_async_telegram2_abe5cc4cf9cf7e92c7a4e662fccc2c83d}{setUpdateTime}}(uint32\_t\ pollingTime)\ \{\ m\_minUpdateTime\ =\ pollingTime;\ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00126}00126\ \ \ \ \ \textcolor{comment}{//\ Get\ file\ link\ and\ size\ by\ unique\ document\ ID}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00127}00127\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00128}00128\ \ \ \ \ \textcolor{comment}{//\ \ \ doc\ \ \ :\ document\ structure}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00129}00129\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00130}00130\ \ \ \ \ \textcolor{comment}{//\ \ \ true\ if\ no\ error}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00131}00131\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a427a550eb618a3f4383b51a3756e7a8b}{getFile}}(\mbox{\hyperlink{struct_t_b_document}{TBDocument}}\ \&doc);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00133}00133\ \ \ \ \ \textcolor{comment}{//\ get\ the\ first\ unread\ message\ from\ the\ queue\ (text\ and\ query\ from\ inline\ keyboard).}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00134}00134\ \ \ \ \ \textcolor{comment}{//\ This\ is\ a\ destructive\ operation:\ once\ read,\ the\ message\ will\ be\ marked\ as\ read}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00135}00135\ \ \ \ \ \textcolor{comment}{//\ so\ a\ new\ getMessage\ will\ read\ the\ next\ message\ (if\ any).}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00136}00136\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00137}00137\ \ \ \ \ \textcolor{comment}{//\ \ \ message:\ the\ data\ structure\ that\ will\ contains\ the\ data\ retrieved}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00138}00138\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00139}00139\ \ \ \ \ \textcolor{comment}{//\ \ \ MessageNoData:\ an\ error\ has\ occurred}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00140}00140\ \ \ \ \ \textcolor{comment}{//\ \ \ MessageText\ \ :\ the\ received\ message\ is\ a\ text}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00141}00141\ \ \ \ \ \textcolor{comment}{//\ \ \ MessageQuery\ :\ the\ received\ message\ is\ a\ query\ (from\ inline\ keyboards)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00142}00142\ \ \ \ \ \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}{MessageType}}\ \mbox{\hyperlink{class_async_telegram2_a79915206e619151282347de69c1c715d}{getNewMessage}}(\mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&message);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00144}00144\ \ \ \ \ \textcolor{comment}{//\ send\ a\ message\ to\ the\ specified\ telegram\ user\ ID}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00145}00145\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00146}00146\ \ \ \ \ \textcolor{comment}{//\ \ \ msg\ \ \ \ \ \ :\ the\ TBMessage\ telegram\ recipient\ with\ user\ ID}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00147}00147\ \ \ \ \ \textcolor{comment}{//\ \ \ message\ :\ the\ message\ to\ send}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00148}00148\ \ \ \ \ \textcolor{comment}{//\ \ \ keyboard:\ the\ inline/reply\ keyboard\ (optional)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00149}00149\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ (in\ json\ format\ or\ using\ the\ inlineKeyboard/ReplyKeyboard\ class\ helper)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00150}00150\ \ \ \ \ \textcolor{comment}{//\ \ \ wait:\ \ \ \ true\ if\ method\ must\ be\ blocking}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00151}00151\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}{sendMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *message,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *keyboard\ =\ \textcolor{keyword}{nullptr},\ \textcolor{keywordtype}{bool}\ wait\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00152}00152\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00153}00153\ \ \ \ \ \textcolor{comment}{//\ sendMessage\ function\ overloads}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00154}\mbox{\hyperlink{class_async_telegram2_a7e41b708d91be89b6fb4ecba16f0e48c}{00154}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a7e41b708d91be89b6fb4ecba16f0e48c}{sendMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ String\ \&message,\ String\ keyboard\ =\ \textcolor{stringliteral}{"{}"{}})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00155}00155\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}{sendMessage}}(msg,\ message.c\_str(),\ keyboard.c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00157}00157\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00158}00158\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00159}\mbox{\hyperlink{class_async_telegram2_a8e23f21b44eb40bec140091cd4590798}{00159}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a8e23f21b44eb40bec140091cd4590798}{sendMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *message,\ \mbox{\hyperlink{class_inline_keyboard}{InlineKeyboard}}\ \&keyboard)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00160}00160\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}{sendMessage}}(msg,\ message,\ keyboard.\mbox{\hyperlink{class_inline_keyboard_af533b314d9647a83f6d92e17e6d93e4a}{getJSON}}().c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00162}00162\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00164}\mbox{\hyperlink{class_async_telegram2_ab464ecfbea296e32590e09c55fdf7550}{00164}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ab464ecfbea296e32590e09c55fdf7550}{sendMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *message,\ \mbox{\hyperlink{class_reply_keyboard}{ReplyKeyboard}}\ \&keyboard)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00165}00165\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00166}00166\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}{sendMessage}}(msg,\ message,\ keyboard.\mbox{\hyperlink{class_reply_keyboard_a1412a40e94989ec3aa56ca6ca86f767b}{getJSON}}().c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00167}00167\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00169}00169\ \ \ \ \ \textcolor{comment}{//\ Forward\ a\ specific\ message\ to\ user\ or\ chat}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00170}00170\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ae25e548e6abd3972b442b6d4d14a9a49}{forwardMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ int64\_t\ to\_chatid);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00172}00172\ \ \ \ \ \textcolor{comment}{//\ Send\ message\ to\ a\ channel.\ This\ bot\ must\ be\ in\ the\ admin\ group}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00173}00173\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_aa081b4af5340bd5a0dcc492d66540768}{sendToChannel}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *channel,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *message,\ \textcolor{keywordtype}{bool}\ silent\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00175}\mbox{\hyperlink{class_async_telegram2_ab27c01a9d59862b9de630a52432b5800}{00175}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ab27c01a9d59862b9de630a52432b5800}{sendToChannel}}(\textcolor{keyword}{const}\ String\ \&channel,\ \textcolor{keyword}{const}\ String\ \&message,\ \textcolor{keywordtype}{bool}\ silent)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00176}00176\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00177}00177\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_aa081b4af5340bd5a0dcc492d66540768}{sendToChannel}}(channel.c\_str(),\ message.c\_str(),\ silent);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00178}00178\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00180}00180\ \ \ \ \ \textcolor{comment}{//\ Send\ message\ to\ a\ specific\ user.\ In\ order\ to\ work\ properly\ two\ conditions\ is\ needed:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00181}00181\ \ \ \ \ \textcolor{comment}{//\ \ -\/\ You\ have\ to\ find\ the\ userid\ (for\ example\ using\ the\ bot\ @JsonBumpBot\ \ https://t.me/JsonDumpBot)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00182}00182\ \ \ \ \ \textcolor{comment}{//\ \ -\/\ User\ has\ to\ start\ your\ bot\ in\ it's\ own\ client.\ For\ example\ send\ a\ message\ with\ @<your\ bot\ name>}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00183}\mbox{\hyperlink{class_async_telegram2_a46f9dc85d1e8226a06b53755e9455914}{00183}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a46f9dc85d1e8226a06b53755e9455914}{sendTo}}(\textcolor{keyword}{const}\ int64\_t\ userid,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *message,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *keyboard\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00184}00184\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00185}00185\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ msg;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00186}00186\ \ \ \ \ \ \ \ \ msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}}\ =\ userid;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a7a1204213ca3392f446e7286112cc1e8}{sendMessage}}(msg,\ message,\ keyboard);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00188}00188\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00190}\mbox{\hyperlink{class_async_telegram2_abe43332c64ac73ec078092f53279d1f0}{00190}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_abe43332c64ac73ec078092f53279d1f0}{sendTo}}(\textcolor{keyword}{const}\ int64\_t\ userid,\ \textcolor{keyword}{const}\ String\ \&message,\ String\ keyboard\ =\ \textcolor{stringliteral}{"{}"{}})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00191}00191\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00192}00192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a46f9dc85d1e8226a06b53755e9455914}{sendTo}}(userid,\ message.c\_str(),\ keyboard.c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00193}00193\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00195}00195\ \ \ \ \ \textcolor{comment}{//\ Send\ a\ document\ passing\ a\ stream\ object}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00196}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{00196}}\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{DocumentType}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00197}00197\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00198}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea4f97963b62fbe2bcf52de140b710c820}{00198}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea4f97963b62fbe2bcf52de140b710c820}{ZIP}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00199}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cead3436454c890ced213ecbb35a7efd17b}{00199}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cead3436454c890ced213ecbb35a7efd17b}{PDF}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00200}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5d559fa70b6ab890b18ad16f71b18462}{00200}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5d559fa70b6ab890b18ad16f71b18462}{PHOTO}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00201}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea6324e6c44aca79c415ab660fce156c9f}{00201}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea6324e6c44aca79c415ab660fce156c9f}{ANIMATION}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00202}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea67c24f091f3223c581ebd5ec87fa8f63}{00202}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea67c24f091f3223c581ebd5ec87fa8f63}{AUDIO}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00203}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5980b573df9dcb42fd086e93c56d438c}{00203}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea5980b573df9dcb42fd086e93c56d438c}{VOICE}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00204}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea1e60136ec171b132b49ce682a209d21d}{00204}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea1e60136ec171b132b49ce682a209d21d}{VIDEO}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00205}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea2388288943109c405b9ee7f18936d5d9}{00205}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea2388288943109c405b9ee7f18936d5d9}{CSV}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00206}00206\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea9dac12e3c50154c1bdf2878c8c116ca9}{JSON}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00207}\mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3cea9dac12e3c50154c1bdf2878c8c116ca9}{00207}}\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00208}00208\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a78eed6d82d6cca9e3869dedf061590d0}{sendDocument}}(int64\_t\ chat\_id,\ Stream\ \&stream,\ \textcolor{keywordtype}{size\_t}\ size,}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{DocumentType}}\ doc,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00210}00210\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00211}\mbox{\hyperlink{class_async_telegram2_aed00b2014187fce21551c67c16fa7e65}{00211}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_aed00b2014187fce21551c67c16fa7e65}{sendDocument}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ Stream\ \&stream,\ \textcolor{keywordtype}{size\_t}\ size,}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a4b9de602dc77a24e010788bb6d8ae3ce}{DocumentType}}\ doc,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00213}00213\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00214}00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a78eed6d82d6cca9e3869dedf061590d0}{sendDocument}}(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ stream,\ size,\ doc,\ filename,\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00215}00215\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00216}00216\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00217}00217\ \ \ \ \ \textcolor{comment}{//\ Send\ a\ picture\ passing\ the\ url}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00218}00218\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}{sendPhotoByUrl}}(\textcolor{keyword}{const}\ int64\_t\ \&chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *url,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00219}00219\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00220}00220\ \ \ \ \ \textcolor{comment}{//\ Send\ an\ animation/gif\ passing\ the\ url}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00221}00221\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a0e6caf66c0341e5a68fa7f7edfe213f2}{sendAnimationByUrl}}(\textcolor{keyword}{const}\ int64\_t\ \&chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *url,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00222}00222\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00223}\mbox{\hyperlink{class_async_telegram2_ad18d53227f670ba4523a7232148b62a9}{00223}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ad18d53227f670ba4523a7232148b62a9}{sendPhoto}}(\textcolor{keyword}{const}\ int64\_t\ \&chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *url,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00224}00224\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00225}00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}{sendPhotoByUrl}}(chat\_id,\ url,\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00226}00226\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00227}00227\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00228}\mbox{\hyperlink{class_async_telegram2_a3236aefd94c0e90f2e045183362e462b}{00228}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a3236aefd94c0e90f2e045183362e462b}{sendPhoto}}(\textcolor{keyword}{const}\ int64\_t\ \&chat\_id,\ \textcolor{keyword}{const}\ String\ \&url,\ \textcolor{keyword}{const}\ String\ \&caption)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00229}00229\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00230}00230\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}{sendPhotoByUrl}}(chat\_id,\ url.c\_str(),\ caption.c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00231}00231\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00232}00232\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00233}\mbox{\hyperlink{class_async_telegram2_a9f0265ed86397a2c7965af009f3938c3}{00233}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a9f0265ed86397a2c7965af009f3938c3}{sendPhoto}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ String\ \&url,\ \textcolor{keyword}{const}\ String\ \&caption)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00234}00234\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00235}00235\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}{sendPhotoByUrl}}(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ url.c\_str(),\ caption.c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00236}00236\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00238}00238\ \ \ \ \ \textcolor{comment}{//\ Send\ a\ picture\ passing\ a\ stream\ object}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00239}\mbox{\hyperlink{class_async_telegram2_adb3bdd31300a50b5b687c123b06e8d91}{00239}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_adb3bdd31300a50b5b687c123b06e8d91}{sendPhoto}}(int64\_t\ chat\_id,\ Stream\ \&stream,\ \textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename\ =\ \textcolor{keyword}{nullptr},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00240}00240\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00241}00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sendStream(chat\_id,\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ stream,\ size,\ filename,\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00242}00242\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00243}00243\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00244}\mbox{\hyperlink{class_async_telegram2_ae9991040d1a8f089cd14c203da99d9e3}{00244}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ae9991040d1a8f089cd14c203da99d9e3}{sendPhoto}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ Stream\ \&stream,\ \textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00245}00245\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00246}00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sendStream(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ stream,\ size,\ filename,\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00247}00247\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00248}00248\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00249}00249\ \textcolor{preprocessor}{\#if\ FS\_SUPPORT\ ==\ true\ }\textcolor{comment}{//\ \#support\ for\ <FS.h>\ is\ needed}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00250}00250\ \ \ \ \ \textcolor{comment}{//\ Send\ a\ picture\ passing\ a\ file\ and\ relative\ filesystem}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00251}00251\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ad18d53227f670ba4523a7232148b62a9}{sendPhoto}}(int64\_t\ chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ fs::FS\ \&fs,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00252}00252\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00253}00253\ \ \ \ \ \ \ \ \ File\ file\ =\ fs.open(filename,\ \textcolor{stringliteral}{"{}r"{}});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00254}00254\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ res\ =\ sendStream(chat\_id,\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ file,\ file.size(),\ file.name(),\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00255}00255\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00256}00256\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00257}00257\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00258}00258\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ad18d53227f670ba4523a7232148b62a9}{sendPhoto}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ fs::FS\ \&fs,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00259}00259\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00260}00260\ \ \ \ \ \ \ \ \ File\ file\ =\ fs.open(filename,\ \textcolor{stringliteral}{"{}r"{}});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00261}00261\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ res\ =\ sendStream(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ file,\ file.size(),\ file.name(),\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00262}00262\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00263}00263\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00264}00264\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00265}00265\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00266}00266\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00267}00267\ \ \ \ \ \textcolor{comment}{//\ Send\ a\ picture\ passing\ a\ raw\ buffer}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00268}\mbox{\hyperlink{class_async_telegram2_a229bc4a406a6380d750e76641339889c}{00268}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a229bc4a406a6380d750e76641339889c}{sendPhoto}}(int64\_t\ chat\_id,\ uint8\_t\ *data,\ \textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00269}00269\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00270}00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sendBuffer(chat\_id,\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ data,\ size,\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00271}00271\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00272}00272\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00273}\mbox{\hyperlink{class_async_telegram2_ad562e66058afc9f16f8b3b3394a4be0c}{00273}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ad562e66058afc9f16f8b3b3394a4be0c}{sendPhoto}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ uint8\_t\ *data,\ \textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00274}00274\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00275}00275\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sendBuffer(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ data,\ size,\ caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00276}00276\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00277}00277\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00279}00279\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00280}\mbox{\hyperlink{class_async_telegram2_a2d0a0affe7559b2e6193cffe8a883d61}{00280}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a2d0a0affe7559b2e6193cffe8a883d61}{sendPhotoByUrl}}(\textcolor{keyword}{const}\ int64\_t\ \&chat\_id,\ \textcolor{keyword}{const}\ String\ \&url,\ \textcolor{keyword}{const}\ String\ \&caption)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00281}00281\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00282}00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}{sendPhotoByUrl}}(chat\_id,\ url.c\_str(),\ caption.c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00283}00283\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00284}00284\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00285}\mbox{\hyperlink{class_async_telegram2_ac7d93fc1919248f9457ec811abeb81d7}{00285}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ac7d93fc1919248f9457ec811abeb81d7}{sendPhotoByUrl}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ String\ \&url,\ \textcolor{keyword}{const}\ String\ \&caption)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00286}00286\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00287}00287\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_a590e45ec6415651989bfdb62547fec1b}{sendPhotoByUrl}}(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ url.c\_str(),\ caption.c\_str());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00288}00288\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00289}00289\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00290}\mbox{\hyperlink{class_async_telegram2_a7b803024488ebd1835aacbc2046babed}{00290}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a7b803024488ebd1835aacbc2046babed}{sendPhotoByFile}}(int64\_t\ chat\_id,\ Stream\ *stream,\ \textcolor{keywordtype}{size\_t}\ size)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00291}00291\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00292}00292\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sendStream(chat\_id,\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ *stream,\ size,\ \textcolor{keyword}{nullptr},\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00293}00293\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00294}00294\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00295}00295\ \textcolor{preprocessor}{\#if\ FS\_SUPPORT\ ==\ true\ }\textcolor{comment}{//\ \#support\ for\ <FS.h>\ is\ needed}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00296}00296\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a7b803024488ebd1835aacbc2046babed}{sendPhotoByFile}}(int64\_t\ chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ fs::FS\ \&fs)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00297}00297\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00298}00298\ \ \ \ \ \ \ \ \ File\ file\ =\ fs.open(filename,\ \textcolor{stringliteral}{"{}r"{}});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00299}00299\ \ \ \ \ \ \ \ \ Serial.println(file.size());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00300}00300\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ res\ =\ sendStream(chat\_id,\ \textcolor{stringliteral}{"{}sendPhoto"{}},\ \textcolor{stringliteral}{"{}image/jpeg"{}},\ \textcolor{stringliteral}{"{}photo"{}},\ file,\ file.size(),\ file.name(),\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00301}00301\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00302}00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ res;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00303}00303\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00304}00304\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00306}00306\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00307}00307\ \ \ \ \ \textcolor{comment}{//\ terminate\ a\ query\ started\ by\ pressing\ an\ inlineKeyboard\ button.\ The\ steps\ are:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00308}00308\ \ \ \ \ \textcolor{comment}{//\ 1)\ send\ a\ message\ with\ an\ inline\ keyboard}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00309}00309\ \ \ \ \ \textcolor{comment}{//\ 2)\ wait\ for\ a\ <message>\ (getNewMessage)\ of\ type\ MessageQuery}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00310}00310\ \ \ \ \ \textcolor{comment}{//\ 3)\ handle\ the\ query\ and\ then\ call\ endQuery\ with\ <message>.callbackQueryID}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00311}00311\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00312}00312\ \ \ \ \ \textcolor{comment}{//\ \ \ msg\ \ :\ the\ TBMessage\ telegram\ recipient\ with\ unique\ query\ ID\ (retrieved\ with\ getNewMessage\ method)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00313}00313\ \ \ \ \ \textcolor{comment}{//\ \ \ message\ \ :\ an\ optional\ message}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00314}00314\ \ \ \ \ \textcolor{comment}{//\ \ \ alertMode:\ false\ -\/>\ a\ simply\ popup\ message}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00315}00315\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ true\ -\/-\/>\ an\ alert\ message\ with\ ok\ button}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00316}00316\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a4e7d5186ea63a6e342503394189cf1c8}{endQuery}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *message,\ \textcolor{keywordtype}{bool}\ alertMode\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00317}00317\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00318}00318\ \ \ \ \ \textcolor{comment}{//\ remove\ an\ active\ reply\ keyboard\ for\ a\ selected\ user,\ sending\ a\ message}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00319}00319\ \ \ \ \ \textcolor{comment}{//\ params:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00320}00320\ \ \ \ \ \textcolor{comment}{//\ \ \ msg\ \ \ \ \ \ :\ the\ TBMessage\ telegram\ recipient\ with\ the\ telegram\ user\ ID}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00321}00321\ \ \ \ \ \textcolor{comment}{//\ \ \ message\ \ :\ the\ message\ to\ be\ show\ to\ the\ selected\ user\ ID}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00322}00322\ \ \ \ \ \textcolor{comment}{//\ \ \ selective:\ enable\ selective\ mode\ (hide\ the\ keyboard\ for\ specific\ users\ only)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00323}00323\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ Targets:\ 1)\ users\ that\ are\ @mentioned\ in\ the\ text\ of\ the\ Message\ object;}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00324}00324\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 2)\ if\ the\ bot's\ message\ is\ a\ reply\ (has\ reply\_to\_message\_id),\ sender\ of\ the\ original\ message}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00325}00325\ \ \ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00326}00326\ \ \ \ \ \textcolor{comment}{//\ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00327}00327\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_aca60e039d76f080c3123cb329b18e831}{removeReplyKeyboard}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *message,\ \textcolor{keywordtype}{bool}\ selective\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00328}00328\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00329}00329\ \ \ \ \ \textcolor{comment}{//\ Get\ the\ current\ bot\ name}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00330}00330\ \ \ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00331}00331\ \ \ \ \ \textcolor{comment}{//\ \ \ the\ bot\ name}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00332}\mbox{\hyperlink{class_async_telegram2_a70e697d61940abe3c26020b02634dfb1}{00332}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{class_async_telegram2_a70e697d61940abe3c26020b02634dfb1}{getBotName}}()}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00333}00333\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00334}00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_botusername.c\_str();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00335}00335\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00336}00336\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00337}00337\ \ \ \ \ \textcolor{comment}{//\ Check\ for\ no\ new\ pending\ message}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00338}00338\ \ \ \ \ \textcolor{comment}{//\ (to\ be\ sure\ all\ messages\ was\ parsed,\ before\ doing\ something)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00339}00339\ \ \ \ \ \textcolor{comment}{//\ Example:\ OTA\ sketch}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00340}00340\ \ \ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00341}00341\ \ \ \ \ \textcolor{comment}{//\ \ \ true\ if\ no\ message}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00342}00342\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_aaec5ad8e68a7409c21ae629545407fad}{noNewMessage}}();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00343}00343\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00344}00344\ \ \ \ \ \textcolor{comment}{//\ If\ bot\ is\ a\ member\ of\ a\ group,\ return\ the\ id\ of\ group\ (negative\ number)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00345}00345\ \ \ \ \ \textcolor{comment}{//\ In\ order\ to\ be\ sure\ library\ is\ able\ to\ catch\ the\ id,}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00346}00346\ \ \ \ \ \textcolor{comment}{//\ add\ bot\ to\ group\ while\ it\ is\ running,\ so\ the\ joining\ message\ can\ be\ parsed}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00347}\mbox{\hyperlink{class_async_telegram2_a4dc70dbb80911d3253a95ea4a19daa21}{00347}}\ \ \ \ \ \textcolor{keyword}{inline}\ int64\_t\ \mbox{\hyperlink{class_async_telegram2_a4dc70dbb80911d3253a95ea4a19daa21}{getGroupId}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00348}00348\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00349}00349\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}}\ <\ 0)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00350}00350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00351}00351\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00352}00352\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00353}00353\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00354}00354\ \ \ \ \ \textcolor{comment}{//\ keep\ track\ of\ defined\ inline\ keybaord\ in\ order\ to\ call\ cb\ function}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00355}00355\ \ \ \ \ \textcolor{comment}{//\ params:\ pointer\ to\ inline\ keyboard}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00356}\mbox{\hyperlink{class_async_telegram2_a4b412a4052949ecad188e5eef0034f6f}{00356}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_async_telegram2_a4b412a4052949ecad188e5eef0034f6f}{addInlineKeyboard}}(\mbox{\hyperlink{class_inline_keyboard}{InlineKeyboard}}\ *keyb)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00357}00357\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00358}00358\ \ \ \ \ \ \ \ \ m\_keyboards[m\_keyboardCount++]\ =\ keyb;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00359}00359\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00360}00360\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00361}00361\ \ \ \ \ \textcolor{comment}{//\ set\ custom\ commands\ for\ bot}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00362}00362\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00363}00363\ \ \ \ \ \textcolor{comment}{//\ \ \ command:\ Text\ of\ the\ command,\ 1-\/32\ characters.\ Can\ contain\ only\ lowercase\ English\ letters,\ digits\ and\ underscores.}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00364}00364\ \ \ \ \ \textcolor{comment}{//\ \ \ description:\ Description\ of\ the\ command,\ 3-\/256\ characters.}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00365}00365\ \ \ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00366}00366\ \ \ \ \ \textcolor{comment}{//\ \ \ true\ if\ success}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00367}00367\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a0a0c361a02fc19d233ae6136ccf781b3}{setMyCommands}}(\textcolor{keyword}{const}\ String\ \&cmd,\ \textcolor{keyword}{const}\ String\ \&desc);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00368}00368\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00369}00369\ \ \ \ \ \textcolor{comment}{//\ get\ list\ of\ custom\ commands\ defined\ for\ bot}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00370}00370\ \ \ \ \ \textcolor{comment}{//\ params:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00371}00371\ \ \ \ \ \textcolor{comment}{//\ \ \ A\ string\ that\ will\ contains\ a\ JSON-\/serialized\ list\ of\ bot\ commands}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00372}00372\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_async_telegram2_a14dc64422808c51a7a14dd3261be575d}{getMyCommands}}(String\ \&cmdList);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00373}00373\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00374}00374\ \ \ \ \ \textcolor{comment}{//\ clear\ list\ of\ custom\ commands\ defined\ for\ bot}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00375}00375\ \ \ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00376}00376\ \ \ \ \ \textcolor{comment}{//\ \ \ true\ if\ success}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00377}00377\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a4ec850e59adae8852c90ced61d3845de}{deleteMyCommands}}();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00378}00378\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00379}00379\ \ \ \ \ \textcolor{comment}{//\ Edit\ a\ previous\ sent\ message}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00380}00380\ \ \ \ \ \textcolor{comment}{//\ params:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00381}00381\ \ \ \ \ \textcolor{comment}{//\ \ \ \ chat\_id:\ the\ iD\ of\ chat}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00382}00382\ \ \ \ \ \textcolor{comment}{//\ \ \ \ message\_id:\ the\ message\ ID\ to\ be\ edited}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00383}00383\ \ \ \ \ \textcolor{comment}{//\ \ \ \ txt:\ the\ new\ text}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00384}00384\ \ \ \ \ \textcolor{comment}{//\ \ \ \ keyboard:\ the\ new\ inline\ keyboard\ (if\ present)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00385}00385\ \ \ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00386}00386\ \ \ \ \ \textcolor{comment}{//\ \ \ \ true\ if\ success}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00387}00387\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_af5c03f30c18df9051ffb8052587f7372}{editMessage}}(int32\_t\ chat\_id,\ int32\_t\ message\_id,\ \textcolor{keyword}{const}\ String\ \&txt,\ \textcolor{keyword}{const}\ String\ \&keyboard);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00388}00388\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00389}\mbox{\hyperlink{class_async_telegram2_ac2ad70a33b6449e4ed6efd446ef03c28}{00389}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ac2ad70a33b6449e4ed6efd446ef03c28}{editMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ String\ \&txt,\ \textcolor{keyword}{const}\ String\ \&keyboard)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00390}00390\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00391}00391\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_af5c03f30c18df9051ffb8052587f7372}{editMessage}}(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ msg.\mbox{\hyperlink{struct_t_b_message_aee364e5f0224df393743e21268f66bbd}{messageID}},\ txt,\ keyboard);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00392}00392\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00393}00393\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00394}\mbox{\hyperlink{class_async_telegram2_ab590a7bd09691493c91425f53518fa18}{00394}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ab590a7bd09691493c91425f53518fa18}{editMessage}}(int32\_t\ chat\_id,\ int32\_t\ message\_id,\ \textcolor{keyword}{const}\ String\ \&txt,\ \mbox{\hyperlink{class_inline_keyboard}{InlineKeyboard}}\ \&keyboard)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00395}00395\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00396}00396\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_af5c03f30c18df9051ffb8052587f7372}{editMessage}}(chat\_id,\ message\_id,\ txt,\ keyboard.\mbox{\hyperlink{class_inline_keyboard_af533b314d9647a83f6d92e17e6d93e4a}{getJSON}}());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00397}00397\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00398}00398\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00399}\mbox{\hyperlink{class_async_telegram2_adf270e109514f7b55b46e3fb07fa8c0b}{00399}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_adf270e109514f7b55b46e3fb07fa8c0b}{editMessage}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_t_b_message}{TBMessage}}\ \&msg,\ \textcolor{keyword}{const}\ String\ \&txt,\ \mbox{\hyperlink{class_inline_keyboard}{InlineKeyboard}}\ \&keyboard)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00400}00400\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00401}00401\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_async_telegram2_af5c03f30c18df9051ffb8052587f7372}{editMessage}}(msg.\mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chatId}},\ msg.\mbox{\hyperlink{struct_t_b_message_aee364e5f0224df393743e21268f66bbd}{messageID}},\ txt,\ keyboard.\mbox{\hyperlink{class_inline_keyboard_af533b314d9647a83f6d92e17e6d93e4a}{getJSON}}());}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00402}00402\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00403}00403\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00404}00404\ \ \ \ \ \textcolor{comment}{//\ check\ if\ connection\ with\ server\ is\ active}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00405}00405\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00406}00406\ \ \ \ \ \textcolor{comment}{//\ \ \ true\ on\ connected}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00407}00407\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a4cc01b5f954e7a6decb3e330fedab3ec}{checkConnection}}();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00408}00408\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00409}00409\ \ \ \ \ \textcolor{comment}{//\ This\ callback\ function\ will\ be\ executed\ once\ the\ message\ was\ delivered\ succesfully}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00410}\mbox{\hyperlink{class_async_telegram2_a657bb83c9330fa6082b57e66f192a190}{00410}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_async_telegram2_a657bb83c9330fa6082b57e66f192a190}{addSentCallback}}(SentCallback\ sentcb,\ uint32\_t\ timeout\ =\ 1000)}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00411}00411\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00412}00412\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sentcb\ !=\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00413}00413\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00414}00414\ \ \ \ \ \ \ \ \ \ \ \ \ m\_sentCallback\ =\ sentcb;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00415}00415\ \ \ \ \ \ \ \ \ \ \ \ \ m\_sentTimeout\ =\ timeout;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00416}00416\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00417}00417\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00418}00418\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00419}00419\ \ \ \ \ \textcolor{comment}{//\ Set\ the\ default\ text\ formatting\ option\ (https://core.telegram.org/bots/api\#formatting-\/options)}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00420}00420\ \ \ \ \ \textcolor{comment}{//\ params:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00421}00421\ \ \ \ \ \textcolor{comment}{//\ \ \ \ format:\ the\ type\ of\ formatting\ text\ of\ sent\ messages.\ No\ formatting,\ HTML\ style\ (default),\ MarkdownV2\ style}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00422}00422\ \ \ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00423}00423\ \ \ \ \ \textcolor{comment}{//\ \ \ \ void}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00424}\mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10}{00424}}\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10}{FormatStyle}}\ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00425}\mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10a30e126b7c8e791e3c14a0de4aa6db7b8}{00425}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10a30e126b7c8e791e3c14a0de4aa6db7b8}{NONE}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00426}\mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abcff4774f8b4c305dcb53e7e5782415c}{00426}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abcff4774f8b4c305dcb53e7e5782415c}{HTML}},}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00427}00427\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abe53632e1a588b53f88ca5785ad107f0}{MARKDOWN}}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00428}\mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abe53632e1a588b53f88ca5785ad107f0}{00428}}\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00429}\mbox{\hyperlink{class_async_telegram2_a7fec1e5ad7e45987d88b540a3dabf556}{00429}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_async_telegram2_a7fec1e5ad7e45987d88b540a3dabf556}{setFormattingStyle}}(uint8\_t\ format)\ \{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00430}00430\ \ \ \ \ \ \ \ \ m\_formatType\ =\ format;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00431}00431\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00432}00432\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00433}\mbox{\hyperlink{class_async_telegram2_a50c5f09c5f492d255b4f14d5078f7e15}{00433}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_async_telegram2_a50c5f09c5f492d255b4f14d5078f7e15}{setJsonBufferSize}}(uint32\_t\ jsonBufferSize)\{}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00434}00434\ \ \ \ \ \ \ \ \ m\_JsonBufferSize\ =\ jsonBufferSize;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00435}00435\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00436}00436\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00437}00437\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00438}00438\ \ \ \ \ Client\ *telegramClient;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00439}00439\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *m\_token;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00440}00440\ \ \ \ \ String\ m\_rxbuffer;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00441}00441\ \ \ \ \ String\ m\_botusername;\ \textcolor{comment}{//\ Store\ only\ botname,\ instead\ TBUser\ struct}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00442}00442\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00443}00443\ \ \ \ \ int32\_t\ m\_lastUpdateId\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00444}00444\ \ \ \ \ uint32\_t\ m\_lastUpdateTime;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00445}00445\ \ \ \ \ uint32\_t\ m\_minUpdateTime\ =\ \mbox{\hyperlink{_async_telegram2_8h_a96ea578243c3f7e4a5f527b26d4b486b}{MIN\_UPDATE\_TIME}};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00446}00446\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00447}00447\ \ \ \ \ uint32\_t\ m\_lastmsg\_timestamp;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00448}00448\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_waitingReply;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00449}00449\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00450}00450\ \ \ \ \ \mbox{\hyperlink{class_inline_keyboard}{InlineKeyboard}}\ *m\_keyboards[10];}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00451}00451\ \ \ \ \ uint8\_t\ m\_keyboardCount\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00452}00452\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00453}00453\ \ \ \ \ \textcolor{keywordtype}{void}\ setformData(int64\_t\ chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *cmd,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *type,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *propName,\ \textcolor{keywordtype}{size\_t}\ size,}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00454}00454\ \ \ \ \ \ \ \ \ String\ \&formData,\ String\ \&request,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00455}00455\ \ \ \ \ \textcolor{keywordtype}{bool}\ sendStream(int64\_t\ chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *command,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *contentType,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *binaryPropertyName,}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00456}00456\ \ \ \ \ \ \ \ \ Stream\ \&stream,\ \textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00457}00457\ \ \ \ \ \textcolor{keywordtype}{bool}\ sendBuffer(int64\_t\ chat\_id,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *cmd,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *type,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *propName,\ uint8\_t\ *data,\ \textcolor{keywordtype}{size\_t}\ size,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *caption);}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00458}00458\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00459}00459\ \ \ \ \ SentCallback\ m\_sentCallback\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00460}00460\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_waitSent\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00461}00461\ \ \ \ \ uint32\_t\ m\_sentTimeout;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00462}00462\ \ \ \ \ uint32\_t\ m\_lastSentTime;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00463}00463\ \ \ \ \ uint32\_t\ m\_lastSentMsgId;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00464}00464\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00465}00465\ \ \ \ \ uint32\_t\ testReconnectTime;}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00466}00466\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00467}00467\ \ \ \ \ uint8\_t\ m\_formatType\ =\ \mbox{\hyperlink{class_async_telegram2_a18e57e92ff8d8d1c919b1852423b5d10abcff4774f8b4c305dcb53e7e5782415c}{HTML}};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00468}00468\ \ \ \ \ uint32\_t\ m\_JsonBufferSize\ =\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00469}00469\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00470}00470\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00471}00471\ \ \ \ \ \textcolor{comment}{//\ send\ commands\ to\ the\ telegram\ server.\ For\ info\ about\ commands,\ check\ the\ telegram\ api\ https://core.telegram.org/bots/api}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00472}00472\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00473}00473\ \ \ \ \ \textcolor{comment}{//\ \ \ command\ \ \ :\ the\ command\ to\ send,\ i.e.\ getMe}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00474}00474\ \ \ \ \ \textcolor{comment}{//\ \ \ parameters:\ optional\ parameters}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00475}00475\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00476}00476\ \ \ \ \ \textcolor{comment}{//\ \ \ an\ empty\ string\ if\ error}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00477}00477\ \ \ \ \ \textcolor{comment}{//\ \ \ a\ string\ containing\ the\ Telegram\ JSON\ response}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00478}00478\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00479}00479\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a79af0c98ff15bf120375cee7a1d820e5}{sendCommand}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *command,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *payload,\ \textcolor{keywordtype}{bool}\ blocking\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00480}00480\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00481}00481\ \ \ \ \ \textcolor{comment}{//\ query\ server\ for\ new\ incoming\ messages}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00482}00482\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00483}00483\ \ \ \ \ \textcolor{comment}{//\ \ \ http\ response\ payload\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00484}00484\ \ \ \ \ \textcolor{comment}{//\ bool\ getUpdates(JsonDocument\ \&doc);}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00485}00485\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00486}00486\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_a6a8e63acbda809e800b7be0ad08d3d87}{getUpdates}}();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00487}00487\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00488}00488\ \ \ \ \ \textcolor{comment}{//\ get\ some\ information\ about\ the\ bot}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00489}00489\ \ \ \ \ \textcolor{comment}{//\ params}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00490}00490\ \ \ \ \ \textcolor{comment}{//\ \ \ user:\ the\ data\ structure\ that\ will\ contains\ the\ data\ retreived}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00491}00491\ \ \ \ \ \textcolor{comment}{//\ returns}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00492}00492\ \ \ \ \ \textcolor{comment}{//\ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00493}00493\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_async_telegram2_ad4395d7cd810db616b083529ff434ae6}{getMe}}();}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00494}00494\ \};}
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00495}00495\ }
+\DoxyCodeLine{\Hypertarget{_async_telegram2_8h_source_l00496}00496\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

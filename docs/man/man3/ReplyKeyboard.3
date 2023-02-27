@@ -1,0 +1,95 @@
+.TH "ReplyKeyboard" 3 "Sun Feb 26 2023" "AsyncTelegram2" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ReplyKeyboard
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <ReplyKeyboard\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBReplyKeyboard\fP ()"
+.br
+.ti -1c
+.RI "\fB~ReplyKeyboard\fP ()"
+.br
+.ti -1c
+.RI "bool \fBaddRow\fP (void)"
+.br
+.ti -1c
+.RI "bool \fBaddButton\fP (const char *text, \fBReplyKeyboardButtonType\fP buttonType=\fBKeyboardButtonSimple\fP)"
+.br
+.ti -1c
+.RI "void \fBenableResize\fP (void)"
+.br
+.ti -1c
+.RI "void \fBenableOneTime\fP (void)"
+.br
+.ti -1c
+.RI "void \fBenableSelective\fP (void)"
+.br
+.ti -1c
+.RI "String \fBgetJSON\fP (void) const"
+.br
+.ti -1c
+.RI "String \fBgetJSONPretty\fP () const"
+.br
+.ti -1c
+.RI "void \fBclear\fP ()"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line \fB18\fP of file \fBReplyKeyboard\&.h\fP\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "ReplyKeyboard::ReplyKeyboard ()"
+
+.PP
+Definition at line \fB3\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SS "ReplyKeyboard::~ReplyKeyboard ()"
+
+.PP
+Definition at line \fB9\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "bool ReplyKeyboard::addButton (const char * text, \fBReplyKeyboardButtonType\fP buttonType = \fC\fBKeyboardButtonSimple\fP\fP)"
+
+.PP
+Definition at line \fB35\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SS "bool ReplyKeyboard::addRow (void)"
+
+.PP
+Definition at line \fB11\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SS "void ReplyKeyboard::clear ()\fC [inline]\fP"
+
+.PP
+Definition at line \fB59\fP of file \fBReplyKeyboard\&.h\fP\&.
+.SS "void ReplyKeyboard::enableOneTime (void)"
+
+.PP
+Definition at line \fB163\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SS "void ReplyKeyboard::enableResize (void)"
+
+.PP
+Definition at line \fB132\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SS "void ReplyKeyboard::enableSelective (void)"
+
+.PP
+Definition at line \fB192\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SS "String ReplyKeyboard::getJSON (void) const"
+
+.PP
+Definition at line \fB221\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+.SS "String ReplyKeyboard::getJSONPretty () const"
+
+.PP
+Definition at line \fB226\fP of file \fBReplyKeyboard\&.cpp\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for AsyncTelegram2 from the source code\&.

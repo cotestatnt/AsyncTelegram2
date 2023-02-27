@@ -1,0 +1,436 @@
+.TH "AsyncTelegram2" 3 "Sun Feb 26 2023" "AsyncTelegram2" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+AsyncTelegram2
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <AsyncTelegram2\&.h>\fP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBDocumentType\fP { \fBZIP\fP, \fBPDF\fP, \fBPHOTO\fP, \fBANIMATION\fP, \fBAUDIO\fP, \fBVOICE\fP, \fBVIDEO\fP, \fBCSV\fP, \fBJSON\fP }"
+.br
+.ti -1c
+.RI "enum \fBFormatStyle\fP { \fBNONE\fP, \fBHTML\fP, \fBMARKDOWN\fP }"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBAsyncTelegram2\fP (Client &client, uint32_t bufferSize=\fBBUFFER_BIG\fP)"
+.br
+.ti -1c
+.RI "\fB~AsyncTelegram2\fP ()"
+.br
+.ti -1c
+.RI "bool \fBbegin\fP (void)"
+.br
+.ti -1c
+.RI "bool \fBreset\fP (void)"
+.br
+.ti -1c
+.RI "void \fBsetTelegramToken\fP (const char *token)"
+.br
+.ti -1c
+.RI "void \fBsetUpdateTime\fP (uint32_t pollingTime)"
+.br
+.ti -1c
+.RI "bool \fBgetFile\fP (\fBTBDocument\fP &doc)"
+.br
+.ti -1c
+.RI "\fBMessageType\fP \fBgetNewMessage\fP (\fBTBMessage\fP &message)"
+.br
+.ti -1c
+.RI "bool \fBsendMessage\fP (const \fBTBMessage\fP &msg, const char *message, const char *keyboard=nullptr, bool wait=false)"
+.br
+.ti -1c
+.RI "bool \fBsendMessage\fP (const \fBTBMessage\fP &msg, const String &message, String keyboard='')"
+.br
+.ti -1c
+.RI "bool \fBsendMessage\fP (const \fBTBMessage\fP &msg, const char *message, \fBInlineKeyboard\fP &keyboard)"
+.br
+.ti -1c
+.RI "bool \fBsendMessage\fP (const \fBTBMessage\fP &msg, const char *message, \fBReplyKeyboard\fP &keyboard)"
+.br
+.ti -1c
+.RI "bool \fBforwardMessage\fP (const \fBTBMessage\fP &msg, const int64_t to_chatid)"
+.br
+.ti -1c
+.RI "bool \fBsendToChannel\fP (const char *channel, const char *message, bool silent=false)"
+.br
+.ti -1c
+.RI "bool \fBsendToChannel\fP (const String &channel, const String &message, bool silent)"
+.br
+.ti -1c
+.RI "bool \fBsendTo\fP (const int64_t userid, const char *message, const char *keyboard=nullptr)"
+.br
+.ti -1c
+.RI "bool \fBsendTo\fP (const int64_t userid, const String &message, String keyboard='')"
+.br
+.ti -1c
+.RI "bool \fBsendDocument\fP (int64_t chat_id, Stream &stream, size_t size, \fBDocumentType\fP doc, const char *filename, const char *caption=nullptr)"
+.br
+.ti -1c
+.RI "bool \fBsendDocument\fP (const \fBTBMessage\fP &msg, Stream &stream, size_t size, \fBDocumentType\fP doc, const char *filename, const char *caption=nullptr)"
+.br
+.ti -1c
+.RI "bool \fBsendPhotoByUrl\fP (const int64_t &chat_id, const char *url, const char *caption)"
+.br
+.ti -1c
+.RI "bool \fBsendAnimationByUrl\fP (const int64_t &chat_id, const char *url, const char *caption)"
+.br
+.ti -1c
+.RI "bool \fBsendPhoto\fP (const int64_t &chat_id, const char *url, const char *caption)"
+.br
+.ti -1c
+.RI "bool \fBsendPhoto\fP (const int64_t &chat_id, const String &url, const String &caption)"
+.br
+.ti -1c
+.RI "bool \fBsendPhoto\fP (const \fBTBMessage\fP &msg, const String &url, const String &caption)"
+.br
+.ti -1c
+.RI "bool \fBsendPhoto\fP (int64_t chat_id, Stream &stream, size_t size, const char *filename=nullptr, const char *caption=nullptr)"
+.br
+.ti -1c
+.RI "bool \fBsendPhoto\fP (const \fBTBMessage\fP &msg, Stream &stream, size_t size, const char *filename, const char *caption=nullptr)"
+.br
+.ti -1c
+.RI "bool \fBsendPhoto\fP (int64_t chat_id, uint8_t *data, size_t size, const char *caption=nullptr)"
+.br
+.ti -1c
+.RI "bool \fBsendPhoto\fP (const \fBTBMessage\fP &msg, uint8_t *data, size_t size, const char *caption=nullptr)"
+.br
+.ti -1c
+.RI "bool \fBsendPhotoByUrl\fP (const int64_t &chat_id, const String &url, const String &caption)"
+.br
+.ti -1c
+.RI "bool \fBsendPhotoByUrl\fP (const \fBTBMessage\fP &msg, const String &url, const String &caption)"
+.br
+.ti -1c
+.RI "bool \fBsendPhotoByFile\fP (int64_t chat_id, Stream *stream, size_t size)"
+.br
+.ti -1c
+.RI "bool \fBendQuery\fP (const \fBTBMessage\fP &msg, const char *message, bool alertMode=false)"
+.br
+.ti -1c
+.RI "bool \fBremoveReplyKeyboard\fP (const \fBTBMessage\fP &msg, const char *message, bool selective=false)"
+.br
+.ti -1c
+.RI "const char * \fBgetBotName\fP ()"
+.br
+.ti -1c
+.RI "bool \fBnoNewMessage\fP ()"
+.br
+.ti -1c
+.RI "int64_t \fBgetGroupId\fP (const \fBTBMessage\fP &msg)"
+.br
+.ti -1c
+.RI "void \fBaddInlineKeyboard\fP (\fBInlineKeyboard\fP *keyb)"
+.br
+.ti -1c
+.RI "bool \fBsetMyCommands\fP (const String &cmd, const String &desc)"
+.br
+.ti -1c
+.RI "void \fBgetMyCommands\fP (String &cmdList)"
+.br
+.ti -1c
+.RI "bool \fBdeleteMyCommands\fP ()"
+.br
+.ti -1c
+.RI "bool \fBeditMessage\fP (int32_t chat_id, int32_t message_id, const String &txt, const String &keyboard)"
+.br
+.ti -1c
+.RI "bool \fBeditMessage\fP (const \fBTBMessage\fP &msg, const String &txt, const String &keyboard)"
+.br
+.ti -1c
+.RI "bool \fBeditMessage\fP (int32_t chat_id, int32_t message_id, const String &txt, \fBInlineKeyboard\fP &keyboard)"
+.br
+.ti -1c
+.RI "bool \fBeditMessage\fP (const \fBTBMessage\fP &msg, const String &txt, \fBInlineKeyboard\fP &keyboard)"
+.br
+.ti -1c
+.RI "bool \fBcheckConnection\fP ()"
+.br
+.ti -1c
+.RI "void \fBaddSentCallback\fP (SentCallback sentcb, uint32_t timeout=1000)"
+.br
+.ti -1c
+.RI "void \fBsetFormattingStyle\fP (uint8_t format)"
+.br
+.ti -1c
+.RI "void \fBsetJsonBufferSize\fP (uint32_t jsonBufferSize)"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBsendCommand\fP (const char *command, const char *payload, bool blocking=false)"
+.br
+.ti -1c
+.RI "bool \fBgetUpdates\fP ()"
+.br
+.ti -1c
+.RI "bool \fBgetMe\fP ()"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line \fB93\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBAsyncTelegram2::DocumentType\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIZIP \fP\fP
+.TP
+\fB\fIPDF \fP\fP
+.TP
+\fB\fIPHOTO \fP\fP
+.TP
+\fB\fIANIMATION \fP\fP
+.TP
+\fB\fIAUDIO \fP\fP
+.TP
+\fB\fIVOICE \fP\fP
+.TP
+\fB\fIVIDEO \fP\fP
+.TP
+\fB\fICSV \fP\fP
+.TP
+\fB\fIJSON \fP\fP
+.PP
+Definition at line \fB196\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "enum \fBAsyncTelegram2::FormatStyle\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fINONE \fP\fP
+.TP
+\fB\fIHTML \fP\fP
+.TP
+\fB\fIMARKDOWN \fP\fP
+.PP
+Definition at line \fB424\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "AsyncTelegram2::AsyncTelegram2 (Client & client, uint32_t bufferSize = \fC\fBBUFFER_BIG\fP\fP)"
+
+.PP
+Definition at line \fB5\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "AsyncTelegram2::~AsyncTelegram2 ()"
+
+.PP
+Definition at line \fB13\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "void AsyncTelegram2::addInlineKeyboard (\fBInlineKeyboard\fP * keyb)\fC [inline]\fP"
+
+.PP
+Definition at line \fB356\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "void AsyncTelegram2::addSentCallback (SentCallback sentcb, uint32_t timeout = \fC1000\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB410\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::begin (void)"
+
+.PP
+Definition at line \fB52\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::checkConnection ()"
+
+.PP
+Definition at line \fB15\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::deleteMyCommands ()"
+
+.PP
+Definition at line \fB786\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::editMessage (const \fBTBMessage\fP & msg, const String & txt, const String & keyboard)\fC [inline]\fP"
+
+.PP
+Definition at line \fB389\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::editMessage (const \fBTBMessage\fP & msg, const String & txt, \fBInlineKeyboard\fP & keyboard)\fC [inline]\fP"
+
+.PP
+Definition at line \fB399\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::editMessage (int32_t chat_id, int32_t message_id, const String & txt, const String & keyboard)"
+
+.PP
+Definition at line \fB838\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::editMessage (int32_t chat_id, int32_t message_id, const String & txt, \fBInlineKeyboard\fP & keyboard)\fC [inline]\fP"
+
+.PP
+Definition at line \fB394\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::endQuery (const \fBTBMessage\fP & msg, const char * message, bool alertMode = \fCfalse\fP)"
+
+.PP
+Definition at line \fB585\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::forwardMessage (const \fBTBMessage\fP & msg, const int64_t to_chatid)"
+
+.PP
+Definition at line \fB509\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "const char * AsyncTelegram2::getBotName ()\fC [inline]\fP"
+
+.PP
+Definition at line \fB332\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::getFile (\fBTBDocument\fP & doc)"
+
+.PP
+Definition at line \fB406\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "int64_t AsyncTelegram2::getGroupId (const \fBTBMessage\fP & msg)\fC [inline]\fP"
+
+.PP
+Definition at line \fB347\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::getMe ()\fC [protected]\fP"
+
+.PP
+Definition at line \fB391\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "void AsyncTelegram2::getMyCommands (String & cmdList)"
+
+.PP
+Definition at line \fB768\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "\fBMessageType\fP AsyncTelegram2::getNewMessage (\fBTBMessage\fP & message)"
+
+.PP
+Definition at line \fB209\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::getUpdates ()\fC [protected]\fP"
+
+.PP
+Definition at line \fB119\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::noNewMessage ()"
+
+.PP
+Definition at line \fB428\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::removeReplyKeyboard (const \fBTBMessage\fP & msg, const char * message, bool selective = \fCfalse\fP)"
+
+.PP
+Definition at line \fB597\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::reset (void)"
+
+.PP
+Definition at line \fB58\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::sendAnimationByUrl (const int64_t & chat_id, const char * url, const char * caption)"
+
+.PP
+Definition at line \fB537\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::sendCommand (const char * command, const char * payload, bool blocking = \fCfalse\fP)\fC [protected]\fP"
+
+.PP
+Definition at line \fB71\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::sendDocument (const \fBTBMessage\fP & msg, Stream & stream, size_t size, \fBDocumentType\fP doc, const char * filename, const char * caption = \fCnullptr\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB211\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendDocument (int64_t chat_id, Stream & stream, size_t size, \fBDocumentType\fP doc, const char * filename, const char * caption = \fCnullptr\fP)"
+
+.PP
+Definition at line \fB607\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::sendMessage (const \fBTBMessage\fP & msg, const char * message, const char * keyboard = \fCnullptr\fP, bool wait = \fCfalse\fP)"
+
+.PP
+Definition at line \fB444\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::sendMessage (const \fBTBMessage\fP & msg, const char * message, \fBInlineKeyboard\fP & keyboard)\fC [inline]\fP"
+
+.PP
+Definition at line \fB159\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendMessage (const \fBTBMessage\fP & msg, const char * message, \fBReplyKeyboard\fP & keyboard)\fC [inline]\fP"
+
+.PP
+Definition at line \fB164\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendMessage (const \fBTBMessage\fP & msg, const String & message, String keyboard = \fC''\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB154\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhoto (const int64_t & chat_id, const char * url, const char * caption)\fC [inline]\fP"
+
+.PP
+Definition at line \fB223\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhoto (const int64_t & chat_id, const String & url, const String & caption)\fC [inline]\fP"
+
+.PP
+Definition at line \fB228\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhoto (const \fBTBMessage\fP & msg, const String & url, const String & caption)\fC [inline]\fP"
+
+.PP
+Definition at line \fB233\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhoto (const \fBTBMessage\fP & msg, Stream & stream, size_t size, const char * filename, const char * caption = \fCnullptr\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB244\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhoto (const \fBTBMessage\fP & msg, uint8_t * data, size_t size, const char * caption = \fCnullptr\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB273\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhoto (int64_t chat_id, Stream & stream, size_t size, const char * filename = \fCnullptr\fP, const char * caption = \fCnullptr\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB239\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhoto (int64_t chat_id, uint8_t * data, size_t size, const char * caption = \fCnullptr\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB268\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhotoByFile (int64_t chat_id, Stream * stream, size_t size)\fC [inline]\fP"
+
+.PP
+Definition at line \fB290\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhotoByUrl (const int64_t & chat_id, const char * url, const char * caption)"
+
+.PP
+Definition at line \fB522\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::sendPhotoByUrl (const int64_t & chat_id, const String & url, const String & caption)\fC [inline]\fP"
+
+.PP
+Definition at line \fB280\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendPhotoByUrl (const \fBTBMessage\fP & msg, const String & url, const String & caption)\fC [inline]\fP"
+
+.PP
+Definition at line \fB285\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendTo (const int64_t userid, const char * message, const char * keyboard = \fCnullptr\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB183\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendTo (const int64_t userid, const String & message, String keyboard = \fC''\fP)\fC [inline]\fP"
+
+.PP
+Definition at line \fB190\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::sendToChannel (const char * channel, const char * message, bool silent = \fCfalse\fP)"
+
+.PP
+Definition at line \fB552\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "bool AsyncTelegram2::sendToChannel (const String & channel, const String & message, bool silent)\fC [inline]\fP"
+
+.PP
+Definition at line \fB175\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "void AsyncTelegram2::setFormattingStyle (uint8_t format)\fC [inline]\fP"
+
+.PP
+Definition at line \fB429\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "void AsyncTelegram2::setJsonBufferSize (uint32_t jsonBufferSize)\fC [inline]\fP"
+
+.PP
+Definition at line \fB433\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "bool AsyncTelegram2::setMyCommands (const String & cmd, const String & desc)"
+
+.PP
+Definition at line \fB796\fP of file \fBAsyncTelegram2\&.cpp\fP\&.
+.SS "void AsyncTelegram2::setTelegramToken (const char * token)\fC [inline]\fP"
+
+.PP
+Definition at line \fB118\fP of file \fBAsyncTelegram2\&.h\fP\&.
+.SS "void AsyncTelegram2::setUpdateTime (uint32_t pollingTime)\fC [inline]\fP"
+
+.PP
+Definition at line \fB124\fP of file \fBAsyncTelegram2\&.h\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for AsyncTelegram2 from the source code\&.

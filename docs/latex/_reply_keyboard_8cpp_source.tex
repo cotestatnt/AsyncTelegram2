@@ -1,0 +1,260 @@
+\hypertarget{_reply_keyboard_8cpp_source}{}\doxysection{Reply\+Keyboard.\+cpp}
+\label{_reply_keyboard_8cpp_source}\index{src/ReplyKeyboard.cpp@{src/ReplyKeyboard.cpp}}
+\mbox{\hyperlink{_reply_keyboard_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00001}00001\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_reply_keyboard_8h}{ReplyKeyboard.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00003}\mbox{\hyperlink{class_reply_keyboard_ac377d6efe61d7345db1552cb7b23c234}{00003}}\ \mbox{\hyperlink{class_reply_keyboard_ac377d6efe61d7345db1552cb7b23c234}{ReplyKeyboard::ReplyKeyboard}}()}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00004}00004\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00005}00005\ \ \ m\_json.reserve(\mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00006}00006\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}\{\(\backslash\)"{}keyboard\(\backslash\)"{}:[[]]\}\(\backslash\)"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00007}00007\ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00009}\mbox{\hyperlink{class_reply_keyboard_a7ba914daff69cf995528c4baafff3847}{00009}}\ \mbox{\hyperlink{class_reply_keyboard_a7ba914daff69cf995528c4baafff3847}{ReplyKeyboard::\string~ReplyKeyboard}}()\ \{\}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00011}\mbox{\hyperlink{class_reply_keyboard_ad4513c5a41f494ad2a46a26a77d14034}{00011}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_reply_keyboard_ad4513c5a41f494ad2a46a26a77d14034}{ReplyKeyboard::addRow}}()}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00013}00013\ \textcolor{preprocessor}{\#if\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00014}00014\ \ \ DynamicJsonDocument\ doc(ESP.getMaxFreeBlockSize()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00015}00015\ \textcolor{preprocessor}{\#elif\ defined(ESP32)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00016}00016\ \ \ DynamicJsonDocument\ doc(ESP.getMaxAllocHeap()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00017}00017\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00018}00018\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00019}00019\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00021}00021\ \ \ DeserializationError\ err\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00022}00022\ \ \ \textcolor{keywordflow}{if}\ (err)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00023}00023\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00024}00024\ \ \ \ \ \mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{log\_debug}}(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ \%s\(\backslash\)n"{}},\ err.c\_str());}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00025}00025\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00026}00026\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00028}00028\ \ \ JsonArray\ rows\ =\ doc[\textcolor{stringliteral}{"{}keyboard"{}}];}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00029}00029\ \ \ rows.createNestedArray();}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00030}00030\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00031}00031\ \ \ serializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00032}00032\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00033}00033\ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00035}\mbox{\hyperlink{class_reply_keyboard_adda6537abe25904581c879d6a3bb3ddb}{00035}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_reply_keyboard_adda6537abe25904581c879d6a3bb3ddb}{ReplyKeyboard::addButton}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *text,\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6}{ReplyKeyboardButtonType}}\ buttonType)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00036}00036\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00037}00037\ \ \ \textcolor{keywordflow}{if}\ ((buttonType\ !=\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6aa9bbc86685d5bc5943211306feaa2ea9}{KeyboardButtonContact}})\ \&\&}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00038}00038\ \ \ \ \ \ \ (buttonType\ !=\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6a9b8df96762fa99fb4fe2309378033fa6}{KeyboardButtonLocation}})\ \&\&}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00039}00039\ \ \ \ \ \ \ (buttonType\ !=\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6ab9aedd6589f8f66f2921ef13552afa8f}{KeyboardButtonSimple}}))}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00040}00040\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00041}00041\ \ \ \ \ Serial.println(\textcolor{stringliteral}{"{}no\ button\ type"{}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00042}00042\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00043}00043\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00045}00045\ \textcolor{preprocessor}{\#if\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00046}00046\ \ \ DynamicJsonDocument\ doc(ESP.getMaxFreeBlockSize()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00047}00047\ \textcolor{preprocessor}{\#elif\ defined(ESP32)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00048}00048\ \ \ DynamicJsonDocument\ doc(ESP.getMaxAllocHeap()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00049}00049\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00050}00050\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00051}00051\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00053}00053\ \ \ DeserializationError\ err\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00054}00054\ \ \ \textcolor{keywordflow}{if}\ (err)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00055}00055\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00056}00056\ \ \ \ \ \mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{log\_debug}}(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ \%s\(\backslash\)n"{}},\ err.c\_str());}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00057}00057\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00058}00058\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00060}00060\ \ \ JsonArray\ rows\ =\ doc[\textcolor{stringliteral}{"{}keyboard"{}}];}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00061}00061\ \ \ JsonObject\ button\ =\ rows[rows.size()\ -\/\ 1].createNestedObject();}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00063}00063\ \ \ button[\textcolor{stringliteral}{"{}text"{}}]\ =\ text;}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00064}00064\ \ \ \textcolor{keywordflow}{switch}\ (buttonType)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00065}00065\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00066}00066\ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6aa9bbc86685d5bc5943211306feaa2ea9}{KeyboardButtonContact}}:}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00067}00067\ \ \ \ \ button[\textcolor{stringliteral}{"{}request\_contact"{}}]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00068}00068\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00069}00069\ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6a9b8df96762fa99fb4fe2309378033fa6}{KeyboardButtonLocation}}:}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00070}00070\ \ \ \ \ button[\textcolor{stringliteral}{"{}request\_location"{}}]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00071}00071\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00072}00072\ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00073}00073\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00074}00074\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00076}00076\ \ \ \textcolor{comment}{//\ Store\ inline\ keyboard\ json\ structure}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00077}00077\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00078}00078\ \ \ serializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00079}00079\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00080}00080\ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00082}00082\ \textcolor{comment}{//\ bool\ ReplyKeyboard::addRow()}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00083}00083\ \textcolor{comment}{//\ \{}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00084}00084\ \textcolor{comment}{//\ \ \ if(m\_jsonSize\ <\ BUFFER\_MEDIUM)\ m\_jsonSize\ =\ BUFFER\_MEDIUM;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00085}00085\ \textcolor{comment}{//\ \ \ DynamicJsonDocument\ doc(m\_jsonSize\ +\ 128);\ \ //\ Current\ size\ +\ space\ for\ new\ row\ (empty)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00087}00087\ \textcolor{comment}{//\ \ \ deserializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00088}00088\ \textcolor{comment}{//\ \ \ JsonArray\ rows\ =\ doc["{}keyboard"{}];}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00089}00089\ \textcolor{comment}{//\ \ \ rows.createNestedArray();}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00090}00090\ \textcolor{comment}{//\ \ \ m\_json\ =\ "{}"{};}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00091}00091\ \textcolor{comment}{//\ \ \ serializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00092}00092\ \textcolor{comment}{//\ \ \ doc.shrinkToFit();}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00093}00093\ \textcolor{comment}{//\ \ \ m\_jsonSize\ =\ doc.memoryUsage();}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00094}00094\ \textcolor{comment}{//\ \ \ return\ true;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00095}00095\ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00097}00097\ \textcolor{comment}{//\ bool\ ReplyKeyboard::addButton(const\ char*\ text,\ ReplyKeyboardButtonType\ buttonType)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00098}00098\ \textcolor{comment}{//\ \{}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00099}00099\ \textcolor{comment}{//\ \ \ if\ ((buttonType\ !=\ KeyboardButtonContact)\ \&\&}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00100}00100\ \textcolor{comment}{//\ \ \ \ \ (buttonType\ !=\ KeyboardButtonLocation)\ \&\&}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00101}00101\ \textcolor{comment}{//\ \ \ \ \ (buttonType\ !=\ KeyboardButtonSimple))}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00102}00102\ \textcolor{comment}{//\ \ \ \ \ return\ false;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00103}00103\ \textcolor{comment}{//\ \ \ //\ As\ reccomended\ use\ local\ JsonDocument\ instead\ global}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00104}00104\ \textcolor{comment}{//\ \ \ //\ inline\ keyboard\ json\ structure\ will\ be\ stored\ in\ a\ String\ var}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00105}00105\ \textcolor{comment}{//\ \ \ if(m\_jsonSize\ <\ BUFFER\_MEDIUM)\ m\_jsonSize\ =\ BUFFER\_MEDIUM;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00106}00106\ \textcolor{comment}{//\ \ \ DynamicJsonDocument\ doc(m\_jsonSize\ +\ 256);\ \ //\ Current\ size\ +\ space\ for\ new\ object\ (button)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00107}00107\ \textcolor{comment}{//\ \ \ deserializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00109}00109\ \textcolor{comment}{//\ \ \ JsonArray\ \ rows\ =\ doc["{}keyboard"{}];}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00110}00110\ \textcolor{comment}{//\ \ \ JsonObject\ button\ =\ rows[rows.size()-\/1].createNestedObject();}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00112}00112\ \textcolor{comment}{//\ \ \ button["{}text"{}]\ =\ text;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00113}00113\ \textcolor{comment}{//\ \ \ switch\ (buttonType)\{}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00114}00114\ \textcolor{comment}{//\ \ \ \ \ case\ KeyboardButtonContact:}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00115}00115\ \textcolor{comment}{//\ \ \ \ \ \ \ button["{}request\_contact"{}]\ =\ true;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00116}00116\ \textcolor{comment}{//\ \ \ \ \ \ \ break;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00117}00117\ \textcolor{comment}{//\ \ \ \ \ case\ KeyboardButtonLocation:}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00118}00118\ \textcolor{comment}{//\ \ \ \ \ \ \ button["{}request\_location"{}]\ =\ true;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00119}00119\ \textcolor{comment}{//\ \ \ \ \ \ \ break;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00120}00120\ \textcolor{comment}{//\ \ \ \ \ default:}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00121}00121\ \textcolor{comment}{//\ \ \ \ \ \ \ break;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00122}00122\ \textcolor{comment}{//\ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00124}00124\ \textcolor{comment}{//\ \ \ //\ Store\ inline\ keyboard\ json\ structure}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00125}00125\ \textcolor{comment}{//\ \ \ m\_json\ =\ "{}"{};}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00126}00126\ \textcolor{comment}{//\ \ \ serializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00127}00127\ \textcolor{comment}{//\ \ \ doc.shrinkToFit();}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00128}00128\ \textcolor{comment}{//\ \ \ m\_jsonSize\ =\ doc.memoryUsage();}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00129}00129\ \textcolor{comment}{//\ \ \ return\ true;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00130}00130\ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00132}\mbox{\hyperlink{class_reply_keyboard_a9e82a65c0b9a00a7a9c03a571a158e11}{00132}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_reply_keyboard_a9e82a65c0b9a00a7a9c03a571a158e11}{ReplyKeyboard::enableResize}}()}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00133}00133\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00134}00134\ \ \ \textcolor{comment}{//\ if\ (m\_jsonSize\ <\ BUFFER\_MEDIUM)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00135}00135\ \ \ \textcolor{comment}{//\ \ \ m\_jsonSize\ =\ BUFFER\_MEDIUM;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00136}00136\ \ \ \textcolor{comment}{//\ DynamicJsonDocument\ doc(m\_jsonSize\ +\ 128);\ //\ Current\ size\ +\ space\ for\ new\ field}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00137}00137\ \ \ \textcolor{comment}{//\ deserializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00138}00138\ \ \ \textcolor{comment}{//\ doc["{}resize\_keyboard"{}]\ =\ true;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00139}00139\ \ \ \textcolor{comment}{//\ m\_json\ =\ "{}"{};}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00140}00140\ \ \ \textcolor{comment}{//\ serializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00142}00142\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00143}00143\ \textcolor{preprocessor}{\#if\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00144}00144\ \ \ DynamicJsonDocument\ doc(ESP.getMaxFreeBlockSize()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00145}00145\ \textcolor{preprocessor}{\#elif\ defined(ESP32)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00146}00146\ \ \ DynamicJsonDocument\ doc(ESP.getMaxAllocHeap()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00147}00147\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00148}00148\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00149}00149\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00150}00150\ \ \ DeserializationError\ err\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00151}00151\ \ \ \textcolor{keywordflow}{if}\ (err)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00152}00152\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00153}00153\ \ \ \ \ \mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{log\_debug}}(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ \%s\(\backslash\)n"{}},\ err.c\_str());}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00154}00154\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00156}00156\ \ \ doc[\textcolor{stringliteral}{"{}resize\_keyboard"{}}]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00157}00157\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00158}00158\ \ \ serializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00160}00160\ \ \ Serial.println(m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00161}00161\ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00163}\mbox{\hyperlink{class_reply_keyboard_a2ad89020c1c225a125d18a70bec385e1}{00163}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_reply_keyboard_a2ad89020c1c225a125d18a70bec385e1}{ReplyKeyboard::enableOneTime}}()}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00164}00164\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00165}00165\ \ \ \textcolor{comment}{//\ if\ (m\_jsonSize\ <\ BUFFER\_MEDIUM)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00166}00166\ \ \ \textcolor{comment}{//\ \ \ m\_jsonSize\ =\ BUFFER\_MEDIUM;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00167}00167\ \ \ \textcolor{comment}{//\ DynamicJsonDocument\ doc(m\_jsonSize\ +\ 128);\ //\ Current\ size\ +\ space\ for\ new\ field}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00168}00168\ \ \ \textcolor{comment}{//\ deserializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00169}00169\ \ \ \textcolor{comment}{//\ doc["{}one\_time\_keyboard"{}]\ =\ true;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00170}00170\ \ \ \textcolor{comment}{//\ m\_json\ =\ "{}"{};}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00171}00171\ \ \ \textcolor{comment}{//\ serializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00174}00174\ \textcolor{preprocessor}{\#if\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00175}00175\ \ \ DynamicJsonDocument\ doc(ESP.getMaxFreeBlockSize()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00176}00176\ \textcolor{preprocessor}{\#elif\ defined(ESP32)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00177}00177\ \ \ DynamicJsonDocument\ doc(ESP.getMaxAllocHeap()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00178}00178\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00179}00179\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00180}00180\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00181}00181\ \ \ DeserializationError\ err\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00182}00182\ \ \ \textcolor{keywordflow}{if}\ (err)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00183}00183\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00184}00184\ \ \ \ \ \mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{log\_debug}}(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ \%s\(\backslash\)n"{}},\ err.c\_str());}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00185}00185\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00186}00186\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00187}00187\ \ \ doc[\textcolor{stringliteral}{"{}one\_time\_keyboard"{}}]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00188}00188\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00189}00189\ \ \ serializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00190}00190\ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00191}00191\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00192}\mbox{\hyperlink{class_reply_keyboard_a32246f430ab3d9efe9bd4496017e1469}{00192}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_reply_keyboard_a32246f430ab3d9efe9bd4496017e1469}{ReplyKeyboard::enableSelective}}()}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00193}00193\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00194}00194\ \ \ \textcolor{comment}{//\ if\ (m\_jsonSize\ <\ BUFFER\_MEDIUM)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00195}00195\ \ \ \textcolor{comment}{//\ \ \ m\_jsonSize\ =\ BUFFER\_MEDIUM;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00196}00196\ \ \ \textcolor{comment}{//\ DynamicJsonDocument\ doc(m\_jsonSize\ +\ 128);\ //\ Current\ size\ +\ space\ for\ new\ field}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00197}00197\ \ \ \textcolor{comment}{//\ deserializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00198}00198\ \ \ \textcolor{comment}{//\ doc["{}selective"{}]\ =\ true;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00199}00199\ \ \ \textcolor{comment}{//\ m\_json\ =\ "{}"{};}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00200}00200\ \ \ \textcolor{comment}{//\ serializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00201}00201\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00202}00202\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00203}00203\ \textcolor{preprocessor}{\#if\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00204}00204\ \ \ DynamicJsonDocument\ doc(ESP.getMaxFreeBlockSize()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00205}00205\ \textcolor{preprocessor}{\#elif\ defined(ESP32)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00206}00206\ \ \ DynamicJsonDocument\ doc(ESP.getMaxAllocHeap()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00207}00207\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00208}00208\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00209}00209\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00210}00210\ \ \ DeserializationError\ err\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00211}00211\ \ \ \textcolor{keywordflow}{if}\ (err)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00212}00212\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00213}00213\ \ \ \ \ \mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{log\_debug}}(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ \%s\(\backslash\)n"{}},\ err.c\_str());}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00214}00214\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00215}00215\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00216}00216\ \ \ doc[\textcolor{stringliteral}{"{}selective"{}}]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00217}00217\ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00218}00218\ \ \ serializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00219}00219\ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00221}\mbox{\hyperlink{class_reply_keyboard_a1412a40e94989ec3aa56ca6ca86f767b}{00221}}\ String\ \mbox{\hyperlink{class_reply_keyboard_a1412a40e94989ec3aa56ca6ca86f767b}{ReplyKeyboard::getJSON}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00222}00222\ \textcolor{keyword}{}\{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00223}00223\ \ \ \textcolor{keywordflow}{return}\ m\_json;}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00224}00224\ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00225}00225\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00226}\mbox{\hyperlink{class_reply_keyboard_ad0d3c0316256d9e9f830ba62f03f44b9}{00226}}\ String\ \mbox{\hyperlink{class_reply_keyboard_ad0d3c0316256d9e9f830ba62f03f44b9}{ReplyKeyboard::getJSONPretty}}()\textcolor{keyword}{\ const}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00227}00227\ \textcolor{keyword}{}\{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00228}00228\ \ \ \textcolor{comment}{//\ uint16\_t\ jsonSize;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00229}00229\ \ \ \textcolor{comment}{//\ if\ (m\_jsonSize\ <\ BUFFER\_MEDIUM)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00230}00230\ \ \ \textcolor{comment}{//\ \ \ jsonSize\ =\ BUFFER\_MEDIUM;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00231}00231\ \ \ \textcolor{comment}{//\ DynamicJsonDocument\ doc(jsonSize\ +\ 128);\ //\ Current\ size\ +\ space\ for\ new\ lines}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00232}00232\ \ \ \textcolor{comment}{//\ deserializeJson(doc,\ m\_json);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00234}00234\ \ \ \textcolor{comment}{//\ String\ serialized;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00235}00235\ \ \ \textcolor{comment}{//\ serializeJsonPretty(doc,\ serialized);}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00236}00236\ \ \ \textcolor{comment}{//\ return\ serialized;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00238}00238\ \textcolor{preprocessor}{\#if\ defined(ESP8266)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00239}00239\ \ \ DynamicJsonDocument\ doc(ESP.getMaxFreeBlockSize()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00240}00240\ \textcolor{preprocessor}{\#elif\ defined(ESP32)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00241}00241\ \ \ DynamicJsonDocument\ doc(ESP.getMaxAllocHeap()\ -\/\ \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00242}00242\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00243}00243\ \ \ DynamicJsonDocument\ doc(\mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\_BIG}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00244}00244\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00245}00245\ \ \ DeserializationError\ err\ =\ deserializeJson(doc,\ m\_json);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00246}00246\ \ \ \textcolor{keywordflow}{if}\ (err)}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00247}00247\ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00248}00248\ \ \ \ \ \mbox{\hyperlink{serial__log_8h_a0e81b2ed10f6207339675f22092a2c32}{log\_debug}}(\textcolor{stringliteral}{"{}deserializeJson()\ failed:\ \%s\(\backslash\)n"{}},\ err.c\_str());}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00249}00249\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00250}00250\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00251}00251\ \ \ String\ serialized;}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00252}00252\ \ \ serializeJsonPretty(doc,\ serialized);}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00253}00253\ \ \ \textcolor{keywordflow}{return}\ serialized;}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8cpp_source_l00254}00254\ \}}
+
+\end{DoxyCode}

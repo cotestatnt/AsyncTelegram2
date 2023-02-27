@@ -1,0 +1,132 @@
+\hypertarget{_data_structures_8h}{}\doxysection{src/\+Data\+Structures.h File Reference}
+\label{_data_structures_8h}\index{src/DataStructures.h@{src/DataStructures.h}}
+This graph shows which files directly or indirectly include this file\+:
+% FIG 0
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_t_b_user}{TBUser}}
+\item 
+struct \mbox{\hyperlink{struct_t_b_location}{TBLocation}}
+\item 
+struct \mbox{\hyperlink{struct_t_b_contact}{TBContact}}
+\item 
+struct \mbox{\hyperlink{struct_t_b_document}{TBDocument}}
+\item 
+struct \mbox{\hyperlink{struct_t_b_message}{TBMessage}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}{BUFFER\+\_\+\+BIG}}~2048
+\item 
+\#define \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\+\_\+\+MEDIUM}}~1024
+\item 
+\#define \mbox{\hyperlink{_data_structures_8h_ae25c3ea74ae70bd224ebb3d11a8cb5a4}{BUFFER\+\_\+\+SMALL}}~512
+\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} \{ \newline
+\mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a8172bf8ec594eb409432f26d55de6268}{Message\+No\+Data}} = 0
+, \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a48e20971b311ab6bbf2a2de2ca281a53}{Message\+Text}} = 1
+, \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013ac14c734b9662254c9072ecc6b7494830}{Message\+Query}} = 2
+, \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013aaabcafa1fff25bdbf94e371cb54179d8}{Message\+Location}} = 3
+, \newline
+\mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013ac21bc2b1523bb02a1c59309e8b731fe1}{Message\+Contact}} = 4
+, \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a00c13e51748441c150708f872958f9bf}{Message\+Document}} = 5
+, \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a97f2e195f3252f74e85a1fe25fe26558}{Message\+Reply}} = 6
+, \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a36b8eb4d4689ede17d158b608da5b541}{Message\+New\+Member}} = 7
+, \newline
+\mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013af78485bf4d25aa3d7538554106eb8705}{Message\+Left\+Member}} =8
+, \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a37468e385f9166fe5d7650d2434b1de4}{Message\+Forwarded}} = 9
+ \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}\label{_data_structures_8h_a88c571692cc653ac156068c0071b0aa7}} 
+\index{DataStructures.h@{DataStructures.h}!BUFFER\_BIG@{BUFFER\_BIG}}
+\index{BUFFER\_BIG@{BUFFER\_BIG}!DataStructures.h@{DataStructures.h}}
+\doxysubsubsection{\texorpdfstring{BUFFER\_BIG}{BUFFER\_BIG}}
+{\footnotesize\ttfamily \#define BUFFER\+\_\+\+BIG~2048}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00005}{5}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}\label{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}} 
+\index{DataStructures.h@{DataStructures.h}!BUFFER\_MEDIUM@{BUFFER\_MEDIUM}}
+\index{BUFFER\_MEDIUM@{BUFFER\_MEDIUM}!DataStructures.h@{DataStructures.h}}
+\doxysubsubsection{\texorpdfstring{BUFFER\_MEDIUM}{BUFFER\_MEDIUM}}
+{\footnotesize\ttfamily \#define BUFFER\+\_\+\+MEDIUM~1024}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00006}{6}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{_data_structures_8h_ae25c3ea74ae70bd224ebb3d11a8cb5a4}\label{_data_structures_8h_ae25c3ea74ae70bd224ebb3d11a8cb5a4}} 
+\index{DataStructures.h@{DataStructures.h}!BUFFER\_SMALL@{BUFFER\_SMALL}}
+\index{BUFFER\_SMALL@{BUFFER\_SMALL}!DataStructures.h@{DataStructures.h}}
+\doxysubsubsection{\texorpdfstring{BUFFER\_SMALL}{BUFFER\_SMALL}}
+{\footnotesize\ttfamily \#define BUFFER\+\_\+\+SMALL~512}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00007}{7}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}} 
+\index{DataStructures.h@{DataStructures.h}!MessageType@{MessageType}}
+\index{MessageType@{MessageType}!DataStructures.h@{DataStructures.h}}
+\doxysubsubsection{\texorpdfstring{MessageType}{MessageType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageNoData@{MessageNoData}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageNoData@{MessageNoData}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a8172bf8ec594eb409432f26d55de6268}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a8172bf8ec594eb409432f26d55de6268}} 
+Message\+No\+Data&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageText@{MessageText}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageText@{MessageText}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a48e20971b311ab6bbf2a2de2ca281a53}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a48e20971b311ab6bbf2a2de2ca281a53}} 
+Message\+Text&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageQuery@{MessageQuery}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageQuery@{MessageQuery}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013ac14c734b9662254c9072ecc6b7494830}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013ac14c734b9662254c9072ecc6b7494830}} 
+Message\+Query&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageLocation@{MessageLocation}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageLocation@{MessageLocation}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013aaabcafa1fff25bdbf94e371cb54179d8}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013aaabcafa1fff25bdbf94e371cb54179d8}} 
+Message\+Location&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageContact@{MessageContact}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageContact@{MessageContact}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013ac21bc2b1523bb02a1c59309e8b731fe1}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013ac21bc2b1523bb02a1c59309e8b731fe1}} 
+Message\+Contact&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageDocument@{MessageDocument}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageDocument@{MessageDocument}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a00c13e51748441c150708f872958f9bf}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a00c13e51748441c150708f872958f9bf}} 
+Message\+Document&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageReply@{MessageReply}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageReply@{MessageReply}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a97f2e195f3252f74e85a1fe25fe26558}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a97f2e195f3252f74e85a1fe25fe26558}} 
+Message\+Reply&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageNewMember@{MessageNewMember}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageNewMember@{MessageNewMember}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a36b8eb4d4689ede17d158b608da5b541}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a36b8eb4d4689ede17d158b608da5b541}} 
+Message\+New\+Member&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageLeftMember@{MessageLeftMember}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageLeftMember@{MessageLeftMember}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013af78485bf4d25aa3d7538554106eb8705}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013af78485bf4d25aa3d7538554106eb8705}} 
+Message\+Left\+Member&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MessageForwarded@{MessageForwarded}!DataStructures.h@{DataStructures.h}}\index{DataStructures.h@{DataStructures.h}!MessageForwarded@{MessageForwarded}}}\mbox{\Hypertarget{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a37468e385f9166fe5d7650d2434b1de4}\label{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013a37468e385f9166fe5d7650d2434b1de4}} 
+Message\+Forwarded&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00009}{9}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+

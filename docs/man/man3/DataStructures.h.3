@@ -1,0 +1,93 @@
+.TH "src/DataStructures.h" 3 "Sun Feb 26 2023" "AsyncTelegram2" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/DataStructures.h
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBTBUser\fP"
+.br
+.ti -1c
+.RI "struct \fBTBLocation\fP"
+.br
+.ti -1c
+.RI "struct \fBTBContact\fP"
+.br
+.ti -1c
+.RI "struct \fBTBDocument\fP"
+.br
+.ti -1c
+.RI "struct \fBTBMessage\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBBUFFER_BIG\fP   2048"
+.br
+.ti -1c
+.RI "#define \fBBUFFER_MEDIUM\fP   1024"
+.br
+.ti -1c
+.RI "#define \fBBUFFER_SMALL\fP   512"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBMessageType\fP { \fBMessageNoData\fP = 0, \fBMessageText\fP = 1, \fBMessageQuery\fP = 2, \fBMessageLocation\fP = 3, \fBMessageContact\fP = 4, \fBMessageDocument\fP = 5, \fBMessageReply\fP = 6, \fBMessageNewMember\fP = 7, \fBMessageLeftMember\fP =8, \fBMessageForwarded\fP = 9 }"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define BUFFER_BIG   2048"
+
+.PP
+Definition at line \fB5\fP of file \fBDataStructures\&.h\fP\&.
+.SS "#define BUFFER_MEDIUM   1024"
+
+.PP
+Definition at line \fB6\fP of file \fBDataStructures\&.h\fP\&.
+.SS "#define BUFFER_SMALL   512"
+
+.PP
+Definition at line \fB7\fP of file \fBDataStructures\&.h\fP\&.
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBMessageType\fP"
+
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIMessageNoData \fP\fP
+.TP
+\fB\fIMessageText \fP\fP
+.TP
+\fB\fIMessageQuery \fP\fP
+.TP
+\fB\fIMessageLocation \fP\fP
+.TP
+\fB\fIMessageContact \fP\fP
+.TP
+\fB\fIMessageDocument \fP\fP
+.TP
+\fB\fIMessageReply \fP\fP
+.TP
+\fB\fIMessageNewMember \fP\fP
+.TP
+\fB\fIMessageLeftMember \fP\fP
+.TP
+\fB\fIMessageForwarded \fP\fP
+.PP
+Definition at line \fB9\fP of file \fBDataStructures\&.h\fP\&.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for AsyncTelegram2 from the source code\&.

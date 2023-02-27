@@ -1,0 +1,232 @@
+\hypertarget{struct_t_b_message}{}\doxysection{TBMessage Struct Reference}
+\label{struct_t_b_message}\index{TBMessage@{TBMessage}}
+
+
+{\ttfamily \#include $<$Data\+Structures.\+h$>$}
+
+
+
+Collaboration diagram for TBMessage\+:
+% FIG 0
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} \mbox{\hyperlink{struct_t_b_message_aaf84d19c6bfc71c449f711740d42627d}{message\+Type}}
+\item 
+bool \mbox{\hyperlink{struct_t_b_message_a26729e11d3faa1b36cd5a671dfaa4cf9}{is\+HTMLenabled}} = true
+\item 
+bool \mbox{\hyperlink{struct_t_b_message_a4c2c5097bb2b4aa72a29f1676dd17386}{is\+Markdown\+Enabled}} = false
+\item 
+bool \mbox{\hyperlink{struct_t_b_message_a2b3fa338410399dd2dac8e6bc0b8e8db}{disable\+\_\+notification}} = false
+\item 
+bool \mbox{\hyperlink{struct_t_b_message_ae78c22482705295fcab671e7f679f827}{force\+\_\+reply}} = false
+\item 
+int32\+\_\+t \mbox{\hyperlink{struct_t_b_message_a62f4c64ae68b56689d8ca8580e536c0e}{date}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{struct_t_b_message_a92c0786d72ff5de5e3f1bd16884e9583}{chat\+Instance}}
+\item 
+int64\+\_\+t \mbox{\hyperlink{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}{chat\+Id}}
+\item 
+int32\+\_\+t \mbox{\hyperlink{struct_t_b_message_aee364e5f0224df393743e21268f66bbd}{message\+ID}}
+\item 
+\mbox{\hyperlink{struct_t_b_user}{TBUser}} \mbox{\hyperlink{struct_t_b_message_a91616732440321d5eaa86f6e557ceceb}{sender}}
+\item 
+\mbox{\hyperlink{struct_t_b_user}{TBUser}} \mbox{\hyperlink{struct_t_b_message_a254e3de624772a0a9df76b04687bd08b}{member}}
+\item 
+\mbox{\hyperlink{struct_t_b_location}{TBLocation}} \mbox{\hyperlink{struct_t_b_message_adfab6e4ed0a32eb72a84af1647430bb5}{location}}
+\item 
+\mbox{\hyperlink{struct_t_b_contact}{TBContact}} \mbox{\hyperlink{struct_t_b_message_a03e0503c26921fa895aa602ca2cb0816}{contact}}
+\item 
+\mbox{\hyperlink{struct_t_b_document}{TBDocument}} \mbox{\hyperlink{struct_t_b_message_a48fe3d02e480acb3ec3b41e96e312579}{document}}
+\item 
+int64\+\_\+t \mbox{\hyperlink{struct_t_b_message_a577e24c27938bb8d26a98a82788690e1}{callback\+Query\+ID}}
+\item 
+String \mbox{\hyperlink{struct_t_b_message_a8c6cd2c1bcde0342b0ac0b8092d982ae}{callback\+Query\+Data}}
+\item 
+String \mbox{\hyperlink{struct_t_b_message_a2920713025cb9908f957146f6afba725}{text}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00051}{51}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{struct_t_b_message_a8c6cd2c1bcde0342b0ac0b8092d982ae}\label{struct_t_b_message_a8c6cd2c1bcde0342b0ac0b8092d982ae}} 
+\index{TBMessage@{TBMessage}!callbackQueryData@{callbackQueryData}}
+\index{callbackQueryData@{callbackQueryData}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{callbackQueryData}{callbackQueryData}}
+{\footnotesize\ttfamily String TBMessage\+::callback\+Query\+Data}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00067}{67}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a577e24c27938bb8d26a98a82788690e1}\label{struct_t_b_message_a577e24c27938bb8d26a98a82788690e1}} 
+\index{TBMessage@{TBMessage}!callbackQueryID@{callbackQueryID}}
+\index{callbackQueryID@{callbackQueryID}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{callbackQueryID}{callbackQueryID}}
+{\footnotesize\ttfamily int64\+\_\+t TBMessage\+::callback\+Query\+ID}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00066}{66}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}\label{struct_t_b_message_a3ac03984cd7eb5b8c7e4bd4e01331c1f}} 
+\index{TBMessage@{TBMessage}!chatId@{chatId}}
+\index{chatId@{chatId}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{chatId}{chatId}}
+{\footnotesize\ttfamily int64\+\_\+t TBMessage\+::chat\+Id}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00059}{59}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a92c0786d72ff5de5e3f1bd16884e9583}\label{struct_t_b_message_a92c0786d72ff5de5e3f1bd16884e9583}} 
+\index{TBMessage@{TBMessage}!chatInstance@{chatInstance}}
+\index{chatInstance@{chatInstance}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{chatInstance}{chatInstance}}
+{\footnotesize\ttfamily int32\+\_\+t TBMessage\+::chat\+Instance}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00058}{58}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a03e0503c26921fa895aa602ca2cb0816}\label{struct_t_b_message_a03e0503c26921fa895aa602ca2cb0816}} 
+\index{TBMessage@{TBMessage}!contact@{contact}}
+\index{contact@{contact}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{contact}{contact}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_t_b_contact}{TBContact}} TBMessage\+::contact}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00064}{64}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a62f4c64ae68b56689d8ca8580e536c0e}\label{struct_t_b_message_a62f4c64ae68b56689d8ca8580e536c0e}} 
+\index{TBMessage@{TBMessage}!date@{date}}
+\index{date@{date}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{date}{date}}
+{\footnotesize\ttfamily int32\+\_\+t TBMessage\+::date}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00057}{57}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a2b3fa338410399dd2dac8e6bc0b8e8db}\label{struct_t_b_message_a2b3fa338410399dd2dac8e6bc0b8e8db}} 
+\index{TBMessage@{TBMessage}!disable\_notification@{disable\_notification}}
+\index{disable\_notification@{disable\_notification}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{disable\_notification}{disable\_notification}}
+{\footnotesize\ttfamily bool TBMessage\+::disable\+\_\+notification = false}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00055}{55}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a48fe3d02e480acb3ec3b41e96e312579}\label{struct_t_b_message_a48fe3d02e480acb3ec3b41e96e312579}} 
+\index{TBMessage@{TBMessage}!document@{document}}
+\index{document@{document}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{document}{document}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_t_b_document}{TBDocument}} TBMessage\+::document}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00065}{65}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_ae78c22482705295fcab671e7f679f827}\label{struct_t_b_message_ae78c22482705295fcab671e7f679f827}} 
+\index{TBMessage@{TBMessage}!force\_reply@{force\_reply}}
+\index{force\_reply@{force\_reply}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{force\_reply}{force\_reply}}
+{\footnotesize\ttfamily bool TBMessage\+::force\+\_\+reply = false}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00056}{56}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a26729e11d3faa1b36cd5a671dfaa4cf9}\label{struct_t_b_message_a26729e11d3faa1b36cd5a671dfaa4cf9}} 
+\index{TBMessage@{TBMessage}!isHTMLenabled@{isHTMLenabled}}
+\index{isHTMLenabled@{isHTMLenabled}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{isHTMLenabled}{isHTMLenabled}}
+{\footnotesize\ttfamily bool TBMessage\+::is\+HTMLenabled = true}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00053}{53}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a4c2c5097bb2b4aa72a29f1676dd17386}\label{struct_t_b_message_a4c2c5097bb2b4aa72a29f1676dd17386}} 
+\index{TBMessage@{TBMessage}!isMarkdownEnabled@{isMarkdownEnabled}}
+\index{isMarkdownEnabled@{isMarkdownEnabled}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{isMarkdownEnabled}{isMarkdownEnabled}}
+{\footnotesize\ttfamily bool TBMessage\+::is\+Markdown\+Enabled = false}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00054}{54}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_adfab6e4ed0a32eb72a84af1647430bb5}\label{struct_t_b_message_adfab6e4ed0a32eb72a84af1647430bb5}} 
+\index{TBMessage@{TBMessage}!location@{location}}
+\index{location@{location}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{location}{location}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_t_b_location}{TBLocation}} TBMessage\+::location}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00063}{63}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a254e3de624772a0a9df76b04687bd08b}\label{struct_t_b_message_a254e3de624772a0a9df76b04687bd08b}} 
+\index{TBMessage@{TBMessage}!member@{member}}
+\index{member@{member}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{member}{member}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_t_b_user}{TBUser}} TBMessage\+::member}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00062}{62}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_aee364e5f0224df393743e21268f66bbd}\label{struct_t_b_message_aee364e5f0224df393743e21268f66bbd}} 
+\index{TBMessage@{TBMessage}!messageID@{messageID}}
+\index{messageID@{messageID}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{messageID}{messageID}}
+{\footnotesize\ttfamily int32\+\_\+t TBMessage\+::message\+ID}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00060}{60}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_aaf84d19c6bfc71c449f711740d42627d}\label{struct_t_b_message_aaf84d19c6bfc71c449f711740d42627d}} 
+\index{TBMessage@{TBMessage}!messageType@{messageType}}
+\index{messageType@{messageType}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{messageType}{messageType}}
+{\footnotesize\ttfamily \mbox{\hyperlink{_data_structures_8h_ac6606ebe91c8ac66a2c314c79f5ab013}{Message\+Type}} TBMessage\+::message\+Type}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00052}{52}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a91616732440321d5eaa86f6e557ceceb}\label{struct_t_b_message_a91616732440321d5eaa86f6e557ceceb}} 
+\index{TBMessage@{TBMessage}!sender@{sender}}
+\index{sender@{sender}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{sender}{sender}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_t_b_user}{TBUser}} TBMessage\+::sender}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00061}{61}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+\mbox{\Hypertarget{struct_t_b_message_a2920713025cb9908f957146f6afba725}\label{struct_t_b_message_a2920713025cb9908f957146f6afba725}} 
+\index{TBMessage@{TBMessage}!text@{text}}
+\index{text@{text}!TBMessage@{TBMessage}}
+\doxysubsubsection{\texorpdfstring{text}{text}}
+{\footnotesize\ttfamily String TBMessage\+::text}
+
+
+
+Definition at line \mbox{\hyperlink{_data_structures_8h_source_l00068}{68}} of file \mbox{\hyperlink{_data_structures_8h_source}{Data\+Structures.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\mbox{\hyperlink{_data_structures_8h}{Data\+Structures.\+h}}\end{DoxyCompactItemize}

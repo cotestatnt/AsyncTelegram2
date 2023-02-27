@@ -1,0 +1,99 @@
+.TH "InlineKeyboard" 3 "Sun Feb 26 2023" "AsyncTelegram2" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+InlineKeyboard
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <InlineKeyboard\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBInlineKeyboard\fP ()"
+.br
+.ti -1c
+.RI "\fBInlineKeyboard\fP (const String &keyboard)"
+.br
+.ti -1c
+.RI "\fB~InlineKeyboard\fP ()"
+.br
+.ti -1c
+.RI "int \fBgetButtonsNumber\fP ()"
+.br
+.ti -1c
+.RI "bool \fBaddRow\fP (void)"
+.br
+.ti -1c
+.RI "bool \fBaddButton\fP (const char *text, const char *command, \fBInlineKeyboardButtonType\fP buttonType, CallbackType onClick=nullptr)"
+.br
+.ti -1c
+.RI "String \fBgetJSON\fP (void) const"
+.br
+.ti -1c
+.RI "String \fBgetJSONPretty\fP (void) const"
+.br
+.ti -1c
+.RI "void \fBclear\fP ()"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBAsyncTelegram2\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line \fB17\fP of file \fBInlineKeyboard\&.h\fP\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "InlineKeyboard::InlineKeyboard ()"
+
+.PP
+Definition at line \fB4\fP of file \fBInlineKeyboard\&.cpp\fP\&.
+.SS "InlineKeyboard::InlineKeyboard (const String & keyboard)"
+
+.SS "InlineKeyboard::~InlineKeyboard ()"
+
+.PP
+Definition at line \fB9\fP of file \fBInlineKeyboard\&.cpp\fP\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "bool InlineKeyboard::addButton (const char * text, const char * command, \fBInlineKeyboardButtonType\fP buttonType, CallbackType onClick = \fCnullptr\fP)"
+
+.PP
+Definition at line \fB35\fP of file \fBInlineKeyboard\&.cpp\fP\&.
+.SS "bool InlineKeyboard::addRow (void)"
+
+.PP
+Definition at line \fB11\fP of file \fBInlineKeyboard\&.cpp\fP\&.
+.SS "void InlineKeyboard::clear ()\fC [inline]\fP"
+
+.PP
+Definition at line \fB57\fP of file \fBInlineKeyboard\&.h\fP\&.
+.SS "int InlineKeyboard::getButtonsNumber ()"
+
+.PP
+Definition at line \fB86\fP of file \fBInlineKeyboard\&.cpp\fP\&.
+.SS "String InlineKeyboard::getJSON (void) const"
+
+.PP
+Definition at line \fB91\fP of file \fBInlineKeyboard\&.cpp\fP\&.
+.SS "String InlineKeyboard::getJSONPretty (void) const"
+
+.PP
+Definition at line \fB96\fP of file \fBInlineKeyboard\&.cpp\fP\&.
+.SH "Friends And Related Function Documentation"
+.PP 
+.SS "friend class \fBAsyncTelegram2\fP\fC [friend]\fP"
+
+.PP
+Definition at line \fB62\fP of file \fBInlineKeyboard\&.h\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for AsyncTelegram2 from the source code\&.

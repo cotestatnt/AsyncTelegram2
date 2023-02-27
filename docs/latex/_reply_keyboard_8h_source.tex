@@ -1,0 +1,70 @@
+\hypertarget{_reply_keyboard_8h_source}{}\doxysection{Reply\+Keyboard.\+h}
+\label{_reply_keyboard_8h_source}\index{src/ReplyKeyboard.h@{src/ReplyKeyboard.h}}
+\mbox{\hyperlink{_reply_keyboard_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00001}00001\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00002}00002\ \textcolor{preprocessor}{\#ifndef\ REPLY\_KEYBOARD}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00003}00003\ \textcolor{preprocessor}{\#define\ REPLY\_KEYBOARD}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00005}\mbox{\hyperlink{_reply_keyboard_8h_ad04364871efb11788ea94d5f5417072c}{00005}}\ \textcolor{preprocessor}{\#define\ ARDUINOJSON\_USE\_LONG\_LONG\ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00006}\mbox{\hyperlink{_reply_keyboard_8h_a335b842b5c1d56001f7bb14a0da46990}{00006}}\ \textcolor{preprocessor}{\#define\ ARDUINOJSON\_DECODE\_UNICODE\ \ 1}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <ArduinoJson.h>}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_data_structures_8h}{DataStructures.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{serial__log_8h}{serial\_log.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00011}\mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6}{00011}}\ \textcolor{keyword}{enum}\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6}{ReplyKeyboardButtonType}}\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00012}\mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6ab9aedd6589f8f66f2921ef13552afa8f}{00012}}\ \ \ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6ab9aedd6589f8f66f2921ef13552afa8f}{KeyboardButtonSimple}}\ \ \ =\ 1,}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00013}\mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6aa9bbc86685d5bc5943211306feaa2ea9}{00013}}\ \ \ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6aa9bbc86685d5bc5943211306feaa2ea9}{KeyboardButtonContact}}\ \ =\ 2,}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00014}00014\ \ \ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6a9b8df96762fa99fb4fe2309378033fa6}{KeyboardButtonLocation}}\ =\ 3}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00015}\mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6a9b8df96762fa99fb4fe2309378033fa6}{00015}}\ \};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00018}\mbox{\hyperlink{class_reply_keyboard}{00018}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_reply_keyboard}{ReplyKeyboard}}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00020}00020\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00021}00021\ \ \ String\ m\_json;}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00022}00022\ \ \ \textcolor{keywordtype}{size\_t}\ m\_jsonSize\ =\ \mbox{\hyperlink{_data_structures_8h_a6c3da8213680f84f1ab89bdccde48fcd}{BUFFER\_MEDIUM}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00024}00024\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00025}00025\ \ \ \mbox{\hyperlink{class_reply_keyboard_ac377d6efe61d7345db1552cb7b23c234}{ReplyKeyboard}}();}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00026}00026\ \ \ \mbox{\hyperlink{class_reply_keyboard_a7ba914daff69cf995528c4baafff3847}{\string~ReplyKeyboard}}();}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00028}00028\ \ \ \textcolor{comment}{//\ add\ a\ new\ empty\ row\ of\ buttons}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00029}00029\ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00030}00030\ \ \ \textcolor{comment}{//\ \ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00031}00031\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_reply_keyboard_ad4513c5a41f494ad2a46a26a77d14034}{addRow}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00033}00033\ \ \ \textcolor{comment}{//\ add\ a\ button\ in\ the\ current\ row}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00034}00034\ \ \ \textcolor{comment}{//\ params:}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00035}00035\ \ \ \textcolor{comment}{//\ \ \ text\ \ \ \ \ \ :\ the\ text\ displayed\ as\ button\ label}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00036}00036\ \ \ \textcolor{comment}{//\ \ \ buttonType:\ the\ type\ of\ the\ button\ (simple\ text,\ contact\ request,\ location\ request)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00037}00037\ \ \ \textcolor{comment}{//\ return:}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00038}00038\ \ \ \textcolor{comment}{//\ \ \ \ true\ if\ no\ error\ occurred}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00039}00039\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_reply_keyboard_adda6537abe25904581c879d6a3bb3ddb}{addButton}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ text,\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6}{ReplyKeyboardButtonType}}\ buttonType\ =\ \mbox{\hyperlink{_reply_keyboard_8h_ac8db0fb6e81ef58b454140d50bea73d6ab9aedd6589f8f66f2921ef13552afa8f}{KeyboardButtonSimple}});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00041}00041\ \ \ \textcolor{comment}{//\ enable\ reply\ keyboard\ autoresizing\ (default:\ the\ same\ size\ of\ the\ standard\ keyboard)}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00042}00042\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_reply_keyboard_a9e82a65c0b9a00a7a9c03a571a158e11}{enableResize}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00044}00044\ \ \ \textcolor{comment}{//\ hide\ the\ reply\ keyboard\ as\ soon\ as\ it's\ been\ used}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00045}00045\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_reply_keyboard_a2ad89020c1c225a125d18a70bec385e1}{enableOneTime}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00047}00047\ \ \ \textcolor{comment}{//\ Use\ this\ parameter\ if\ you\ want\ to\ show\ the\ keyboard\ for\ specific\ users\ only.}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00048}00048\ \ \ \ \ \textcolor{comment}{//\ Targets:\ 1)\ users\ that\ are\ @mentioned\ in\ the\ text\ of\ the\ Message\ object;}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00049}00049\ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ 2)\ if\ the\ bot's\ message\ is\ a\ reply\ (has\ reply\_to\_message\_id),\ sender\ of\ the\ original\ message}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00050}00050\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_reply_keyboard_a32246f430ab3d9efe9bd4496017e1469}{enableSelective}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00052}00052\ \ \ \textcolor{comment}{//\ generate\ a\ string\ that\ contains\ the\ inline\ keyboard\ formatted\ in\ a\ JSON\ structure.}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00053}00053\ \ \ \textcolor{comment}{//\ returns:}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00054}00054\ \ \ \textcolor{comment}{//\ \ \ the\ JSON\ of\ the\ inline\ keyboard}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00055}00055\ \ \ String\ \mbox{\hyperlink{class_reply_keyboard_a1412a40e94989ec3aa56ca6ca86f767b}{getJSON}}(\textcolor{keywordtype}{void})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00056}00056\ \ \ String\ \mbox{\hyperlink{class_reply_keyboard_ad0d3c0316256d9e9f830ba62f03f44b9}{getJSONPretty}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00059}\mbox{\hyperlink{class_reply_keyboard_a852bde942959a74ec053b96058e7ae32}{00059}}\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_reply_keyboard_a852bde942959a74ec053b96058e7ae32}{clear}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00060}00060\ \ \ \ \ m\_json\ =\ \textcolor{stringliteral}{"{}\{\(\backslash\)"{}keyboard\(\backslash\)"{}:[[]]\}\(\backslash\)"{}"{}};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00061}00061\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00062}00062\ \};}
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{_reply_keyboard_8h_source_l00064}00064\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}
