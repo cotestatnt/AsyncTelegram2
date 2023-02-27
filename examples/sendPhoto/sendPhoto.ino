@@ -167,7 +167,7 @@ void loop() {
         File file = LittleFS.open("/telegram-bot2.jpg", "r");
 
         // sendPhoto(const TBMessage &msg, Stream &stream, size_t size, const char* caption = nullptr)
-        myBot.sendPhoto(msg, file, file.size());
+        myBot.sendPhoto(msg, file, file.size(), file.name(), "This is the caption");
         file.close();
       }
 
@@ -232,9 +232,9 @@ void printHeapStats() {
       heap_caps_get_free_size(0), heap_caps_get_largest_free_block(0) );
 #elif defined(ESP8266)
     uint32_t free;
-    uint16_t max;
+    uint32_t max;
     ESP.getHeapStats(&free, &max, nullptr);
-    Serial.printf("%02d:%02d:%02d - Total free: %5d - Max block: %5d\n",
+    Serial.printf("%02d:%02d:%02d - Total free: %5u - Max block: %5u\n",
       sysTime.tm_hour, sysTime.tm_min, sysTime.tm_sec, free, max);
 #endif
   }
