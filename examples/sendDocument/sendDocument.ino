@@ -26,17 +26,45 @@ const char* token =  "xxxxxx:xxxxxxxxxxxxx";  // Telegram token
 // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
 int64_t userid = 123456789;
 
+void messageSent(bool sent) {
+  if (sent) {
+    Serial.println("Last message was delivered");
+  }
+  else {
+    Serial.println("Last message was NOT delivered");
+  }
+}
+
+
+void sendDocument(TBMessage &msg,
+                  AsyncTelegram2::DocumentType fileType,
+                  const char* filename,
+                  const char* caption = nullptr )
+  {
+  Serial.print("\nFilename: ");
+  Serial.println(filename);
+
+  File file = LittleFS.open(filename, "r");
+  if (file) {
+    myBot.sendDocument(msg, file, file.size(), fileType, file.name(), caption);
+    myBot.sendMessage(msg, "Log file sent");
+    file.close();
+  }
+  else {
+    Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
+  }
+}
+
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
 
-  rst_info *resetInfo;
-  resetInfo = ESP.getResetInfoPtr();
-  Serial.print("Reset reason: ");
-  Serial.println(resetInfo->reason);
-
+  // rst_info *resetInfo;
+  // resetInfo = ESP.getResetInfoPtr();
+  // Serial.print("Reset reason: ");
+  // Serial.println(resetInfo->reason);
   WiFi.setAutoConnect(true);
   WiFi.mode(WIFI_STA);
 
@@ -70,6 +98,9 @@ void setup() {
   client.setCACert(telegram_cert);
 #endif
 
+  // Add the callback function to bot
+  myBot.addSentCallback(messageSent, 3000);
+
   // Set the Telegram bot properies
   myBot.setUpdateTime(1000);
   myBot.setTelegramToken(token);
@@ -85,7 +116,7 @@ void setup() {
   char welcome_msg[128];
   snprintf(welcome_msg, sizeof(welcome_msg),
           "BOT @%s online.\n/help for command list.\nLast reset reason: %d",
-          myBot.getBotName(), resetInfo->reason);
+          myBot.getBotName(), -1 /*resetInfo->reason*/);
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
@@ -118,47 +149,27 @@ void loop() {
       Serial.print("Text message received: ");
       Serial.println(msgText);
 
-      // Send picture stored in filesystem passing the stream
+      // Send docuements stored in filesystem passing the stream
       // (File is a class derived from Stream)
-      if (msgText.equalsIgnoreCase("/picfs")) {
-        Serial.println("\nSending picture from filesystem");
-        File file = LittleFS.open("/telegram-bot.jpg", "r");
-        myBot.sendPhoto(msg, file, file.size(), file.name(), "This is the caption");
-        file.close();
+      if (msgText.indexOf("/picfs") > -1) {
+        Serial.println("\nSending a picture from filesystem");
+        sendDocument(msg, AsyncTelegram2::DocumentType::PHOTO, "/telegram-bot.jpg", "This is the caption" );
       }
 
       // Send a csv file passing the stream
       else if (msgText.indexOf("/csv") > -1) {
         Serial.println("\nSending csv file from filesystem");
-        File file = LittleFS.open("/cities.csv", "r");
-        if (file) {
-          myBot.sendDocument(msg, file, file.size(), AsyncTelegram2::DocumentType::CSV, file.name());
-          file.close();
-        }
-        else
-          Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
+        sendDocument(msg, AsyncTelegram2::DocumentType::CSV, "/cities.csv" );
       }
 
       else if (msgText.indexOf("/zip") > -1) {
         Serial.println("\nSending a zip file from filesystem");
-        File file = LittleFS.open("/cities.zip", "r");
-        if (file) {
-          myBot.sendDocument(msg, file, file.size(), AsyncTelegram2::DocumentType::ZIP, file.name(), "A zip file");
-          file.close();
-        }
-        else
-          Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
+        sendDocument(msg, AsyncTelegram2::DocumentType::ZIP, "/cities.zip" );
       }
 
       else if (msgText.indexOf("/pdf") > -1) {
         Serial.println("\nSending a pdf file from filesystem");
-        File file = LittleFS.open("/test.pdf", "r");
-        if (file) {
-          myBot.sendDocument(msg, file, file.size(), AsyncTelegram2::DocumentType::PDF, file.name(), "A pdf file");
-          file.close();
-        }
-        else
-          Serial.println("Can't open the file. Upload \"data\" folder to filesystem");
+        sendDocument(msg, AsyncTelegram2::DocumentType::PDF, "/test.pdf" );
       }
 
       else if (msgText.equalsIgnoreCase("/reset")) {

@@ -81,7 +81,7 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
         httpBuffer += command;
         // Let's use 1.0 protocol in order to avoid chunked transfer encoding
         httpBuffer += " HTTP/1.0"
-                      "\nHost: api.telegram.org"
+                      "\nHost: " TELEGRAM_HOST
                       "\nConnection: keep-alive"
                       "\nContent-Type: application/json";
         httpBuffer += "\nContent-Length: ";
@@ -272,7 +272,19 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
         // This a reply after send message
         if (result["message_id"])
         {
-            m_lastSentMsgId = result["message_id"];
+            // m_lastSentMsgId = result["message_id"];
+            if (m_sentCallback != nullptr && m_waitSent)
+            {
+                m_waitSent = false;
+                if (result["message_id"] > m_lastSentMsgId  )
+                {
+                    m_lastSentMsgId = result["message_id"];
+                    m_sentCallback(true);
+                }
+                else {
+                    m_sentCallback(false);
+                }
+            }
         }
 
         uint32_t updateID = result["update_id"];
@@ -393,7 +405,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
                 message.messageType = MessageText;
             }
         }
-        m_lastSentMsgId = message.messageID;
+        // m_lastSentMsgId = message.messageID;
         return message.messageType;
     }
     return MessageNoData; // waiting for reply from server
@@ -461,7 +473,7 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, cons
         return false;
     m_waitSent = true;
     m_lastSentTime = millis();
-    m_lastSentMsgId += 1;
+    // m_lastSentMsgId += 1;
 
     DynamicJsonDocument root(BUFFER_BIG);
     // Backward compatibility
@@ -668,14 +680,16 @@ void AsyncTelegram2::setformData(int64_t chat_id, const char *cmd, const char *t
     formData += "\"\r\nContent-Type: ";
     formData += type;
     formData += "\"\r\n\r\n";
-    int contentLength = size + formData.length() + strlen(END_BOUNDARY);
 
     request = "POST /bot";
     request += m_token;
     request += "/";
     request += cmd;
-    request += " HTTP/1.0\r\nHost: " TELEGRAM_HOST "\r\nContent-Length: ";
-    request += contentLength;
+    request +=  " HTTP/1.0"
+                "\r\nConnection: keep-alive"
+                "\r\nHost: " TELEGRAM_HOST
+                "\r\nContent-Length: ";
+    request += (size + formData.length() + strlen(END_BOUNDARY));
     request += "\r\nContent-Type: multipart/form-data; boundary=" BOUNDARY "\r\n";
 }
 
@@ -717,7 +731,9 @@ bool AsyncTelegram2::sendStream(int64_t chat_id, const char *cmd, const char *ty
 
         // Close the request form-data
         telegramClient->println(END_BOUNDARY);
-        telegramClient->flush();
+        // telegramClient->flush();
+        m_waitSent = true;
+        m_lastSentTime = millis();
 
 #if DEBUG_ENABLE
         log_debug("Raw upload time: %lums\n", millis() - t1);
@@ -765,7 +781,9 @@ bool AsyncTelegram2::sendBuffer(int64_t chat_id, const char *cmd, const char *ty
 
         // Close the request form-data
         telegramClient->println(END_BOUNDARY);
-        telegramClient->flush();
+        // telegramClient->flush();
+        m_waitSent = true;
+        m_lastSentTime = millis();
 
 #if DEBUG_ENABLE
         log_debug("Raw upload time: %lums\n", millis() - t1);

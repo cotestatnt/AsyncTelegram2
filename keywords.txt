@@ -16,6 +16,10 @@ sendPhotoByUrl		KEYWORD2
 getBotName			KEYWORD2
 addSentCallback		KEYWORD2
 checkConnection		KEYWORD2
+addSentCallback		KEYWORD2
+sendDocument		KEYWORD2
+setFormattingStyle		KEYWORD2
+setJsonBufferSize		KEYWORD2
 
 addRow	    KEYWORD2
 addButton	KEYWORD2
