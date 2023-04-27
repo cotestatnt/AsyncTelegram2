@@ -52,8 +52,9 @@ const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
 const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
 const char* token =  "xxxxxxxxxxxx";  // Telegram token
 
-// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
-// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
+
+// Target user can find it's own userid with the bot @JsonDumpBot
+// https://t.me/JsonDumpBot
 int64_t userid = 123456789;
 
 // Structure containing a calendar date and time broken down into its components.
@@ -173,7 +174,7 @@ void loop() {
 
       // Send a picture passing url to online file
       else if (msgText.indexOf("/picweb") > -1) {
-        String url = msgText.substring(msgText.indexOf("/picweb ") + sizeof("/picweb "));
+        String url = msgText.substring(msgText.indexOf("/picweb ") + sizeof("/picweb ") -1);
         Serial.print("\nSending picture from web: ");
         Serial.println(url);
         if(url.length())
@@ -183,7 +184,7 @@ void loop() {
       else {
         String replyMsg = "Welcome to the Async Telegram bot.\n\n";
         replyMsg += "/picfs1 or /picfs2 will send an example picture from fylesystem\n";
-        replyMsg += "/picweb <b>https://telegram.org/img/t_logo.svg</b> will send a picture from internet\n";
+        replyMsg += "/picweb <b>https://telegram.org/img/t_logo.png</b> will send a picture from internet\n";
         msg.isHTMLenabled = true;
         myBot.sendMessage(msg, replyMsg);
       }

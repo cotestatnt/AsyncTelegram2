@@ -466,18 +466,15 @@ bool AsyncTelegram2::noNewMessage()
     return true;
 }
 
-bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, const char *keyboard, bool wait)
+bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char *keyboard, bool wait)
 {
 
     if (!strlen(message))
         return false;
     m_waitSent = true;
     m_lastSentTime = millis();
-    // m_lastSentMsgId += 1;
 
-    DynamicJsonDocument root(BUFFER_BIG);
-    // Backward compatibility
-    // root["chat_id"] = msg.sender.id != 0 ? msg.sender.id : msg.chatId;
+    DynamicJsonDocument root(m_JsonBufferSize);
     root["chat_id"] = msg.chatId;
     root["text"] = message;
 
@@ -498,19 +495,15 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, cons
 
     if (keyboard != nullptr)
     {
-        if (strlen(keyboard) || msg.force_reply)
+        size_t len = strlen(keyboard);
+        if (len || msg.force_reply)
         {
-            // DynamicJsonDocument doc(BUFFER_BIG);
-
-#if defined(ESP8266)
-            DynamicJsonDocument doc(ESP.getMaxFreeBlockSize() - BUFFER_MEDIUM);
-#elif defined(ESP32)
-            DynamicJsonDocument doc(ESP.getMaxAllocHeap());
-#else
-            DynamicJsonDocument doc(BUFFER_BIG);
-#endif
-
-            deserializeJson(doc, keyboard);
+            DynamicJsonDocument doc(len*2);
+            DeserializationError err = deserializeJson(doc, keyboard);
+            if (err)
+            {
+                log_debug("deserializeJson() failed: %s\n", err.c_str());
+            }
             JsonObject myKeyb = doc.as<JsonObject>();
             root["reply_markup"] = myKeyb;
             if (msg.force_reply)

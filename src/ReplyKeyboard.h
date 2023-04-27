@@ -52,8 +52,8 @@ public:
   // generate a string that contains the inline keyboard formatted in a JSON structure.
   // returns:
   //   the JSON of the inline keyboard
-  String getJSON(void) const;
-  String getJSONPretty() const;
+  String getJSON(void);
+  String getJSONPretty();
 
 
   inline void clear() {

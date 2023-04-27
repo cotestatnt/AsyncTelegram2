@@ -62,7 +62,6 @@
 #define TELEGRAM_IP "149.154.167.220"
 #define TELEGRAM_PORT 443
 
-/* This is used with ESP8266 platform only */
 static const char telegram_cert[] PROGMEM = R"EOF(
 -----BEGIN CERTIFICATE-----
 MIIEADCCAuigAwIBAgIBADANBgkqhkiG9w0BAQUFADBjMQswCQYDVQQGEwJVUzEh
@@ -148,22 +147,22 @@ public:
     //   keyboard: the inline/reply keyboard (optional)
     //             (in json format or using the inlineKeyboard/ReplyKeyboard class helper)
     //   wait:    true if method must be blocking
-    bool sendMessage(const TBMessage &msg, const char *message, const char *keyboard = nullptr, bool wait = false);
+    bool sendMessage(const TBMessage &msg, const char *message, char *keyboard = nullptr, bool wait = false);
 
     // sendMessage function overloads
     inline bool sendMessage(const TBMessage &msg, const String &message, String keyboard = "")
     {
-        return sendMessage(msg, message.c_str(), keyboard.c_str());
+        return sendMessage(msg, message.c_str(), (char*)keyboard.c_str());
     }
 
     inline bool sendMessage(const TBMessage &msg, const char *message, InlineKeyboard &keyboard)
     {
-        return sendMessage(msg, message, keyboard.getJSON().c_str());
+        return sendMessage(msg, message, (char*) keyboard.getJSON().c_str());
     }
 
     inline bool sendMessage(const TBMessage &msg, const char *message, ReplyKeyboard &keyboard)
     {
-        return sendMessage(msg, message, keyboard.getJSON().c_str());
+        return sendMessage(msg, message, (char*) keyboard.getJSON().c_str());
     }
 
     // Forward a specific message to user or chat
