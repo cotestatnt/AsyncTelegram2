@@ -399,6 +399,13 @@ public:
     {
         return editMessage(msg.chatId, msg.messageID, txt, keyboard.getJSON());
     }
+    
+    bool deleteMessage(int64_t chatId, int32_t messageId);
+
+    inline bool deleteMessage(const TBMessage &msg) 
+    {
+        return deleteMessage(msg.chatId, msg.messageID);
+    }
 
     // check if connection with server is active
     // returns

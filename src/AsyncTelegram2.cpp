@@ -882,3 +882,15 @@ bool AsyncTelegram2::editMessage(int32_t chat_id, int32_t message_id, const Stri
     bool result = sendCommand("editMessageText", payload.c_str());
     return result;
 }
+
+bool AsyncTelegram2::deleteMessage(int64_t chatId, int32_t messageId)
+{
+    char payload[BUFFER_SMALL];
+    snprintf(payload, BUFFER_SMALL,
+        "{\"chat_id\":%lld,\"message_id\":%" INT32 "}",
+         chatId, messageId);
+
+    const bool result = sendCommand("deleteMessage", payload);
+    log_debug("%s", payload);
+    return result;
+}
