@@ -459,10 +459,7 @@ bool AsyncTelegram2::noNewMessage()
     while (!this->getUpdates())
     {
         delay(100);
-        // if(millis() - startTime > 10000UL)
-        //     break;
     }
-    // log_debug("\n");
     return true;
 }
 
@@ -526,15 +523,17 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
 
 bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chatid)
 {
-    char payload[BUFFER_SMALL];
-    snprintf(payload, BUFFER_SMALL,
-             "{\"chat_id\":%lld,\"from_chat_id\":%lld,\"message_id\":%" INT32 "}",
-             to_chatid, msg.chatId, msg.messageID);
-
-    bool result = sendCommand("forwardMessage", payload);
-    log_debug("%s\n", payload);
-    m_lastUpdateTime = millis();
-    return result;
+     // DynamicJsonDocument root(BUFFER_SMALL);
+    StaticJsonDocument<BUFFER_SMALL> root;
+    root["chat_id"] = to_chatid;
+    root["from_chat_id"] = msg.chatId;
+    root["message_id"] = msg.messageID;
+    // root.shrinkToFit();
+    size_t len = measureJson(root);
+    char payload[len];
+    serializeJson(root, payload, len);
+    debugJson(root, Serial);
+    return sendCommand("forwardMessage", payload);
 }
 
 bool AsyncTelegram2::sendPhotoByUrl(const int64_t &chat_id, const char *url, const char *caption)
@@ -542,14 +541,17 @@ bool AsyncTelegram2::sendPhotoByUrl(const int64_t &chat_id, const char *url, con
     if (!strlen(url))
         return false;
 
-    char payload[BUFFER_SMALL];
-    snprintf(payload, BUFFER_SMALL,
-             "{\"chat_id\":%lld,\"photo\":\"%s\",\"caption\":\"%s\"}",
-             chat_id, url, caption);
-
-    bool result = sendCommand("sendPhoto", payload);
-    log_debug("%s", payload);
-    return result;
+    // DynamicJsonDocument root(BUFFER_SMALL);
+    StaticJsonDocument<BUFFER_SMALL> root;
+    root["chat_id"] = chat_id;
+    root["photo"] = url;
+    root["caption"] = caption;
+    // root.shrinkToFit();
+    size_t len = measureJson(root);
+    char payload[len];
+    serializeJson(root, payload, len);
+    debugJson(root, Serial);
+    return sendCommand("sendPhoto", payload);
 }
 
 bool AsyncTelegram2::sendAnimationByUrl(const int64_t &chat_id, const char *url, const char *caption)
@@ -557,14 +559,17 @@ bool AsyncTelegram2::sendAnimationByUrl(const int64_t &chat_id, const char *url,
     if (!strlen(url))
         return false;
 
-    char payload[BUFFER_SMALL];
-    snprintf(payload, BUFFER_SMALL,
-             "{\"chat_id\":%lld,\"video\":\"%s\",\"caption\":\"%s\"}",
-             chat_id, url, caption);
-
-    bool result = sendCommand("sendVideo", payload);
-    log_debug("%s", payload);
-    return result;
+    // DynamicJsonDocument root(BUFFER_SMALL);
+    StaticJsonDocument<BUFFER_SMALL> root;
+    root["chat_id"] = chat_id;
+    root["video"] = url;
+    root["caption"] = caption;
+    // root.shrinkToFit();
+    size_t len = measureJson(root);
+    char payload[len];
+    serializeJson(root, payload, len);
+    debugJson(root, Serial);
+    return sendCommand("sendVideo", payload);
 }
 
 bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, bool silent)
@@ -604,21 +609,32 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool al
 {
     if (!msg.callbackQueryID)
         return false;
-    char payload[BUFFER_SMALL];
-    snprintf(payload, BUFFER_SMALL,
-             "{\"callback_query_id\":%lld,\"text\":\"%s\",\"cache_time\":2,\"show_alert\":%s}",
-             msg.callbackQueryID, message, alertMode ? "true" : "false");
-    bool result = sendCommand("answerCallbackQuery", payload, true);
-    return result;
+
+    DynamicJsonDocument root(m_JsonBufferSize);
+    root["callback_query_id"] = msg.callbackQueryID;
+    root["text"] = message;
+    root["cache_time"] = 2;
+    root["show_alert"] = alertMode ? "true" : "false";
+    root.shrinkToFit();
+    size_t len = measureJson(root);
+    char payload[len];
+    serializeJson(root, payload, len);
+    debugJson(root, Serial);
+    return sendCommand("answerCallbackQuery", payload, true);
 }
 
 bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char *message, bool selective)
 {
-    char payload[BUFFER_SMALL];
-    snprintf(payload, BUFFER_SMALL,
-             "{\"remove_keyboard\":true,\"selective\":%s}", selective ? "true" : "false");
-    bool result = sendMessage(msg, message, payload);
-    return result;
+    // DynamicJsonDocument root(BUFFER_SMALL);
+    StaticJsonDocument<BUFFER_SMALL> root;
+    root["remove_keyboard"] = true;
+    root["selective"] = selective ? "true" : "false";
+    // root.shrinkToFit();
+    size_t len = measureJson(root);
+    char payload[len];
+    serializeJson(root, payload, len);
+    debugJson(root, Serial);
+    return sendMessage(msg, message, payload);
 }
 
 // enum DocumentType { DOCUMENT, PHOTO, ANIMATION, AUDIO, VOICE, VIDEO};

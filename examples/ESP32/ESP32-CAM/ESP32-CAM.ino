@@ -7,13 +7,12 @@
 #include <WiFiClientSecure.h>
 WiFiClientSecure client;
 
-const char* ssid = "xxxxxxxxxxxx";  // SSID WiFi network
-const char* pass = "xxxxxxxxxxxx";  // Password  WiFi network
-const char* token = "xxxxxxxx:xxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";
-
+const char* ssid = "xxxxxxxxx";                                        // SSID WiFi network
+const char* pass = "xxxxxxxxx";                                        // Password  WiFi network
+const char* token = "xxxxxxxxxx:xxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";  // Telegram token
 // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
 // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-int64_t userid = 1234567890;  
+int64_t userid = 123456789;
 
 // Timezone definition to get properly time from NTP server
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
@@ -56,38 +55,52 @@ static camera_config_t camera_config = {
   .pin_d0 = Y2_GPIO_NUM,
   .pin_vsync = VSYNC_GPIO_NUM,
   .pin_href = HREF_GPIO_NUM,
-  .pin_pclk = PCLK_GPIO_NUM,  
-  .xclk_freq_hz = 10000000,        //XCLK 20MHz or 10MHz
+  .pin_pclk = PCLK_GPIO_NUM,
+  .xclk_freq_hz = 20000000,
   .ledc_timer = LEDC_TIMER_0,
   .ledc_channel = LEDC_CHANNEL_0,
-  .pixel_format = PIXFORMAT_JPEG,  //YUV422,GRAYSCALE,RGB565,JPEG
-  .frame_size = FRAMESIZE_UXGA,    //QQVGA-UXGA Do not use sizes above QVGA when not JPEG
-  .jpeg_quality = 12,              //0-63 lower number means higher quality
-  .fb_count = 1                    //if more than one, i2s runs in continuous mode. Use only with JPEG
+  .pixel_format = PIXFORMAT_JPEG,  /* PIXFORMAT_RGB565, // for face detection/recognition */
+  .frame_size = FRAMESIZE_UXGA,
+  .jpeg_quality = 12,
+  .fb_count = 1,
+  .fb_location = CAMERA_FB_IN_PSRAM,
+  .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
+#if CONFIG_CAMERA_CONVERTER_ENABLED
+  .conv_mode = CONV_DISABLE,  /*!< RGB<->YUV Conversion mode */
+#endif
+  .sccb_i2c_port = 1          /*!< If pin_sccb_sda is -1, use the already configured I2C bus by number */
 };
 
 
-int lampChannel = 7;           // a free PWM channel (some channels used by camera)
-const int pwmfreq = 50000;     // 50K pwm frequency
-const int pwmresolution = 9;   // duty cycle bit range
-const int pwmMax = pow(2,pwmresolution)-1;
+int lampChannel = 7;          // a free PWM channel (some channels used by camera)
+const int pwmfreq = 50000;    // 50K pwm frequency
+const int pwmresolution = 9;  // duty cycle bit range
+const int pwmMax = pow(2, pwmresolution) - 1;
 
 // Lamp Control
 void setLamp(int newVal) {
-    if (newVal != -1) {
-        // Apply a logarithmic function to the scale.
-        int brightness = round((pow(2,(1+(newVal*0.02)))-2)/6*pwmMax);
-        ledcWrite(lampChannel, brightness);
-        Serial.print("Lamp: ");
-        Serial.print(newVal);
-        Serial.print("%, pwm = ");
-        Serial.println(brightness);
-    }
+  if (newVal != -1) {
+    // Apply a logarithmic function to the scale.
+    int brightness = round((pow(2, (1 + (newVal * 0.02))) - 2) / 6 * pwmMax);
+    ledcWrite(lampChannel, brightness);
+    Serial.print("Lamp: ");
+    Serial.print(newVal);
+    Serial.print("%, pwm = ");
+    Serial.println(brightness);
+  }
 }
 
 static esp_err_t init_camera() {
+   
+  // Best picture quality, but first frame requestes get lost sometimes (comment/uncomment to try)
+  if (psramFound()) {
+    Serial.println("PSRAM found");
+    camera_config.fb_count = 2;
+    camera_config.grab_mode = CAMERA_GRAB_LATEST;
+  }
+  
   //initialize the camera
-  Serial.print("Camera init... ");
+  Serial.println("Camera init... ");
   esp_err_t err = esp_camera_init(&camera_config);
 
   if (err != ESP_OK) {
@@ -126,25 +139,22 @@ size_t sendPicture(TBMessage& msg) {
     return 0;
   }
   size_t len = fb->len;
-  if (!myBot.sendPhoto(msg, fb->buf, fb->len)){
-    len = 0;
-    myBot.sendMessage(msg, "Error! Picture not sent.");
-  }
+  myBot.sendPhoto(msg, fb->buf, fb->len);
 
   // Clear buffer
   esp_camera_fb_return(fb);
   return len;
 }
 
-void setup() {  
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);       // disable brownout detector
-  pinMode(LAMP_PIN, OUTPUT);                       // set the lamp pin as output 
-  ledcSetup(lampChannel, pwmfreq, pwmresolution);  // configure LED PWM channel
-  setLamp(0);                                      // set default value  
-  ledcAttachPin(LAMP_PIN, lampChannel);            // attach the GPIO pin to the channel
-
+void setup() {
   Serial.begin(115200);
   Serial.println();
+
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);       // disable brownout detector
+  pinMode(LAMP_PIN, OUTPUT);                       // set the lamp pin as output
+  ledcSetup(lampChannel, pwmfreq, pwmresolution);  // configure LED PWM channel
+  setLamp(0);                                      // set default value
+  ledcAttachPin(LAMP_PIN, lampChannel);            // attach the GPIO pin to the channel
 
   // Start WiFi connection
   WiFi.begin(ssid, pass);
@@ -159,6 +169,12 @@ void setup() {
   // Sync time with NTP
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
   client.setCACert(telegram_cert);
+
+  myBot.addSentCallback([](bool sent){
+    const char* res = sent ? "Picture delivered!" : "Error! Picture NOT delivered";
+    if (!sent)
+      myBot.sendTo(userid, res);
+  }, 3000);
 
   // Set the Telegram bot properies
   myBot.setUpdateTime(1000);
@@ -191,11 +207,10 @@ void loop() {
       if (msg.text.equalsIgnoreCase("/takePhoto")) {
         Serial.println("\nSending Photo from CAM");
         if (sendPicture(msg))
-            Serial.println("Picture sent successfull");
+          Serial.println("Picture sent successfull");
         else
-            myBot.sendMessage(msg, "Error, picture not sent.");
-      } 
-      else {
+          myBot.sendMessage(msg, "Error, picture not sent.");
+      } else {
         Serial.print("\nText message received: ");
         Serial.println(msg.text);
         String replyStr = "Message received:\n";

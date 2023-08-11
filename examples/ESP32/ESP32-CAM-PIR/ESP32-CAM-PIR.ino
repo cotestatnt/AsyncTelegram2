@@ -22,9 +22,12 @@ WiFiClientSecure client;
 
 #define PIR_PIN   GPIO_NUM_13
 
-const char* ssid = "xxxxxxxxxxxx";  // SSID WiFi network
-const char* pass = "xxxxxxxxxxxx";  // Password  WiFi network
-const char* token = "xxxxxxxx:xxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";
+const char* ssid = "xxxxxxxxx";                                        // SSID WiFi network
+const char* pass = "xxxxxxxxx";                                        // Password  WiFi network
+const char* token = "xxxxxxxxxx:xxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";  // Telegram token
+// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
+// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
+int64_t userid = 123456789;
 
 
 #define PIR_PIN       GPIO_NUM_13
@@ -32,11 +35,6 @@ const char* token = "xxxxxxxx:xxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";
 #define DELAY_PHOTO   2000            // Waiting time between one photo and the next 
 
 int currentPict = 3;
-
-// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
-// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-int64_t userid = 1234567890;
-
 AsyncTelegram2 myBot(client);
 
 // Timezone definition to get properly time from NTP server
@@ -54,6 +52,9 @@ size_t sendPicture(bool);
 
 ///////////////////////////////////  SETUP  ///////////////////////////////////////
 void setup() {
+  Serial.begin(115200);
+  Serial.println();
+
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);       // disable brownout detect
   
   // PIR Motion Sensor setup
@@ -64,9 +65,6 @@ void setup() {
   ledcSetup(lampChannel, pwmfreq, pwmresolution);  // configure LED PWM channel
   setLamp(0);                                      // set default value
   ledcAttachPin(LAMP_PIN, lampChannel);            // attach the GPIO pin to the channel
-
-  Serial.begin(115200);
-  Serial.println();
 
   // Start WiFi connection
   WiFi.begin(ssid, pass);
@@ -245,7 +243,6 @@ size_t sendPicture(bool saveImg = false) {
 
   // If is necessary keep the image file, save and send as stream object
   if (saveImg) {
-
     // Keep files on SD memory, filename is time based (YYYYMMDD_HHMMSS.jpg)
     #if USE_MMC
       char filename[30];
@@ -265,19 +262,12 @@ size_t sendPicture(bool saveImg = false) {
     file.write(fb->buf, fb->len);
     file.close();
     Serial.printf("Saved file to path: %s - %zu bytes\n", filename, fb->len);
-
-    if (!myBot.sendPhoto(userid, filename, FILESYSTEM)) {
-      len = 0;
-      myBot.sendTo(userid, "Error, picture not sent.");
-    }
+    myBot.sendPhoto(userid, filename, FILESYSTEM);
   }
 
   // If is NOT necessary keep the image file, send picture directly from ram buffer
   else {
-    if (!myBot.sendPhoto(userid, fb->buf, fb->len)){
-      len = 0;
-      myBot.sendTo(userid, "Error, picture not sent.");
-    }
+    myBot.sendPhoto(userid, fb->buf, fb->len);
   }
 
   // Clear buffer
