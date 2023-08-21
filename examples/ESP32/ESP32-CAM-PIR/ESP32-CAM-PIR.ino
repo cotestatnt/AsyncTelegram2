@@ -48,7 +48,7 @@ void listDir(const char *, uint8_t, bool) ;
 void printHeapStats();
 static void checkTelegram(void *);
 void setLamp(int);
-size_t sendPicture(bool);
+size_t sendPicture(bool, int64_t);
 
 ///////////////////////////////////  SETUP  ///////////////////////////////////////
 void setup() {
@@ -111,7 +111,7 @@ void setup() {
   xTaskCreatePinnedToCore(
     checkTelegram,    // Function to implement the task
     "checkTelegram",  // Label name of the task
-    8192,             // Stack size
+    16384,            // Stack size
     NULL,             // Task input parameter
     1,                // Priority of the task
     NULL,             // Task handle.
@@ -125,7 +125,7 @@ void setup() {
 
 ///////////////////////////////////  LOOP  ///////////////////////////////////////
 void loop() {
-  printHeapStats();
+  // printHeapStats();
 }
 
 
@@ -151,7 +151,7 @@ static void checkTelegram(void * args) {
     
     if(millis() - waitPhotoTime > DELAY_PHOTO && currentPict < NUM_PHOTO) {
       waitPhotoTime = millis();
-      size_t bytes_sent = sendPicture(true);
+      size_t bytes_sent = sendPicture(true, userid);
       if (bytes_sent) {
         Serial.printf("CAM picture sent to Telegram (%d bytes)\n", bytes_sent);
         currentPict++;
@@ -163,7 +163,7 @@ static void checkTelegram(void * args) {
     // if there is an incoming message...
     if (myBot.getNewMessage(msg)) {
       Serial.print("New message from chat_id: ");
-      Serial.println(msg.sender.id);
+      Serial.println(msg.chatId);
       MessageType msgType = msg.messageType;
 
       // Received a text message
@@ -172,7 +172,7 @@ static void checkTelegram(void * args) {
         // Send a picture grabbed from camera directly to Telegram
         if (msg.text.equalsIgnoreCase("/takePhoto")) {
           uint32_t t1 = millis();
-          size_t bytes_sent = sendPicture(false);
+          size_t bytes_sent = sendPicture(false, msg.chatId);
           if (bytes_sent) Serial.printf("Picture sent to Telegram (%d bytes)\n", bytes_sent);
           
           Serial.printf("Total upload time (server latency time included, ~ 500 ms): %lu ms\n", millis() - t1 );
@@ -180,7 +180,7 @@ static void checkTelegram(void * args) {
 
         // Save a picture and then send to Telegram
         else if (msg.text.equalsIgnoreCase("/savePhoto")) {
-          size_t bytes_sent = sendPicture(true);
+          size_t bytes_sent = sendPicture(true, msg.chatId);
           if (bytes_sent) Serial.printf("Picture saved and sent to Telegram (%d bytes)\n", bytes_sent);
         }
 
@@ -227,7 +227,7 @@ void setLamp(int newVal) {
 }
 
 // Send a picture taken from CAM to a Telegram chat
-size_t sendPicture(bool saveImg = false) {
+size_t sendPicture(bool saveImg, int64_t chatId) {
   // Take Picture with Camera;
   Serial.println("Camera capture requested");
 
@@ -262,12 +262,12 @@ size_t sendPicture(bool saveImg = false) {
     file.write(fb->buf, fb->len);
     file.close();
     Serial.printf("Saved file to path: %s - %zu bytes\n", filename, fb->len);
-    myBot.sendPhoto(userid, filename, FILESYSTEM);
+    myBot.sendPhoto(chatId, filename, FILESYSTEM);
   }
 
   // If is NOT necessary keep the image file, send picture directly from ram buffer
   else {
-    myBot.sendPhoto(userid, fb->buf, fb->len);
+    myBot.sendPhoto(chatId, fb->buf, fb->len);
   }
 
   // Clear buffer

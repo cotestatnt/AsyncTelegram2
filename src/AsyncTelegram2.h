@@ -22,7 +22,7 @@
 #include "time.h"
 
 #ifndef DEBUG_ENABLE
-#define DEBUG_ENABLE 0
+#define DEBUG_ENABLE 1
 #endif
 
 #if defined(ESP32) || defined(ESP8266)

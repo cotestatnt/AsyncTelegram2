@@ -328,11 +328,20 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
             message.sender.id = result["forward_from"]["id"];
             message.sender.username = result["forward_from"]["username"].as<String>();
             message.sender.firstName = result["forward_from"]["first_name"].as<String>();
-            message.sender.lastName = result["forward_from"]["last_name"].as<String>();
-
+            message.sender.lastName = result["forward_from"]["last_name"].as<String>();		
             message.text = result["text"].as<String>();
             message.messageType = MessageForwarded;
         }
+		else if (result["channel_post"])
+        {
+            // this is a channel message
+            message.sender.id = result["channel_post"]["sender_chat"]["id"];
+            message.sender.username = result["channel_post"]["sender_chat"]["title"].as<String>(); 
+			message.chatId = result["channel_post"]["chat"]["id"];
+            message.text = result["channel_post"]["text"].as<String>();
+            message.messageType = MessageText;
+        }
+		
         else if (result["message"]["message_id"])
         {
 
