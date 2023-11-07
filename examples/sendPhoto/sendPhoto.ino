@@ -168,7 +168,7 @@ void loop() {
         File file = LittleFS.open("/telegram-bot2.jpg", "r");
 
         // sendPhoto(const TBMessage &msg, Stream &stream, size_t size, const char* caption = nullptr)
-        myBot.sendPhoto(msg, file, file.size());
+        myBot.sendPhoto(msg, file, file.size(), file.name(), "This is a caption");
         file.close();
       }
 
