@@ -48,14 +48,14 @@
 const uint8_t LED = LED_BUILTIN;
 
 AsyncTelegram2 myBot(client);
-const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
-const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
-const char* token =  "xxxxxxxxxxxx";  // Telegram token
 
+const char* ssid  =  "xxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxx";     // Password  WiFi network
+const char* token =  "xxxx:xxxxxxxxxx-xxxx";  // Telegram token
 
-// Target user can find it's own userid with the bot @JsonDumpBot
-// https://t.me/JsonDumpBot
-int64_t userid = 123456789;
+// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
+// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
+int64_t userid = 1234567890;
 
 // Structure containing a calendar date and time broken down into its components.
 struct tm sysTime;
@@ -158,7 +158,7 @@ void loop() {
         strftime(timestamp, sizeof(timestamp), "%d/%m/%Y %T", &sysTime);
 
         // sendPhoto(const TBMessage &msg, const char* filename, fs::FS &fs, const char* caption = nullptr)
-        myBot.sendPhoto(msg, "/telegram-bot1.jpg", LittleFS, timestamp);
+        myBot.sendPhoto(msg, "/telegram-bot1.jpg", LittleFS);
       }
 
       // Send picture stored in filesystem passing the stream
@@ -168,7 +168,7 @@ void loop() {
         File file = LittleFS.open("/telegram-bot2.jpg", "r");
 
         // sendPhoto(const TBMessage &msg, Stream &stream, size_t size, const char* caption = nullptr)
-        myBot.sendPhoto(msg, file, file.size(), file.name(), "This is the caption");
+        myBot.sendPhoto(msg, file, file.size());
         file.close();
       }
 

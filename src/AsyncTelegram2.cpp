@@ -88,6 +88,13 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
         httpBuffer += strlen(payload);
         httpBuffer += "\n\n";
         httpBuffer += payload;
+
+        #if DEBUG_ENABLE
+        if (strcmp(command, "getUpdates") != 0) {
+            log_debug("Command %s, payload: %s\n", command, payload);
+        }
+        #endif
+
         // Send the whole request in one go is much faster
         telegramClient->print(httpBuffer);
 
@@ -328,7 +335,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
             message.sender.id = result["forward_from"]["id"];
             message.sender.username = result["forward_from"]["username"].as<String>();
             message.sender.firstName = result["forward_from"]["first_name"].as<String>();
-            message.sender.lastName = result["forward_from"]["last_name"].as<String>();		
+            message.sender.lastName = result["forward_from"]["last_name"].as<String>();
             message.text = result["text"].as<String>();
             message.messageType = MessageForwarded;
         }
@@ -336,12 +343,12 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
         {
             // this is a channel message
             message.sender.id = result["channel_post"]["sender_chat"]["id"];
-            message.sender.username = result["channel_post"]["sender_chat"]["title"].as<String>(); 
+            message.sender.username = result["channel_post"]["sender_chat"]["title"].as<String>();
 			message.chatId = result["channel_post"]["chat"]["id"];
             message.text = result["channel_post"]["text"].as<String>();
             message.messageType = MessageText;
         }
-		
+
         else if (result["message"]["message_id"])
         {
 
@@ -520,29 +527,21 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
         }
     }
     root.shrinkToFit();
-
-    size_t len = measureJson(root);
-    char payload[len];
-    serializeJson(root, payload, len);
-
-    debugJson(root, Serial);
-    bool result = sendCommand("sendMessage", payload, wait);
-    return result;
+    String payload;
+    serializeJson(root, payload);
+    return sendCommand("sendMessage", payload.c_str(),  wait);
 }
 
 bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chatid)
 {
-     // DynamicJsonDocument root(BUFFER_SMALL);
-    StaticJsonDocument<BUFFER_SMALL> root;
+    DynamicJsonDocument root(BUFFER_SMALL);
     root["chat_id"] = to_chatid;
     root["from_chat_id"] = msg.chatId;
     root["message_id"] = msg.messageID;
-    // root.shrinkToFit();
-    size_t len = measureJson(root);
-    char payload[len];
-    serializeJson(root, payload, len);
-    debugJson(root, Serial);
-    return sendCommand("forwardMessage", payload);
+    root.shrinkToFit();
+    String payload;
+    serializeJson(root, payload);
+    return sendCommand("forwardMessage", payload.c_str());
 }
 
 bool AsyncTelegram2::sendPhotoByUrl(const int64_t &chat_id, const char *url, const char *caption)
@@ -550,17 +549,14 @@ bool AsyncTelegram2::sendPhotoByUrl(const int64_t &chat_id, const char *url, con
     if (!strlen(url))
         return false;
 
-    // DynamicJsonDocument root(BUFFER_SMALL);
-    StaticJsonDocument<BUFFER_SMALL> root;
+    DynamicJsonDocument root(BUFFER_SMALL);
     root["chat_id"] = chat_id;
     root["photo"] = url;
     root["caption"] = caption;
-    // root.shrinkToFit();
-    size_t len = measureJson(root);
-    char payload[len];
-    serializeJson(root, payload, len);
-    debugJson(root, Serial);
-    return sendCommand("sendPhoto", payload);
+    root.shrinkToFit();
+    String payload;
+    serializeJson(root, payload);
+    return sendCommand("sendPhoto", payload.c_str());
 }
 
 bool AsyncTelegram2::sendAnimationByUrl(const int64_t &chat_id, const char *url, const char *caption)
@@ -568,17 +564,14 @@ bool AsyncTelegram2::sendAnimationByUrl(const int64_t &chat_id, const char *url,
     if (!strlen(url))
         return false;
 
-    // DynamicJsonDocument root(BUFFER_SMALL);
-    StaticJsonDocument<BUFFER_SMALL> root;
+    DynamicJsonDocument root(BUFFER_SMALL);
     root["chat_id"] = chat_id;
     root["video"] = url;
     root["caption"] = caption;
-    // root.shrinkToFit();
-    size_t len = measureJson(root);
-    char payload[len];
-    serializeJson(root, payload, len);
-    debugJson(root, Serial);
-    return sendCommand("sendVideo", payload);
+    root.shrinkToFit();
+    String payload;
+    serializeJson(root, payload);
+    return sendCommand("sendVideo", payload.c_str());
 }
 
 bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, bool silent)
@@ -602,16 +595,9 @@ bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, boo
         root["parse_mode"] = "MarkdownV2";
         break;
     }
-
-    size_t len = measureJson(root);
-    char payload[len];
-    serializeJson(root, payload, len);
-    payload[len] = '\0';
-    log_debug("%s", payload);
-
-    bool result = sendCommand("sendMessage", payload);
-
-    return result;
+    String payload;
+    serializeJson(root, payload);
+    return sendCommand("sendMessage", payload.c_str());
 }
 
 bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool alertMode)
@@ -625,24 +611,19 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool al
     root["cache_time"] = 2;
     root["show_alert"] = alertMode ? "true" : "false";
     root.shrinkToFit();
-    size_t len = measureJson(root);
-    char payload[len];
-    serializeJson(root, payload, len);
-    debugJson(root, Serial);
-    return sendCommand("answerCallbackQuery", payload, true);
+    String payload;
+    serializeJson(root, payload);
+    return sendCommand("answerCallbackQuery", payload.c_str(), true);
 }
 
 bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char *message, bool selective)
 {
-    // DynamicJsonDocument root(BUFFER_SMALL);
-    StaticJsonDocument<BUFFER_SMALL> root;
+    DynamicJsonDocument root(BUFFER_SMALL);
     root["remove_keyboard"] = true;
-    root["selective"] = selective ? "true" : "false";
-    // root.shrinkToFit();
-    size_t len = measureJson(root);
-    char payload[len];
-    serializeJson(root, payload, len);
-    debugJson(root, Serial);
+    root["selective"] = selective ? true : false;
+    root.shrinkToFit();
+    String payload;
+    serializeJson(root, payload);
     return sendMessage(msg, message, payload);
 }
 
@@ -757,7 +738,6 @@ bool AsyncTelegram2::sendStream(int64_t chat_id, const char *cmd, const char *ty
         log_debug("Raw upload time: %lums\n", millis() - t1);
         t1 = millis();
 #endif
-
         // Handle reply with getUpdates() method
     }
     else
@@ -844,7 +824,6 @@ bool AsyncTelegram2::deleteMyCommands()
 
 bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc)
 {
-
     // get actual list of commands
     if (!sendCommand("getMyCommands", "", true))
     {
@@ -875,35 +854,22 @@ bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc)
     StaticJsonDocument<BUFFER_MEDIUM> doc2;
     doc2["commands"] = doc["result"].as<JsonArray>();
 
-    size_t len = measureJson(doc2);
-    char payload[len + 1];
-    serializeJson(doc2, payload, len);
-    debugJson(doc2, Serial);
-
-    bool result = sendCommand("setMyCommands", payload, true);
-    return result;
+    String payload;
+    serializeJson(doc2, payload);
+    return sendCommand("setMyCommands", payload.c_str(), true);
 }
 
-bool AsyncTelegram2::editMessage(int32_t chat_id, int32_t message_id, const String &txt, const String &keyboard)
+bool AsyncTelegram2::editMessage(int64_t chat_id, int32_t message_id, const String &txt, const String &keyboard)
 {
-    String payload = "{\"chat_id\":";
-    payload += chat_id;
-    payload += ",\"message_id\":";
-    payload += message_id;
-    payload += ", \"text\": \"";
-    payload += txt;
-
-    if (keyboard.length())
-    {
-        payload += "\", \"reply_markup\": ";
-        payload += keyboard;
-        payload += "}";
+    DynamicJsonDocument root(m_JsonBufferSize);
+    root["chat_id"] = chat_id;
+    root["message_id"] = message_id;
+    root["text"] = txt;
+    if (keyboard.length()) {
+        root["reply_markup"] = keyboard;
     }
-    else
-    {
-        payload += "\"}";
-    }
-
-    bool result = sendCommand("editMessageText", payload.c_str());
-    return result;
+    root.shrinkToFit();
+    String payload;
+    serializeJson(root, payload);
+    return sendCommand("editMessageText", payload.c_str());
 }
