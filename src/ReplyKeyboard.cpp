@@ -1,34 +1,38 @@
 #include "ReplyKeyboard.h"
 
-ReplyKeyboard::ReplyKeyboard()
+ReplyKeyboard::ReplyKeyboard(size_t size)
 {
-  m_json.reserve(BUFFER_MEDIUM);
+  m_jsonSize = size;
+  m_json.reserve(m_jsonSize);
   m_json = "{\"keyboard\":[[]]}\"";
 }
 
-ReplyKeyboard::~ReplyKeyboard() {}
+ReplyKeyboard::~ReplyKeyboard() {
+  m_json = "";
+}
 
 bool ReplyKeyboard::addRow()
 {
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 128);	 // Current size + space for new row (empty)
+  JSON_DOC(m_jsonSize);
 
-  DeserializationError err = deserializeJson(doc, m_json);
+  DeserializationError err = deserializeJson(root, m_json);
   if (err)
   {
     log_debug("deserializeJson() failed: %s\n", err.c_str());
     return false;
   }
 
-  JsonArray rows = doc["keyboard"];
+#if ARDUINOJSON_VERSION_MAJOR > 6
+  JsonArray rows = root["keyboard"].as<JsonArray>();
+  rows.add<JsonVariant>();
+#else
+  JsonArray rows = root["keyboard"];
   rows.createNestedArray();
+#endif
   m_json = "";
-  serializeJson(doc, m_json);
-  doc.shrinkToFit();
-  m_jsonSize = doc.memoryUsage();
+  serializeJson(root, m_json);
   return true;
 }
-
 bool ReplyKeyboard::addButton(const char *text, ReplyKeyboardButtonType buttonType)
 {
   if ((buttonType != KeyboardButtonContact) &&
@@ -39,18 +43,22 @@ bool ReplyKeyboard::addButton(const char *text, ReplyKeyboardButtonType buttonTy
     return false;
   }
 
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 256);	 // Current size + space for new object (button)
+  JSON_DOC(m_jsonSize);
 
-  DeserializationError err = deserializeJson(doc, m_json);
+  DeserializationError err = deserializeJson(root, m_json);
   if (err)
   {
     log_debug("deserializeJson() failed: %s\n", err.c_str());
     return false;
   }
 
-  JsonArray rows = doc["keyboard"];
+#if ARDUINOJSON_VERSION_MAJOR > 6
+  JsonArray rows = root["keyboard"].as<JsonArray>();
+  JsonObject button = rows[rows.size()-1].add<JsonObject>();
+#else
+  JsonArray rows = root["keyboard"];
   JsonObject button = rows[rows.size() - 1].createNestedObject();
+#endif
 
   button["text"] = text;
   switch (buttonType)
@@ -67,64 +75,49 @@ bool ReplyKeyboard::addButton(const char *text, ReplyKeyboardButtonType buttonTy
 
   // Store inline keyboard json structure
   m_json = "";
-  serializeJson(doc, m_json);
-  doc.shrinkToFit();
-  m_jsonSize = doc.memoryUsage();
+  serializeJson(root, m_json);
   return true;
 }
 
 void ReplyKeyboard::enableResize()
 {
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 128); // Current size + space for new field
-  deserializeJson(doc, m_json);
-  DeserializationError err = deserializeJson(doc, m_json);
+
+  JSON_DOC(m_jsonSize);
+  deserializeJson(root, m_json);
+  DeserializationError err = deserializeJson(root, m_json);
   if (err)
   {
     log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
-
-  doc["resize_keyboard"] = true;
   m_json = "";
-  serializeJson(doc, m_json);
-  doc.shrinkToFit();
-  m_jsonSize = doc.memoryUsage();
-
-  Serial.println(m_json);
+  root["resize_keyboard"] = true;
+  serializeJson(root, m_json);
 }
 
 void ReplyKeyboard::enableOneTime()
 {
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 128); // Current size + space for new field
-  DeserializationError err = deserializeJson(doc, m_json);
+  JSON_DOC(m_jsonSize);
+  DeserializationError err = deserializeJson(root, m_json);
   if (err)
   {
     log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
-
-  doc["one_time_keyboard"] = true;
   m_json = "";
-  serializeJson(doc, m_json);
-  doc.shrinkToFit();
-  m_jsonSize = doc.memoryUsage();
+  root["one_time_keyboard"] = true;
+  serializeJson(root, m_json);
 }
 
 void ReplyKeyboard::enableSelective()
 {
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 128); // Current size + space for new field
-  DeserializationError err = deserializeJson(doc, m_json);
+  JSON_DOC(m_jsonSize);
+  DeserializationError err = deserializeJson(root, m_json);
   if (err)
   {
     log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
-
-  doc["selective"] = true;
   m_json = "";
-  serializeJson(doc, m_json);
-  doc.shrinkToFit();
-  m_jsonSize = doc.memoryUsage();
+  root["selective"] = true;
+  serializeJson(root, m_json);
 }
 
 String ReplyKeyboard::getJSON()
@@ -134,15 +127,14 @@ String ReplyKeyboard::getJSON()
 
 String ReplyKeyboard::getJSONPretty()
 {
-  if(m_jsonSize < BUFFER_MEDIUM) m_jsonSize = BUFFER_MEDIUM;
-  DynamicJsonDocument doc(m_jsonSize + 128); // Current size + space for new field
-  DeserializationError err = deserializeJson(doc, m_json);
+  JSON_DOC(m_jsonSize);
+  DeserializationError err = deserializeJson(root, m_json);
   if (err)
   {
     log_debug("deserializeJson() failed: %s\n", err.c_str());
   }
 
   String serialized;
-  serializeJsonPretty(doc, serialized);
+  serializeJsonPretty(root, serialized);
   return serialized;
 }

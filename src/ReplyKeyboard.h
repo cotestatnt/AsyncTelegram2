@@ -8,6 +8,12 @@
 #include "DataStructures.h"
 #include "serial_log.h"
 
+#if ARDUINOJSON_VERSION_MAJOR > 6
+    #define JSON_DOC(x) JsonDocument root
+#else
+    #define JSON_DOC(x) DynamicJsonDocument root((size_t)x)
+#endif
+
 enum ReplyKeyboardButtonType {
   KeyboardButtonSimple   = 1,
   KeyboardButtonContact  = 2,
@@ -19,10 +25,10 @@ class ReplyKeyboard
 {
 private:
   String m_json;
-  size_t m_jsonSize = BUFFER_MEDIUM;
+  size_t m_jsonSize;
 
 public:
-  ReplyKeyboard();
+  ReplyKeyboard(size_t size = BUFFER_SMALL);
   ~ReplyKeyboard();
 
   // add a new empty row of buttons

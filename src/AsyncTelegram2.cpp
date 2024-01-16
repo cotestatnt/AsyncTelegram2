@@ -240,41 +240,45 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
     // We have a message, parse data received
     if (getUpdates())
     {
-        JsonVariant result;
-        { // Add as scope in order to destroy updateDoc as soon as possible
-            DynamicJsonDocument updateDoc(m_JsonBufferSize);
-            DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
-            if (err)
-            {
-                log_error("deserializeJson() failed\n");
-                log_debug("%s", err.c_str());
-                log_error();
-                log_error(m_rxbuffer);
-                // Skip this message id due to the impossibility to parse correctly
-                m_lastUpdateId = m_rxbuffer.substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":")).toInt() + 1;
-                // int64_t chat_id = m_rxbuffer.substring( m_rxbuffer.indexOf("{\"id\":") + strlen("{\"id\":")).toInt();
-                m_rxbuffer = "";
+        #if ARDUINOJSON_VERSION_MAJOR > 6
+        JsonDocument updateDoc;
+        #else
+        DynamicJsonDocument updateDoc(m_JsonBufferSize);
+        #endif
 
-                // Inform the user about parsing error (blocking)
-                sendTo(message.chatId, "[ERROR] - No memory: inrease buffer size with \"setJsonBufferSize(buf_size)\" method");
-                return MessageNoData;
-            }
-            updateDoc.shrinkToFit();
+        DeserializationError err = deserializeJson(updateDoc, m_rxbuffer);
+        if (err)
+        {
+            log_error("deserializeJson() failed\n");
+            log_debug("%s", err.c_str());
+            log_error();
+            log_error(m_rxbuffer);
+            // Skip this message id due to the impossibility to parse correctly
+            m_lastUpdateId = m_rxbuffer.substring(m_rxbuffer.indexOf(F("\"update_id\":")) + strlen("\"update_id\":")).toInt() + 1;
             m_rxbuffer = "";
 
-            if (!updateDoc.containsKey("result"))
-            {
-                log_error("JSON data not expected");
-                serializeJsonPretty(updateDoc, Serial);
-                return MessageNoData;
-            }
-
-            result = updateDoc["result"];
-            if (result.is<JsonArray>())
-            {
-                result = result[0];
-            }
+            // Inform the user about parsing error (blocking)
+            sendTo(message.chatId, "[ERROR] - No memory: inrease buffer size with \"setJsonBufferSize(buf_size)\" method");
+            return MessageNoData;
         }
+        updateDoc.shrinkToFit();
+
+        m_rxbuffer = "";
+        if (!updateDoc.containsKey("result"))
+        {
+            log_error("JSON data not expected");
+            serializeJsonPretty(updateDoc, Serial);
+            return MessageNoData;
+        }
+
+        JsonVariantConst result;
+        if (updateDoc["result"].is<JsonArray>())
+            result = updateDoc["result"][0].as<JsonVariant>();
+        else
+            result = updateDoc["result"].as<JsonVariant>();
+
+        if (result.isNull())
+            return MessageNoData;
 
         // This a reply after send message
         if (result["message_id"])
@@ -283,7 +287,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
             if (m_sentCallback != nullptr && m_waitSent)
             {
                 m_waitSent = false;
-                if (result["message_id"] > m_lastSentMsgId  )
+                if (result["message_id"]> m_lastSentMsgId  )
                 {
                     m_lastSentMsgId = result["message_id"];
                     m_sentCallback(true);
@@ -437,10 +441,11 @@ bool AsyncTelegram2::getMe()
         log_error("getMe error ");
         return false;
     }
-    StaticJsonDocument<BUFFER_SMALL> smallDoc;
-    deserializeJson(smallDoc, m_rxbuffer);
-    debugJson(smallDoc, Serial);
-    m_botusername = smallDoc["result"]["username"].as<String>();
+    // StaticJsonDocument<BUFFER_SMALL> root;
+    JSON_DOC(BUFFER_SMALL);
+    deserializeJson(root, m_rxbuffer);
+    debugJson(root, Serial);
+    m_botusername = root["result"]["username"].as<String>();
     return true;
 }
 
@@ -455,14 +460,15 @@ bool AsyncTelegram2::getFile(TBDocument &doc)
         log_error("getFile error");
         return false;
     }
-    StaticJsonDocument<BUFFER_MEDIUM> fileDoc;
-    deserializeJson(fileDoc, m_rxbuffer);
-    debugJson(fileDoc, Serial);
+    // StaticJsonDocument<BUFFER_MEDIUM> fileDoc;
+    JSON_DOC(BUFFER_MEDIUM);
+    deserializeJson(root, m_rxbuffer);
+    debugJson(root, Serial);
     doc.file_path = "https://api.telegram.org/file/bot";
     doc.file_path += m_token;
     doc.file_path += "/";
-    doc.file_path += fileDoc["result"]["file_path"].as<String>();
-    doc.file_size = fileDoc["result"]["file_size"].as<long>();
+    doc.file_path += root["result"]["file_path"].as<String>();
+    doc.file_size = root["result"]["file_size"].as<long>();
     return true;
 }
 
@@ -487,7 +493,8 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
     m_waitSent = true;
     m_lastSentTime = millis();
 
-    DynamicJsonDocument root(m_JsonBufferSize);
+    // DynamicJsonDocument root(m_JsonBufferSize);
+    JSON_DOC(m_JsonBufferSize);
     root["chat_id"] = msg.chatId;
     root["text"] = message;
 
@@ -511,7 +518,12 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
         size_t len = strlen(keyboard);
         if (len || msg.force_reply)
         {
+            #if ARDUINOJSON_VERSION_MAJOR > 6
+            JsonDocument doc;
+            #else
             DynamicJsonDocument doc(len*2);
+            #endif
+
             DeserializationError err = deserializeJson(doc, keyboard);
             if (err)
             {
@@ -534,7 +546,8 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
 
 bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chatid)
 {
-    DynamicJsonDocument root(BUFFER_SMALL);
+    // DynamicJsonDocument root(BUFFER_SMALL);
+    JSON_DOC(BUFFER_SMALL);
     root["chat_id"] = to_chatid;
     root["from_chat_id"] = msg.chatId;
     root["message_id"] = msg.messageID;
@@ -549,7 +562,8 @@ bool AsyncTelegram2::sendPhotoByUrl(const int64_t &chat_id, const char *url, con
     if (!strlen(url))
         return false;
 
-    DynamicJsonDocument root(BUFFER_SMALL);
+    // DynamicJsonDocument root(BUFFER_SMALL);
+    JSON_DOC(BUFFER_SMALL);
     root["chat_id"] = chat_id;
     root["photo"] = url;
     root["caption"] = caption;
@@ -564,7 +578,8 @@ bool AsyncTelegram2::sendAnimationByUrl(const int64_t &chat_id, const char *url,
     if (!strlen(url))
         return false;
 
-    DynamicJsonDocument root(BUFFER_SMALL);
+    // DynamicJsonDocument root(BUFFER_SMALL);
+    JSON_DOC(BUFFER_SMALL);
     root["chat_id"] = chat_id;
     root["video"] = url;
     root["caption"] = caption;
@@ -579,7 +594,8 @@ bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, boo
     if (!strlen(message))
         return false;
 
-    DynamicJsonDocument root(BUFFER_BIG);
+    // DynamicJsonDocument root(BUFFER_BIG);
+    JSON_DOC(BUFFER_BIG);
     root["chat_id"] = channel;
     root["text"] = message;
     root["silent"] = silent ? "true" : "false";
@@ -605,7 +621,8 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool al
     if (!msg.callbackQueryID)
         return false;
 
-    DynamicJsonDocument root(m_JsonBufferSize);
+    // DynamicJsonDocument root(m_JsonBufferSize);
+    JSON_DOC(m_JsonBufferSize);
     root["callback_query_id"] = msg.callbackQueryID;
     root["text"] = message;
     root["cache_time"] = 2;
@@ -618,7 +635,8 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool al
 
 bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char *message, bool selective)
 {
-    DynamicJsonDocument root(BUFFER_SMALL);
+    // DynamicJsonDocument root(BUFFER_SMALL);
+    JSON_DOC(BUFFER_SMALL);
     root["remove_keyboard"] = true;
     root["selective"] = selective ? true : false;
     root.shrinkToFit();
@@ -801,15 +819,16 @@ void AsyncTelegram2::getMyCommands(String &cmdList)
         log_error("getMyCommands error ");
         return;
     }
-    StaticJsonDocument<BUFFER_MEDIUM> doc;
-    DeserializationError err = deserializeJson(doc, m_rxbuffer);
+    // StaticJsonDocument<BUFFER_MEDIUM> root;
+    JSON_DOC(BUFFER_MEDIUM);
+    DeserializationError err = deserializeJson(root, m_rxbuffer);
     if (err)
     {
         return;
     }
-    debugJson(doc, Serial);
-    // cmdList = doc["result"].as<String>();
-    serializeJsonPretty(doc["result"], cmdList);
+    debugJson(root, Serial);
+    // cmdList = root["result"].as<String>();
+    serializeJsonPretty(root["result"], cmdList);
 }
 
 bool AsyncTelegram2::deleteMyCommands()
@@ -830,15 +849,17 @@ bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc)
         log_error("getMyCommands error ");
         return "";
     }
-    DynamicJsonDocument doc(BUFFER_MEDIUM);
-    DeserializationError err = deserializeJson(doc, m_rxbuffer);
+    // DynamicJsonDocument root(BUFFER_MEDIUM);
+    JSON_DOC(BUFFER_MEDIUM);
+
+    DeserializationError err = deserializeJson(root, m_rxbuffer);
     if (err)
     {
         return false;
     }
 
     // Check if command already present in list
-    for (JsonObject key : doc["result"].as<JsonArray>())
+    for (JsonObject key : root["result"].as<JsonArray>())
     {
         if (key["command"] == cmd)
         {
@@ -846,13 +867,22 @@ bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc)
         }
     }
 
+#if ARDUINOJSON_VERSION_MAJOR > 6
+    JsonDocument obj;
+#else
     StaticJsonDocument<256> obj;
+#endif
+
     obj["command"] = cmd;
     obj["description"] = desc;
-    doc["result"].as<JsonArray>().add(obj);
+    root["result"].as<JsonArray>().add(obj);
 
+#if ARDUINOJSON_VERSION_MAJOR > 6
+    JsonDocument doc2;
+#else
     StaticJsonDocument<BUFFER_MEDIUM> doc2;
-    doc2["commands"] = doc["result"].as<JsonArray>();
+#endif
+    doc2["commands"] = root["result"].as<JsonArray>();
 
     String payload;
     serializeJson(doc2, payload);
@@ -861,7 +891,8 @@ bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc)
 
 bool AsyncTelegram2::editMessage(int64_t chat_id, int32_t message_id, const String &txt, const String &keyboard)
 {
-    DynamicJsonDocument root(m_JsonBufferSize);
+    // DynamicJsonDocument root(m_JsonBufferSize);
+    JSON_DOC(m_JsonBufferSize);
     root["chat_id"] = chat_id;
     root["message_id"] = message_id;
     root["text"] = txt;

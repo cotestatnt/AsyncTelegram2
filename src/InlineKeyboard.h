@@ -5,8 +5,13 @@
 #define ARDUINOJSON_USE_LONG_LONG 	1
 #define ARDUINOJSON_DECODE_UNICODE  1
 #include <ArduinoJson.h>
-// #include <functional>
 #include "DataStructures.h"
+
+#if ARDUINOJSON_VERSION_MAJOR > 6
+    #define JSON_DOC(x) JsonDocument root
+#else
+    #define JSON_DOC(x) DynamicJsonDocument root((size_t)x)
+#endif
 
 enum InlineKeyboardButtonType {
   KeyboardButtonURL    = 1,
@@ -26,8 +31,8 @@ struct InlineButton{
 } ;
 
 public:
-  InlineKeyboard();
-  InlineKeyboard(const String& keyboard);
+  InlineKeyboard(size_t size = BUFFER_SMALL);
+  InlineKeyboard(const String& keyboard, size_t size = BUFFER_SMALL);
   ~InlineKeyboard();
 
   // Get total number of keyboard buttons
@@ -60,6 +65,7 @@ public:
 
 private:
   friend class AsyncTelegram2;
+  size_t      m_jsonSize;
   String 			m_json;
   String 			m_name;
 

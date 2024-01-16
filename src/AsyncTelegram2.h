@@ -5,6 +5,12 @@
 #define ARDUINOJSON_USE_LONG_LONG 1
 #define ARDUINOJSON_DECODE_UNICODE 1
 #include <ArduinoJson.h>
+#if ARDUINOJSON_VERSION_MAJOR > 6
+    #define JSON_DOC(x) JsonDocument root
+#else
+    #define JSON_DOC(x) DynamicJsonDocument root((size_t)x)
+#endif
+
 
 #if defined(ESP32) || defined(ESP8266)
 #define FS_SUPPORT true

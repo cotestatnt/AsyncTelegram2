@@ -1,20 +1,30 @@
 #include "InlineKeyboard.h"
 
 
-InlineKeyboard::InlineKeyboard()
+InlineKeyboard::InlineKeyboard(size_t size)
 {
+  m_jsonSize = size;
+  m_json.reserve(m_jsonSize);
   m_json = "{\"inline_keyboard\":[[]]}\"";
 }
 
-InlineKeyboard::~InlineKeyboard(){}
+InlineKeyboard::InlineKeyboard(const String& keyboard, size_t size){
+  m_jsonSize = size;
+  m_json.reserve(m_jsonSize);
+  m_json = keyboard;
+}
+
+InlineKeyboard::~InlineKeyboard(){
+  m_json = "";
+}
 
 bool InlineKeyboard::addRow()
 {
-  DynamicJsonDocument doc(BUFFER_BIG+BUFFER_MEDIUM);
-  deserializeJson(doc, m_json);
+  JSON_DOC(m_jsonSize);
+  deserializeJson(root, m_json);
 
   // Deserialize the JSON document
-  DeserializationError error = deserializeJson(doc, m_json);
+  DeserializationError error = deserializeJson(root, m_json);
 
   // Test if parsing succeeds.
   if (error) {
@@ -23,12 +33,15 @@ bool InlineKeyboard::addRow()
     return false;
   }
 
-  JsonArray  rows = doc["inline_keyboard"];
+#if ARDUINOJSON_VERSION_MAJOR > 6
+  JsonArray rows = root["inline_keyboard"].as<JsonArray>();
+  rows.add<JsonVariant>();
+#else
+  JsonArray rows = root["inline_keyboard"];
   rows.createNestedArray();
+#endif 
   m_json = "";
-  doc.shrinkToFit();
-  serializeJson(doc, m_json);
-
+  serializeJson(root, m_json);
   return true;
 }
 
@@ -47,8 +60,8 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
   _lastButton = inlineButton;
   m_buttonsCounter++;
 
-  DynamicJsonDocument doc(BUFFER_BIG+BUFFER_MEDIUM);
-  DeserializationError error = deserializeJson(doc, m_json);
+  JSON_DOC(m_jsonSize);
+  DeserializationError error = deserializeJson(root, m_json);
 
   // Test if parsing succeeds.
   if (error) {
@@ -57,8 +70,13 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
     return false;
   }
 
-  JsonArray  rows = doc["inline_keyboard"];
+#if ARDUINOJSON_VERSION_MAJOR > 6
+  JsonArray rows = root["inline_keyboard"].as<JsonArray>();
+  JsonObject button = rows[rows.size()-1].add<JsonObject>();
+#else
+  JsonArray rows = root["inline_keyboard"];
   JsonObject button = rows[rows.size()-1].createNestedObject();
+#endif
 
   button["text"] = text ;
   if(KeyboardButtonURL == buttonType)
@@ -68,8 +86,7 @@ bool InlineKeyboard::addButton(const char* text, const char* command, InlineKeyb
 
   // Store inline keyboard json structure
   m_json = "";
-  doc.shrinkToFit();
-  serializeJson(doc, m_json);
+  serializeJson(root, m_json);
   return true;
 }
 
@@ -95,11 +112,11 @@ String InlineKeyboard::getJSON() const
 
 String InlineKeyboard::getJSONPretty() const
 {
-  StaticJsonDocument<BUFFER_MEDIUM> doc;
-  deserializeJson(doc, m_json);
+  JSON_DOC(m_jsonSize);
+  deserializeJson(root, m_json);
 
   String serialized;
-  serializeJsonPretty(doc, serialized);
+  serializeJsonPretty(root, serialized);
   return serialized;
 }
 
