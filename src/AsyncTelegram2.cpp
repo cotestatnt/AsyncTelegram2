@@ -102,18 +102,32 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
         // Blocking mode
         if (blocking)
         {
-            if (!telegramClient->find((char *)HEADERS_END))
+            bool close_connection = false;
+            uint16_t len = 0, pos = 0;
+            // Skip headers
+            while (telegramClient->connected())
             {
-                log_error("Invalid HTTP response");
-                telegramClient->stop();
-                return false;
+                String line = telegramClient->readStringUntil('\n');
+                if (line == "\r")
+                    break;
+                if (line.indexOf("close") > -1)
+                {
+                    close_connection = true;
+                }
+                if (line.indexOf("Content-Length:") > -1)
+                {
+                    len = line.substring(strlen("Content-Length: ")).toInt();
+                }
             }
-            // If there are incoming bytes available from the server, read them and print them:
-            m_rxbuffer = "";
-            while (telegramClient->available())
+            m_rxbuffer.clear();
+            // If there are incoming bytes available from the server, read them and store:
+            for (uint32_t timeout = millis(); (millis() - timeout > 1000) || pos < len;)
             {
-                yield();
-                m_rxbuffer += (char)telegramClient->read();
+                if (telegramClient->available())
+                {
+                    m_rxbuffer += (char)telegramClient->read();
+                    pos++;
+                }
             }
             m_waitingReply = false;
             if (m_rxbuffer.indexOf("\"ok\":true") > -1)
