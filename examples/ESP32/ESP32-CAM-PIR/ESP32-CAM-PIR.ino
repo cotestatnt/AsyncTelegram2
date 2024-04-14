@@ -1,3 +1,12 @@
+/*
+  Name:        ESP32-CAM-PIR.ino
+  Created:     11/04/2024
+  Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
+  Description:
+  In this example, the Telegram bot management code runs in a FreeRTOS task.
+  When a PIR sensor is excited, a sequence of NUM_PHOTO images will be sent taking every DELAY_PHOTO ms
+*/
+
 #include <WiFi.h>
 #include <FS.h>
 #include <AsyncTelegram2.h>
@@ -8,9 +17,15 @@
 // Local include files
 #include "camera_pins.h"
 
-#define USE_MMC true          // Define where store images (on board SD card reader or internal flash memory)
+#define PIR_PIN       GPIO_NUM_14
+#define NUM_PHOTO     3               // Total number of photos to send on motion detection
+#define DELAY_PHOTO   5000            // Waiting time between one photo and the next 
+#define DELAY_FLASH   500             // Flash delay time
+
+#define STORE_IMAGE   false    // Save the pictures also in SDmmemory card
+#define USE_MMC       true     // Define where store images (on board SD card reader or internal flash memory)
 #if USE_MMC
-#include <SD_MMC.h>           // Use onboard SD Card reader
+#include <SD_MMC.h>            // Use onboard SD Card reader
 #define FILESYSTEM SD_MMC
 #else
 #include <FFat.h>              // Use internal flash memory
@@ -20,45 +35,78 @@
 #include <WiFiClientSecure.h>
 WiFiClientSecure client;
 
-#define PIR_PIN   GPIO_NUM_13
+const char* ssid  =  "XXXXXX";     // SSID WiFi network
+const char* pass  =  "XXXXXX";     // Password  WiFi network
+const char* token =  "XXXX:XXXXXXX-XXXXXXX-XXXXXX";  // Telegram token
 
-const char* ssid = "xxxxxxxxx";                                        // SSID WiFi network
-const char* pass = "xxxxxxxxx";                                        // Password  WiFi network
-const char* token = "xxxxxxxxxx:xxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxx";  // Telegram token
-// Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
-// https://t.me/JsonDumpBot  or  https://t.me/getidsbot
-int64_t userid = 123456789;
+// Target user can find it's own userid with the bot @JsonDumpBot
+// https://t.me/JsonDumpBot
+int64_t userid = 1234567890;
 
-
-#define PIR_PIN       GPIO_NUM_13
-#define NUM_PHOTO     3               // Total number of photos to send on motion detection
-#define DELAY_PHOTO   2000            // Waiting time between one photo and the next 
-
-int currentPict = 3;
+bool captureEnabled = false;  
+int currentPict = NUM_PHOTO;
 AsyncTelegram2 myBot(client);
 
 // Timezone definition to get properly time from NTP server
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
 
 // Struct for saving time datas (needed for time-naming the image files)
-struct tm tInfo;
+struct tm tInfo, bootTime;
 
-// Functions prototype
+// Declare functions prototype here, so we can leave the 
+// definitions at the bottom of the sketch without worries
 void listDir(const char *, uint8_t, bool) ;
 void printHeapStats();
-static void checkTelegram(void *);
 void setLamp(int);
 size_t sendPicture(bool, int64_t);
+void parseTelegramMessage( const TBMessage &msg);
+
+// Help message
+const char* help_msg PROGMEM = 
+  "Welcome to the ESP32-CAM BirdCam Telegram bot.\n"
+  "/start: Start detection\n"
+  "/stop: Stop detection\n"
+  "/reboot : Reboot Birdcam\n"
+  "/photo: Takes a new photo\n"
+  "/flash: Toggle flash LED\n"
+  "/boot: Boot time ESP32-CAM\n"
+#if STORE_IMAGE
+  "/list: List all stored pictures\n"
+  "/deleteAll: Delete all pictures\n"
+#endif
+  "To start capture pls run the /start command\n"
+  "You'll receive a photo whenever motion is detected.\n";
+  
+// This is the task for checking new messages from Telegram
+static void checkTelegram(void * args) {
+  while (true) {
+    // A variable to store telegram message data
+    TBMessage msg;
+    // if there is an incoming message...
+    if (myBot.getNewMessage(msg)) {
+      Serial.print("New message from chat_id: ");
+      Serial.println(msg.chatId);
+
+      // Received a text message
+      if ( msg.messageType == MessageText) {
+        parseTelegramMessage(msg);        
+      }
+    }
+    yield();
+  }
+  // Delete this task on exit (should never occurs)
+  vTaskDelete(NULL);
+}
+
 
 ///////////////////////////////////  SETUP  ///////////////////////////////////////
 void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);       // disable brownout detect
   Serial.begin(115200);
   Serial.println();
 
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);       // disable brownout detect
-  
   // PIR Motion Sensor setup
-  pinMode(PIR_PIN, INPUT_PULLUP);         
+  pinMode(PIR_PIN, INPUT);         
   
   // Flash LED setup
   pinMode(LAMP_PIN, OUTPUT);                       // set the lamp pin as output
@@ -104,7 +152,7 @@ void setup() {
 
   // Send a welcome message to user when ready
   char welcome_msg[128];
-  snprintf(welcome_msg, 128, "BOT @%s online.\nTry with /takePhoto or /savePhoto", myBot.getBotName());
+  snprintf(welcome_msg, 128, "BOT @%s online.\nWrite /help for commands list", myBot.getBotName());
   myBot.sendTo(userid, welcome_msg);
 
   // Start telegram message check task
@@ -126,92 +174,109 @@ void setup() {
 ///////////////////////////////////  LOOP  ///////////////////////////////////////
 void loop() {
   // printHeapStats();
+    
+  // PIR motion detected, start picture acquisition
+  static uint32_t waitPhotoTime;
+  if(digitalRead(PIR_PIN) == HIGH && captureEnabled) {   
+    currentPict = 0;
+    waitPhotoTime = 0;
+    char message[50];
+    time_t now = time(nullptr);
+    tInfo = *localtime(&now);
+    strftime(message, sizeof(message), "%d/%m/%Y %H:%M:%S - Motion detected!", &tInfo);
+    Serial.println(message);
+    myBot.sendTo(userid, message);
+  }
+  
+  // Non blocking delay time and check amount of pictures sent
+  if (millis() - waitPhotoTime > DELAY_PHOTO && currentPict < NUM_PHOTO) {
+    waitPhotoTime = millis();
+    size_t bytes_sent = sendPicture(true, userid);
+    if (bytes_sent) {
+      Serial.printf("CAM picture sent to Telegram (%d bytes)\n", bytes_sent);
+      currentPict++;
+    }
+  }
 }
 
 
 //////////////////////////////////  FUNCTIONS//////////////////////////////////////
-
-// This is the task for checking new messages from Telegram
-static void checkTelegram(void * args) {
-  while (true) {
-    static uint32_t waitPhotoTime;
+void parseTelegramMessage( const TBMessage &msg){
+  // Send a picture grabbed from camera directly to Telegram
+  if (msg.text.equalsIgnoreCase("/photo")) {
+    uint32_t t1 = millis();
+    size_t bytes_sent = sendPicture(false, msg.chatId);
+    if (bytes_sent) 
+      Serial.printf("Picture sent to Telegram (%d bytes)\n", bytes_sent);
     
-    // PIR motion detected 
-    // could be on interrupt, but PIR sensor usually keep signal HIGH for enough time
-    if(digitalRead(PIR_PIN) == LOW) {   
-      currentPict = 0;
-      waitPhotoTime = 0;
-      char message[50];
-      time_t now = time(nullptr);
-      tInfo = *localtime(&now);
-      strftime(message, 50, "%d/%m/%Y %H:%M:%S - Motion detected!", &tInfo);
-      Serial.println(message);
-      myBot.sendTo(userid, message);
-    }
-    
-    if(millis() - waitPhotoTime > DELAY_PHOTO && currentPict < NUM_PHOTO) {
-      waitPhotoTime = millis();
-      size_t bytes_sent = sendPicture(true, userid);
-      if (bytes_sent) {
-        Serial.printf("CAM picture sent to Telegram (%d bytes)\n", bytes_sent);
-        currentPict++;
-      }
-    }
-
-    // A variable to store telegram message data
-    TBMessage msg;
-    // if there is an incoming message...
-    if (myBot.getNewMessage(msg)) {
-      Serial.print("New message from chat_id: ");
-      Serial.println(msg.chatId);
-      MessageType msgType = msg.messageType;
-
-      // Received a text message
-      if (msgType == MessageText) {
-
-        // Send a picture grabbed from camera directly to Telegram
-        if (msg.text.equalsIgnoreCase("/takePhoto")) {
-          uint32_t t1 = millis();
-          size_t bytes_sent = sendPicture(false, msg.chatId);
-          if (bytes_sent) Serial.printf("Picture sent to Telegram (%d bytes)\n", bytes_sent);
-          
-          Serial.printf("Total upload time (server latency time included, ~ 500 ms): %lu ms\n", millis() - t1 );
-        }
-
-        // Save a picture and then send to Telegram
-        else if (msg.text.equalsIgnoreCase("/savePhoto")) {
-          size_t bytes_sent = sendPicture(true, msg.chatId);
-          if (bytes_sent) Serial.printf("Picture saved and sent to Telegram (%d bytes)\n", bytes_sent);
-        }
-
-        // Delete all files in folder
-        else if (msg.text.equalsIgnoreCase("/deleteAll")) {
-          listDir("/", 0, true);
-          myBot.sendMessage(msg, "All files deleted.");
-        }
-
-        // Delete all files in folder
-        else if (msg.text.equalsIgnoreCase("/listDir")) {
-          listDir("/", 0, false);
-          myBot.sendMessage(msg, "All files listed on Serial port.");
-        }
-
-        // Echo received message and send command list
-        else {
-          Serial.print("\nText message received: ");
-          Serial.println(msg.text);
-          String replyStr = "Message received:\n";
-          replyStr += msg.text;
-          replyStr +=  "\nTry with /takePhoto or /savePhoto";
-          myBot.sendMessage(msg, replyStr);
-        }
-      }
-    }
-    yield();
+    Serial.printf("Total upload time (server latency time included, ~ 500 ms): %lu ms\n", millis() - t1 );
   }
-  // Delete this task on exit (should never occurs)
-  vTaskDelete(NULL);
+
+  // Start motion capture
+  else if (msg.text.equalsIgnoreCase("/start")) {
+    captureEnabled = true;
+    myBot.sendMessage(msg, "Motion capture enabled");
+  }
+
+  // Stop motion capture
+  else if (msg.text.equalsIgnoreCase("/stop")) {
+    captureEnabled = false;
+    myBot.sendMessage(msg, "Motion capture disabled");
+  }
+
+  // Send ESP32 runtime (HH:MM:SS)
+  else if (msg.text.equalsIgnoreCase("/boot")) {
+    time_t rawTime = millis() / 1000;
+    struct tm *timeInfo = gmtime(&rawTime);
+    char timeStr[32];
+    strftime(timeStr, sizeof(timeStr), "ESP32-CAM run since: %H:%M:%S", timeInfo);
+    Serial.println(timeStr);
+    myBot.sendMessage(msg, timeStr);
+  }
+
+  // Send /help menu list
+  else if (msg.text.equalsIgnoreCase("/help")) {
+    myBot.sendMessage(msg, help_msg);
+  }
+
+  // Reboot ESP 
+  else if (msg.text.equalsIgnoreCase("/reboot")) {
+    myBot.sendMessage(msg, "Restarting in few seconds...");
+    // Avoid bootloop
+    while (!myBot.noNewMessage()) {
+      Serial.print(".");
+      delay(50);
+    }
+    ESP.restart();
+  }
+
+#if STORE_IMAGE
+  // Delete all files in folder
+  else if (msg.text.equalsIgnoreCase("/deleteAll")) {
+    listDir("/", 0, true);
+    myBot.sendMessage(msg, "All files deleted.");
+  }
+
+  // Delete all files in folder
+  else if (msg.text.equalsIgnoreCase("/list")) {
+    listDir("/", 0, false);
+    myBot.sendMessage(msg, "All files listed on Serial port.");
+  }
+#endif
+
+  // Echo received message and send command list
+  else {
+    Serial.print("\nText message received: ");
+    Serial.println(msg.text);
+    String replyStr = "Message received:\n";
+    replyStr += msg.text;
+    replyStr += "\nCommands list with /help";
+    myBot.sendMessage(msg, replyStr);
+  }
 }
+
+
+
 
 // Lamp Control
 void setLamp(int newVal) {
@@ -233,6 +298,7 @@ size_t sendPicture(bool saveImg, int64_t chatId) {
 
   // Take Picture with Camera and store in ram buffer fb
   setLamp(100);
+  delay(DELAY_FLASH);
   camera_fb_t* fb = esp_camera_fb_get();
   setLamp(0);
   if (!fb) {
@@ -242,7 +308,7 @@ size_t sendPicture(bool saveImg, int64_t chatId) {
   size_t len = fb->len;
 
   // If is necessary keep the image file, save and send as stream object
-  if (saveImg) {
+  #if STORE_IMAGE
     // Keep files on SD memory, filename is time based (YYYYMMDD_HHMMSS.jpg)
     #if USE_MMC
       char filename[30];
@@ -263,12 +329,9 @@ size_t sendPicture(bool saveImg, int64_t chatId) {
     file.close();
     Serial.printf("Saved file to path: %s - %zu bytes\n", filename, fb->len);
     myBot.sendPhoto(chatId, filename, FILESYSTEM);
-  }
-
-  // If is NOT necessary keep the image file, send picture directly from ram buffer
-  else {
+  #else
     myBot.sendPhoto(chatId, fb->buf, fb->len);
-  }
+  #endif
 
   // Clear buffer
   esp_camera_fb_return(fb);
