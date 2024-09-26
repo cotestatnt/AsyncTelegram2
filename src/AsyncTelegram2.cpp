@@ -142,7 +142,7 @@ bool AsyncTelegram2::getUpdates()
         if (m_waitingReply == false)
         {
             char payload[BUFFER_SMALL];
-            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%" INT32 "}", m_lastUpdateId);
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%" INT32 "}", (int)m_lastUpdateId);
             sendCommand("getUpdates", payload);
         }
     }
@@ -264,7 +264,8 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
         updateDoc.shrinkToFit();
 
         m_rxbuffer = "";
-        if (!updateDoc.containsKey("result"))
+        // if (!updateDoc.containsKey("result")) // Deprecated
+        if (!updateDoc["result"].is<const char*>())
         {
             log_error("JSON data not expected");
             serializeJsonPretty(updateDoc, Serial);
