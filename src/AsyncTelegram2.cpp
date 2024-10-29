@@ -664,8 +664,12 @@ bool AsyncTelegram2::sendDocument(int64_t chat_id, Stream &stream, size_t size,
         return sendStream(chat_id, "sendPhoto", "image/jpeg", "photo", stream, size, filename, caption);
     case AUDIO:
         return sendStream(chat_id, "sendDocument", "audio/mp3", "audio", stream, size, filename, caption);
-    default:
+    case VOICE:
+        return sendStream(chat_id, "sendVoice", "audio/ogg", "voice", stream, size, filename, caption);
+    case TEXT:
         return sendStream(chat_id, "sendDocument", "text/plain", "document", stream, size, filename, caption);
+    default: // BINARY
+        return sendStream(chat_id, "sendDocument", "application/octet-stream", "document", stream, size, filename, caption);
     }
 
     return false;

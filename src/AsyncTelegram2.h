@@ -208,7 +208,9 @@ public:
         VOICE,
         VIDEO,
         CSV,
-        JSON
+        JSON,
+        TEXT,
+        BINARY
     };
     bool sendDocument(int64_t chat_id, Stream &stream, size_t size,
                         DocumentType doc, const char *filename, const char *caption = nullptr);
