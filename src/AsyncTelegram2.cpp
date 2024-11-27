@@ -102,32 +102,18 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
         // Blocking mode
         if (blocking)
         {
-            bool close_connection = false;
-            uint16_t len = 0, pos = 0;
-            // Skip headers
-            while (telegramClient->connected())
+            if (!telegramClient->find((char *)HEADERS_END))
             {
-                String line = telegramClient->readStringUntil('\n');
-                if (line == "\r")
-                    break;
-                if (line.indexOf("close") > -1)
-                {
-                    close_connection = true;
-                }
-                if (line.indexOf("Content-Length:") > -1)
-                {
-                    len = line.substring(strlen("Content-Length: ")).toInt();
-                }
+                log_error("Invalid HTTP response");
+                telegramClient->stop();
+                return false;
             }
-            m_rxbuffer.clear();
-            // If there are incoming bytes available from the server, read them and store:
-            for (uint32_t timeout = millis(); (millis() - timeout > 1000) || pos < len;)
+            // If there are incoming bytes available from the server, read them and print them:
+            m_rxbuffer = "";
+            while (telegramClient->available())
             {
-                if (telegramClient->available())
-                {
-                    m_rxbuffer += (char)telegramClient->read();
-                    pos++;
-                }
+                yield();
+                m_rxbuffer += (char)telegramClient->read();
             }
             m_waitingReply = false;
             if (m_rxbuffer.indexOf("\"ok\":true") > -1)
@@ -156,7 +142,7 @@ bool AsyncTelegram2::getUpdates()
         if (m_waitingReply == false)
         {
             char payload[BUFFER_SMALL];
-            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%" INT32 "}", (int)m_lastUpdateId);
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%"PRIu32"}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
         }
     }
@@ -278,8 +264,7 @@ MessageType AsyncTelegram2::getNewMessage(TBMessage &message)
         updateDoc.shrinkToFit();
 
         m_rxbuffer = "";
-        // if (!updateDoc.containsKey("result")) // Deprecated
-        if (!updateDoc["result"].is<const char*>())
+        if (!updateDoc["result"])
         {
             log_error("JSON data not expected");
             serializeJsonPretty(updateDoc, Serial);
