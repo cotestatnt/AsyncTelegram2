@@ -5,7 +5,7 @@
   Description: an example that check for incoming messages
               and install rom update remotely.
 */
-#include <WiFi.h>
+
 #include <AsyncTelegram2.h>
 #ifndef LED_BUILTIN
 #define LED_BUILTIN 2
@@ -23,6 +23,7 @@
   Session   session;
   X509List  certificate(telegram_cert);
 #elif defined(ESP32)
+  #include <WiFi.h>
   #include <HTTPClient.h>
   #include <HTTPUpdate.h>  
   #define UPDATER httpUpdate
