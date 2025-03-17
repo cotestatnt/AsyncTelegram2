@@ -102,12 +102,18 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
         // Blocking mode
         if (blocking)
         {
+            // Wait data (with timeout)
+            uint32_t timeout = millis() + 1000;
+            while (!telegramClient->available() && millis() < timeout) ;
+
+            // Skip headers
             if (!telegramClient->find((char *)HEADERS_END))
             {
                 log_error("Invalid HTTP response");
                 telegramClient->stop();
                 return false;
             }
+
             // If there are incoming bytes available from the server, read them and print them:
             m_rxbuffer = "";
             while (telegramClient->available())
@@ -115,6 +121,7 @@ bool AsyncTelegram2::sendCommand(const char *command, const char *payload, bool 
                 yield();
                 m_rxbuffer += (char)telegramClient->read();
             }
+
             m_waitingReply = false;
             if (m_rxbuffer.indexOf("\"ok\":true") > -1)
                 return true;
