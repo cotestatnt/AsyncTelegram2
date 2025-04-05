@@ -149,7 +149,7 @@ bool AsyncTelegram2::getUpdates()
         if (m_waitingReply == false)
         {
             char payload[BUFFER_SMALL];
-            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%"PRIu32"}", m_lastUpdateId);
+            snprintf(payload, BUFFER_SMALL, "{\"limit\":1,\"timeout\":0,\"offset\":%" PRIu32 "}", m_lastUpdateId);
             sendCommand("getUpdates", payload);
         }
     }

@@ -46,9 +46,14 @@
 
 
 AsyncTelegram2 myBot(client);
-const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
-const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
-const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
+const char* ssid  =  "xxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxx:xxxxxxxx-xxxxxxxx";  // Telegram token
+
+// Target user can find it's own userid with the bot @JsonDumpBot
+// https://t.me/JsonDumpBot
+int64_t userid = 123456789;
+
 
 InlineKeyboard myInlineKbd1, myInlineKbd2; // inline keyboards object helper
 
@@ -62,23 +67,23 @@ const uint8_t LED = 4;
 // Callback functions definition for inline keyboard buttons
 void onPressed(const TBMessage &queryMsg){
   digitalWrite(LED, HIGH);
-  Serial.printf("\nON button pressed (callback);\nQueryId: %s\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nON button pressed (callback);\nQueryId: %lld\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "Light on", true);
 }
 
 void offPressed(const TBMessage &queryMsg){
   digitalWrite(LED, LOW);
-  Serial.printf("\nOFF button pressed (callback); \nQueryId: %s\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nOFF button pressed (callback); \nQueryId: %lld\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "Light on", false);
 }
 
 void button1Pressed(const TBMessage &queryMsg){
-  Serial.printf("\nButton 1 pressed (callback); \nQueryId: %s\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nButton 1 pressed (callback); \nQueryId: %lld\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "You pressed Button 1", true);
 }
 
 void button2Pressed(const TBMessage &queryMsg){
-  Serial.printf("\nButton 2 pressed (callback); \nQueryId: %s\n\n", queryMsg.callbackQueryID);
+  Serial.printf("\nButton 2 pressed (callback); \nQueryId: %lld\n\n", queryMsg.callbackQueryID);
   myBot.endQuery(queryMsg, "You pressed Button 2", false);
 }
 
@@ -89,7 +94,6 @@ void setup() {
   Serial.begin(115200);
 
   // connects to access point
-  WiFi.setAutoConnect(true);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pass);
   delay(500);
