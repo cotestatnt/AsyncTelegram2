@@ -401,6 +401,9 @@ public:
         return editMessage(msg.chatId, msg.messageID, txt, keyboard.getJSON());
     }
 
+
+    bool deleteMessage(int64_t chat_id, int32_t message_id);
+
     // check if connection with server is active
     // returns
     //   true on connected
