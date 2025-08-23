@@ -20,12 +20,15 @@
 */
 #define USE_CLIENTSSL false
 
-#ifdef ESP8266
+#if defined(ESP8266)
   #include <ESP8266WiFi.h>
   WiFiClientSecure client;
   Session   session;
   X509List  certificate(telegram_cert);
 #elif defined(ESP32)
+  #include "esp_task_wdt.h"
+  #include "WiFi.h"
+
   #if USE_CLIENTSSL
     #include <SSLClient.h>      //https://github.com/OPEnSLab-OSU/SSLClient/
     #include "tg_certificate.h"
@@ -92,17 +95,70 @@ pre-formatted fixed-width code block written in the Python programming language
 )EOF";
 
 
+#if defined(ESP32)
+const char *resetReasonName(esp_reset_reason_t r) {
+  switch (r) {
+    case ESP_RST_UNKNOWN:   return "Unknown";
+    case ESP_RST_POWERON:   return "PowerOn";    //Power on or RST pin toggled
+    case ESP_RST_EXT:       return "ExtPin";     //External pin - not applicable for ESP32
+    case ESP_RST_SW:        return "Reboot";     //esp_restart()
+    case ESP_RST_PANIC:     return "Crash";      //Exception/panic
+    case ESP_RST_INT_WDT:   return "WDT_Int";    //Interrupt watchdog (software or hardware)
+    case ESP_RST_TASK_WDT:  return "WDT_Task";   //Task watchdog
+    case ESP_RST_WDT:       return "WDT_Other";  //Other watchdog
+    case ESP_RST_DEEPSLEEP: return "Sleep";      //Reset after exiting deep sleep mode
+    case ESP_RST_BROWNOUT:  return "BrownOut";   //Brownout reset (software or hardware)
+    case ESP_RST_SDIO:      return "SDIO";       //Reset over SDIO
+    default:                return "";
+  }
+}
+#endif
+
+
+
+void printHeapStats() {
+  static uint32_t infoTime;
+  if (millis() - infoTime > 10000) {
+    infoTime = millis();
+    time_t now = time(nullptr);
+    sysTime = *localtime(&now);
+#if defined(ESP32)
+    //heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
+    Serial.printf("%02d:%02d:%02d - Total free: %6d - Max block: %6d\n",
+      sysTime.tm_hour, sysTime.tm_min, sysTime.tm_sec,
+      heap_caps_get_free_size(0), heap_caps_get_largest_free_block(0) );
+#elif defined(ESP8266)
+    uint32_t free;
+    uint16_t max;
+    ESP.getHeapStats(&free, &max, nullptr);
+    Serial.printf("%02d:%02d:%02d - Total free: %5d - Max block: %5d\n",
+      sysTime.tm_hour, sysTime.tm_min, sysTime.tm_sec, free, max);
+#endif
+  }
+}
+
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
-
+  int resetCode;
+#if defined(ESP8266)
   rst_info *resetInfo;
   resetInfo = ESP.getResetInfoPtr();
+  resetCode = resetInfo->reason;
+
   Serial.print("Reset reason: ");
   Serial.println(resetInfo->reason);
+#elif defined(ESP32)
+  esp_reset_reason_t resetInfo = esp_reset_reason();
+  resetCode = resetInfo;
+  if (resetInfo == ESP_RST_POWERON) {
+    delay(6000);  //Wait for serial monitor to connect
+  }
+  Serial.printf("\r\nReset reason %i - %s\r\n", resetInfo, resetReasonName(resetInfo));
+#endif
 
-  WiFi.setAutoConnect(true);
   WiFi.mode(WIFI_STA);
 
   // connects to access point
@@ -145,7 +201,7 @@ void setup() {
   char welcome_msg[128];
   snprintf(welcome_msg, sizeof(welcome_msg),
           "BOT @%s online.\n/help for command list.\nLast reset reason: %d",
-          myBot.getBotName(), resetInfo->reason);
+          myBot.getBotName(), resetCode);
 
   // Check the userid with the help of bot @JsonDumpBot or @getidsbot (work also with groups)
   // https://t.me/JsonDumpBot  or  https://t.me/getidsbot
@@ -204,24 +260,3 @@ void loop() {
   }
 }
 
-
-void printHeapStats() {
-  static uint32_t infoTime;
-  if (millis() - infoTime > 10000) {
-    infoTime = millis();
-    time_t now = time(nullptr);
-    sysTime = *localtime(&now);
-#ifdef ESP32
-    //heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
-    Serial.printf("%02d:%02d:%02d - Total free: %6d - Max block: %6d\n",
-      sysTime.tm_hour, sysTime.tm_min, sysTime.tm_sec,
-      heap_caps_get_free_size(0), heap_caps_get_largest_free_block(0) );
-#elif defined(ESP8266)
-    uint32_t free;
-    uint16_t max;
-    ESP.getHeapStats(&free, &max, nullptr);
-    Serial.printf("%02d:%02d:%02d - Total free: %5d - Max block: %5d\n",
-      sysTime.tm_hour, sysTime.tm_min, sysTime.tm_sec, free, max);
-#endif
-  }
-}
