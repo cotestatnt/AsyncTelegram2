@@ -105,6 +105,9 @@ public:
     //    true if no error occurred
     bool begin(void);
 
+    // use the network client in unsecure mode
+    void useUnsecureClient(void);
+
     // reset the connection between ESP8266 and the telegram server (ex. when connection was lost)
     // returns
     //    true if no error occurred
