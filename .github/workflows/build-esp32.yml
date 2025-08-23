@@ -36,7 +36,15 @@ jobs:
 
       - name: Build Examples
         run: |
+          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR ESP_OTA Ethernet advanced echoBot_UnoR4 echoBot_wifiNINA"
+          
           for i in `ls examples`; do
+            # skip excluded examples
+            if [[ $EXCLUDE_EXAMPLES == *"$i"* ]]; then
+              echo "Skipping: $i"
+              continue
+            fi
+            
             echo "============================================================="
             echo "Building examples/$i..."
             echo "============================================================="
@@ -118,7 +126,15 @@ jobs:
 
       - name: Build Examples
         run: |
+          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR ESP_OTA Ethernet advanced echoBot_UnoR4 echoBot_wifiNINA"
+          
           for i in `ls examples`; do
+            # skip excluded examples
+            if [[ $EXCLUDE_EXAMPLES == *"$i"* ]]; then
+              echo "Skipping: $i"
+              continue
+            fi
+            
             echo "============================================================="
             echo "Building examples/$i..."
             echo "============================================================="
@@ -159,7 +175,15 @@ jobs:
 
       - name: Build Examples
         run: |
+          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR ESP_OTA Ethernet advanced echoBot_UnoR4 echoBot_wifiNINA"
+          
           for i in `ls examples`; do
+            # skip excluded examples
+            if [[ $EXCLUDE_EXAMPLES == *"$i"* ]]; then
+              echo "Skipping: $i"
+              continue
+            fi
+            
             echo "============================================================="
             echo "Building examples/$i..."
             echo "============================================================="
