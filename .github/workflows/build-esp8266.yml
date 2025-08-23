@@ -36,7 +36,7 @@ jobs:
 
       - name: Build Examples
         run: |          
-          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR ESP_OTA echoBot_UnoR4 echoBot_wifiNINA"
+          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR ESP_OTA Ethernet echoBot_UnoR4 echoBot_wifiNINA"
           
           for i in `ls examples`; do
             # skip excluded examples
@@ -85,7 +85,7 @@ jobs:
 
       - name: Build Examples
         run: |          
-          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR ESP_OTA echoBot_UnoR4 echoBot_wifiNINA"
+          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR ESP_OTA Ethernet echoBot_UnoR4 echoBot_wifiNINA"
           
           for i in `ls examples`; do
             # skip excluded examples
