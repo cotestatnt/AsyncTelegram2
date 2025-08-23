@@ -30,22 +30,13 @@ jobs:
 
       - name: Install ArduinoJson
         run: arduino-cli lib install ArduinoJson
-
-      - name: Install ESPAsyncTCP (ESP8266)
-        run: ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true arduino-cli lib install --git-url https://github.com/ESP32Async/ESPAsyncTCP#v2.0.0
-
-      - name: Install ESPAsyncWebServer
-        run: ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true arduino-cli lib install --git-url https://github.com/ESP32Async/ESPAsyncWebServer#v3.7.3
-
-      - name: Install Arduino-MySQL
-        run: ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true arduino-cli lib install --git-url https://github.com/cotestatnt/Arduino-MySQL
         
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Build Examples
         run: |          
-          EXCLUDE_EXAMPLES="esp32-cam binaryWebSocket csvLoggerSD localRFID mysqlRFID"
+          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR echoBot_UnoR4 echoBot_wifiNINA"
           
           for i in `ls examples`; do
             # skip excluded examples
@@ -94,7 +85,7 @@ jobs:
 
       - name: Build Examples
         run: |          
-          EXCLUDE_EXAMPLES="esp32-cam binaryWebSocket csvLoggerSD localRFID mysqlRFID"
+          EXCLUDE_EXAMPLES="ESP32-CAM ESP32-CAM-PIR echoBot_UnoR4 echoBot_wifiNINA"
           
           for i in `ls examples`; do
             # skip excluded examples
