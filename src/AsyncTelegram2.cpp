@@ -56,10 +56,6 @@ bool AsyncTelegram2::begin()
     return getMe();
 }
 
- void AsyncTelegram2::useUnsecureClient(void){
-    telegramClient->setInsecure();
- }
-
 bool AsyncTelegram2::reset(void)
 {
     static uint32_t lastResetTime;
