@@ -58,7 +58,6 @@ jobs:
       fail-fast: false
       matrix:
         board:
-          - huzzah
           - d1_mini
 
     steps:
