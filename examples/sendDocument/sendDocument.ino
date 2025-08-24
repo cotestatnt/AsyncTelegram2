@@ -5,12 +5,16 @@
 #define MYTZ "CET-1CEST,M3.5.0,M10.5.0/3"
 struct tm sysTime;
 
-#include <WiFiClientSecure.h>
-WiFiClientSecure client;
-#ifdef ESP8266
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+  WiFiClientSecure client;
   Session   session;
   X509List  certificate(telegram_cert);
+#elif defined(ESP32)
+  #include <WiFi.h>
+  #include <WiFiClientSecure.h>
+  WiFiClientSecure client;
 #endif
 
 
@@ -60,13 +64,6 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
-
-  // rst_info *resetInfo;
-  // resetInfo = ESP.getResetInfoPtr();
-  // Serial.print("Reset reason: ");
-  // Serial.println(resetInfo->reason);
-  WiFi.setAutoConnect(true);
-  WiFi.mode(WIFI_STA);
 
   // connects to access point
   WiFi.begin(ssid, pass);
