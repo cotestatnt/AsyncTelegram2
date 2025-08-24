@@ -28,10 +28,13 @@
 
 #ifdef ESP8266
   #include <ESP8266WiFi.h>
+  #include <WiFiClientSecure.h>
   WiFiClientSecure client;
   Session   session;
   X509List  certificate(telegram_cert);
 #elif defined(ESP32)
+  #include <WiFi.h>
+  #include <WiFiClientSecure.h>
   #if USE_CLIENTSSL
     #include <SSLClient.h>      //https://github.com/OPEnSLab-OSU/SSLClient/
     #include "tg_certificate.h"
@@ -65,9 +68,6 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   // initialize the Serial
   Serial.begin(115200);
-
-  WiFi.setAutoConnect(true);
-  WiFi.mode(WIFI_STA);
 
   // connects to access point
   WiFi.begin(ssid, pass);

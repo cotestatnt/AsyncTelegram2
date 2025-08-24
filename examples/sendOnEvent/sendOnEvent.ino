@@ -40,9 +40,6 @@ void setup() {
   // initialize the Serial
   Serial.begin(115200);
 
-  WiFi.setAutoConnect(true);
-  WiFi.mode(WIFI_STA);
-
   // connects to the access point
   WiFi.begin(ssid, pass);
   delay(500);
