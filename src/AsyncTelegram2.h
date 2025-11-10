@@ -55,7 +55,6 @@
 #include "DataStructures.h"
 #include "InlineKeyboard.h"
 #include "ReplyKeyboard.h"
-#include "serial_log.h"
 
 #define TELEGRAM_HOST "api.telegram.org"
 #define TELEGRAM_IP "149.154.167.220"
