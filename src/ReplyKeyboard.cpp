@@ -1,4 +1,5 @@
 #include "ReplyKeyboard.h"
+#include "serial_log.h"
 
 ReplyKeyboard::ReplyKeyboard(size_t size)
 {
