@@ -1,4 +1,5 @@
 #include "AsyncTelegram2.h"
+#include "serial_log.h"
 
 #define HEADERS_END "\r\n\r\n"
 

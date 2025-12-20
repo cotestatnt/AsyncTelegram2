@@ -6,7 +6,6 @@
 #define ARDUINOJSON_DECODE_UNICODE  1
 #include <ArduinoJson.h>
 #include "DataStructures.h"
-#include "serial_log.h"
 
 #if ARDUINOJSON_VERSION_MAJOR > 6
     #define JSON_DOC(x) JsonDocument root
