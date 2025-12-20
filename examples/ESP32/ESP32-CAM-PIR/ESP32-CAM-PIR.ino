@@ -6,7 +6,7 @@
   In this example, the Telegram bot management code runs in a FreeRTOS task.
   When a PIR sensor is excited, a sequence of NUM_PHOTO images will be sent taking every DELAY_PHOTO ms
 */
-
+#include <Arduino.h>
 #include <WiFi.h>
 #include <FS.h>
 #include <AsyncTelegram2.h>
@@ -17,31 +17,42 @@
 // Local include files
 #include "camera_pins.h"
 
+// Define where store images (on board SD card reader or internal flash memory)
+#define USE_MMC       1
+#define USE_LITTLEFS  0
+#define USE_FFAT      0
+#define STORE_IMAGE   false     // Save the pictures also in SDmmemory card
+
+#if USE_MMC
+  #include <SD_MMC.h>
+  #define FILESYSTEM SD_MMC
+#elif USE_LITTLEFS
+  #include <LittleFS.h>
+  #define FILESYSTEM LittleFS
+#elif USE_FFAT
+  #include <FFat.h>
+  #define FILESYSTEM FFat
+#else
+  #error "No filesystem selected!"
+#endif
+
 #define PIR_PIN       GPIO_NUM_14
 #define NUM_PHOTO     3               // Total number of photos to send on motion detection
 #define DELAY_PHOTO   5000            // Waiting time between one photo and the next 
 #define DELAY_FLASH   500             // Flash delay time
 
-#define STORE_IMAGE   false    // Save the pictures also in SDmmemory card
-#define USE_MMC       true     // Define where store images (on board SD card reader or internal flash memory)
-#if USE_MMC
-#include <SD_MMC.h>            // Use onboard SD Card reader
-#define FILESYSTEM SD_MMC
-#else
-#include <FFat.h>              // Use internal flash memory
-#define FILESYSTEM FFat        // Be sure to select the correct filesystem in IDE option
-#endif
+
 
 #include <WiFiClientSecure.h>
 WiFiClientSecure client;
 
-const char* ssid  =  "XXXXXX";     // SSID WiFi network
-const char* pass  =  "XXXXXX";     // Password  WiFi network
-const char* token =  "XXXX:XXXXXXX-XXXXXXX-XXXXXX";  // Telegram token
+const char* ssid  =  "xxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxxxxxxx:xxxxxxxxxxxxxxxxxxx";
 
 // Target user can find it's own userid with the bot @JsonDumpBot
 // https://t.me/JsonDumpBot
-int64_t userid = 1234567890;
+int64_t userid = 123456789;
 
 bool captureEnabled = false;  
 int currentPict = NUM_PHOTO;
@@ -101,19 +112,28 @@ static void checkTelegram(void * args) {
 
 ///////////////////////////////////  SETUP  ///////////////////////////////////////
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);       // disable brownout detect
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // disable brownout detect
+
   Serial.begin(115200);
   Serial.println();
+  Serial.println("ESP32-CAM PIR Telegram Bot");
 
   // PIR Motion Sensor setup
-  pinMode(PIR_PIN, INPUT);         
-  
-  // Flash LED setup
-  pinMode(LAMP_PIN, OUTPUT);                       // set the lamp pin as output
-  ledcSetup(lampChannel, pwmfreq, pwmresolution);  // configure LED PWM channel
-  setLamp(0);                                      // set default value
-  ledcAttachPin(LAMP_PIN, lampChannel);            // attach the GPIO pin to the channel
+  pinMode(PIR_PIN, INPUT);     
 
+  // Flash LED setup
+#if defined(LED_GPIO_NUM)
+  #if ESP_ARDUINO_VERSION_MAJOR >= 3
+  ledcAttach(LED_GPIO_NUM, 5000, 8);
+  #else
+  ledcSetup(lampChannel, pwmfreq, pwmresolution); // configure LED PWM channel
+  ledcAttachPin(LAMP_PIN, lampChannel);
+  #endif
+#else
+  log_i("LED flash is disabled -> LED_GPIO_NUM undefined");
+#endif
+  setLamp(0);                                     // Switch off lamp initially
+  
   // Start WiFi connection
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
@@ -174,6 +194,7 @@ void setup() {
 ///////////////////////////////////  LOOP  ///////////////////////////////////////
 void loop() {
   // printHeapStats();
+  delay(10);  // Let some time to other tasks
     
   // PIR motion detected, start picture acquisition
   static uint32_t waitPhotoTime;
@@ -210,6 +231,13 @@ void parseTelegramMessage( const TBMessage &msg){
       Serial.printf("Picture sent to Telegram (%d bytes)\n", bytes_sent);
     
     Serial.printf("Total upload time (server latency time included, ~ 500 ms): %lu ms\n", millis() - t1 );
+  }
+
+  // Check flash LED status
+  else if (msg.text.equalsIgnoreCase("/flash")) {
+    setLamp(100);
+    delay(100);
+    setLamp(0);
   }
 
   // Start motion capture
@@ -276,14 +304,12 @@ void parseTelegramMessage( const TBMessage &msg){
 }
 
 
-
-
 // Lamp Control
 void setLamp(int newVal) {
   if (newVal != -1) {
     // Apply a logarithmic function to the scale.
     int brightness = round((pow(2, (1 + (newVal * 0.02))) - 2) / 6 * pwmMax);
-    ledcWrite(lampChannel, brightness);
+    ledcWrite(LED_GPIO_NUM, brightness);
     Serial.print("Lamp: ");
     Serial.print(newVal);
     Serial.print("%, pwm = ");
