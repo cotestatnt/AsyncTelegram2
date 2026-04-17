@@ -30,9 +30,9 @@
 WiFiClientSecure client;
 AsyncTelegram2 myBot(client);
 
-const char* ssid  =  "PuccosNET";     // SSID WiFi network
-const char* pass  =  "Tole76tnt";     // Password  WiFi network
-const char* token =  "5692757090:AAHbcKoebgS9sPJ4SFtHCf3amrWZBh1Q0b4";  // Telegram token
+const char* ssid  =  "xxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxx:xxxxxxxx";  // Telegram token
 
 // Target user can find it's own userid with the bot @JsonDumpBot
 // https://t.me/JsonDumpBot

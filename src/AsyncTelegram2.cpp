@@ -607,21 +607,24 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
     if (msg.disable_notification)
         root["disable_notification"] = true;
 
-    if (keyboard != nullptr)
+    if (keyboard != nullptr || msg.force_reply)
     {
-        size_t len = strlen(keyboard);
+        size_t len = keyboard != nullptr ? strlen(keyboard) : 0;
         if (len || msg.force_reply)
         {
             #if ARDUINOJSON_VERSION_MAJOR > 6
             JsonDocument doc;
             #else
-            DynamicJsonDocument doc(len*2);
+            DynamicJsonDocument doc(len ? len * 2 : BUFFER_SMALL);
             #endif
 
-            DeserializationError err = deserializeJson(doc, keyboard);
-            if (err)
+            if (len)
             {
-                log_debug("deserializeJson() failed: %s\n", err.c_str());
+                DeserializationError err = deserializeJson(doc, keyboard);
+                if (err)
+                {
+                    log_debug("deserializeJson() failed: %s\n", err.c_str());
+                }
             }
             JsonObject myKeyb = doc.as<JsonObject>();
             root["reply_markup"] = myKeyb;
