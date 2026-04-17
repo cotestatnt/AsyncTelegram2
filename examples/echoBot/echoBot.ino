@@ -1,21 +1,12 @@
 /*
   Name:        echoBot.ino
-  Created:     26/03/2021
+  Created:     17/04/2026
   Author:      Tolentino Cotesta <cotestatnt@yahoo.com>
   Description: a simple example that check for incoming messages
                and reply the sender with the received message.
-                 The message will be forwarded also in a public channel
-                 anad to a specific userid.
+               The message will be forwarded also in a public channel
+               and to a specific userid.
 */
-
-
-/* 
-  Set true if you want use external library for SSL connection instead ESP32@WiFiClientSecure 
-  For example https://github.com/OPEnSLab-OSU/SSLClient/ is very efficient BearSSL library.
-  You can use AsyncTelegram2 even with other MCUs or transport layer (ex. Ethernet)
-  With SSLClient, be sure "certificates.h" file is present in sketch folder
-*/ 
-#define USE_CLIENTSSL true  
 
 #include <AsyncTelegram2.h>
 
@@ -28,31 +19,21 @@
   BearSSL::WiFiClientSecure client;
   BearSSL::Session   session;
   BearSSL::X509List  certificate(telegram_cert);
-  
 #elif defined(ESP32)
   #include <WiFi.h>
-  #include <WiFiClient.h>
-  #if USE_CLIENTSSL
-    #include <SSLClient.h>  
-    #include "tg_certificate.h"
-    WiFiClient base_client;
-    SSLClient client(base_client, TAs, (size_t)TAs_NUM, A0, 1, SSLClient::SSL_ERROR);
-  #else
-    #include <WiFiClientSecure.h>
-    WiFiClientSecure client;  
-  #endif
+  #include <WiFiClientSecure.h>
+  WiFiClientSecure client;  
 #endif
 
 AsyncTelegram2 myBot(client);
 
-const char* ssid  =  "xxxxxxxxx";     // SSID WiFi network
-const char* pass  =  "xxxxxxxxx";     // Password  WiFi network
-const char* token =  "xxxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";  // Telegram token
+const char* ssid  =  "xxxxxxxx";     // SSID WiFi network
+const char* pass  =  "xxxxxxxx";     // Password  WiFi network
+const char* token =  "xxxxxxxx";  // Telegram token
 
 // Target user can find it's own userid with the bot @JsonDumpBot
 // https://t.me/JsonDumpBot
-int64_t userid = 123456789;  
-
+int64_t userid =  1234567890;  
 
 // Name of public channel (your bot must be in admin group)
 const char* channel = "@tolentino_cotesta";
@@ -81,21 +62,25 @@ void setup() {
 #elif defined(ESP32)
   // Sync time with NTP
   configTzTime(MYTZ, "time.google.com", "time.windows.com", "pool.ntp.org");
-  #if USE_CLIENTSSL == false
-    client.setCACert(telegram_cert);
-  #endif
+  client.setCACert(telegram_cert);
 #endif
   
   // Set the Telegram bot properies
   myBot.setUpdateTime(2000);
   myBot.setTelegramToken(token);
 
+  // Enable insecure fallback (optional, but recommended for better reliability)
+  myBot.enableInsecureFallback();
+
   // Check if all things are ok
   Serial.print("\nTest Telegram connection... ");
-  myBot.begin() ? Serial.println("OK") : Serial.println("NOK");
+  bool connected = myBot.begin();
+  const char* connection_mode = myBot.getConnectionModeName();
+  connected ? Serial.println("OK") : Serial.println("NOK");
+  Serial.printf("Connection mode: %s\n", connection_mode);
 
-  char welcome_msg[128];
-  snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
+  char welcome_msg[192];
+  snprintf(welcome_msg, sizeof(welcome_msg), "BOT @%s online\nConnection mode: %s\n/help all commands avalaible.", myBot.getBotName(), connection_mode);
 
   // Send a message to specific user who has started your bot
   myBot.sendTo(userid, welcome_msg);

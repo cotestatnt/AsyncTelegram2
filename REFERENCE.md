@@ -1,4 +1,9 @@
 # Reference
+> Note
+>
+> This file is kept for compatibility with older links and existing users.
+> The actively maintained documentation now lives in [docs/README.md](docs/README.md).
+
 Here you can find an explanation of the functionalities provided and how to use the library. 
 Check the [examples folder](https://github.com/cotestatnt/AsyncTelegram2/tree/master/examples) for demos and examples.
 ___

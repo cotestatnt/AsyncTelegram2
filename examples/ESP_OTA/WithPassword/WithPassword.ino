@@ -30,10 +30,13 @@
 WiFiClientSecure client;
 AsyncTelegram2 myBot(client);
 
-const char* ssid = "xxxxxxxxxxxxx";     // REPLACE mySSID WITH YOUR WIFI SSID
-const char* pass = "xxxxxxxxxxxxx";     // REPLACE myPassword YOUR WIFI PASSWORD, IF ANY
-const char* token = "xxxxxxxxxxxxxx";   // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
-int64_t chat_id = 1234567890; 			// You can discover your own chat id, with "Json Dump Bot"
+const char* ssid  =  "PuccosNET";     // SSID WiFi network
+const char* pass  =  "Tole76tnt";     // Password  WiFi network
+const char* token =  "5692757090:AAHbcKoebgS9sPJ4SFtHCf3amrWZBh1Q0b4";  // Telegram token
+
+// Target user can find it's own userid with the bot @JsonDumpBot
+// https://t.me/JsonDumpBot
+int64_t userid =  5631852587;  
 
 #define CANCEL  "CANCEL"
 #define CONFIRM "FLASH_FW"
@@ -77,7 +80,7 @@ void setup() {
 
   char welcome_msg[128];
   snprintf(welcome_msg, 128, "BOT @%s online\n/help all commands avalaible.", myBot.getBotName());
-  myBot.sendTo(chat_id, welcome_msg);
+  myBot.sendTo(userid, welcome_msg);
 
   // We have to handle reboot manually after sync with TG server
   UPDATER.rebootOnUpdate(false);
@@ -109,11 +112,11 @@ void loop() {
             if ( msg.document.file_path.endsWith(".bin")) {
               char report [128];
               snprintf(report, 128, "Start firmware update\nFile name: %s\nFile size: %d",
-                       msg.document.file_name, msg.document.file_size);
+                       msg.document.file_name.c_str(), msg.document.file_size);
               // Inform user and query for flash confirmation with password
-              myBot.sendMessage(msg, report, "");
+              myBot.sendMessage(msg, report);
               msg.force_reply = true;
-              myBot.sendMessage(msg, "Please insert password", "");
+              myBot.sendMessage(msg, "Please insert password");
             }
           }
           else {

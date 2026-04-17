@@ -3,7 +3,7 @@
 
 #define HEADERS_END "\r\n\r\n"
 
-AsyncTelegram2::AsyncTelegram2(Client &client, uint32_t bufferSize)
+void AsyncTelegram2::initClient(Client &client, uint32_t bufferSize)
 {
     m_botusername.reserve(32); // Telegram username is 5-32 chars lenght
     m_rxbuffer.reserve(bufferSize);
@@ -11,7 +11,85 @@ AsyncTelegram2::AsyncTelegram2(Client &client, uint32_t bufferSize)
     m_minUpdateTime = MIN_UPDATE_TIME;
 }
 
+AsyncTelegram2::AsyncTelegram2(Client &client, uint32_t bufferSize)
+{
+    initClient(client, bufferSize);
+}
+
+#if defined(ESP32) || defined(ESP8266)
+AsyncTelegram2::AsyncTelegram2(TelegramSecureClient &client, uint32_t bufferSize)
+{
+    initClient(client, bufferSize);
+    secureTelegramClient = &client;
+}
+#endif
+
 AsyncTelegram2::~AsyncTelegram2(){};
+
+bool AsyncTelegram2::connectToTelegramServer()
+{
+    if (telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT))
+    {
+        if (m_insecureMode)
+        {
+            m_connectionMode = ConnectionModeInsecureFallback;
+        }
+        else if (m_customRecoveryMode)
+        {
+            m_connectionMode = ConnectionModeCustomRecovery;
+        }
+        else
+        {
+            m_connectionMode = ConnectionModeCertificateValidation;
+        }
+        return true;
+    }
+
+    if (m_connectionRecoveryCallback != nullptr)
+    {
+        log_error("Telegram connection failed, invoking custom recovery callback");
+        telegramClient->stop();
+        if (m_connectionRecoveryCallback(*telegramClient, TELEGRAM_HOST, TELEGRAM_PORT))
+        {
+            if (telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT))
+            {
+                m_customRecoveryMode = true;
+                m_connectionMode = ConnectionModeCustomRecovery;
+                return true;
+            }
+        }
+    }
+
+#if defined(ESP32) || defined(ESP8266)
+    if (m_insecureFallbackEnabled && !m_insecureMode && enableInsecureMode())
+    {
+        log_error("TLS certificate validation failed, retrying with insecure client");
+        telegramClient->stop();
+        if (telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT))
+        {
+            m_insecureMode = true;
+            m_customRecoveryMode = false;
+            m_connectionMode = ConnectionModeInsecureFallback;
+            return true;
+        }
+    }
+#endif
+
+    return false;
+}
+
+#if defined(ESP32) || defined(ESP8266)
+bool AsyncTelegram2::enableInsecureMode()
+{
+    if (secureTelegramClient == nullptr)
+    {
+        return false;
+    }
+
+    secureTelegramClient->setInsecure();
+    return true;
+}
+#endif
 
 bool AsyncTelegram2::checkConnection()
 {
@@ -27,7 +105,7 @@ bool AsyncTelegram2::checkConnection()
         ESP.wdtDisable();
         *((volatile uint32_t*) 0x60000900) &= ~(1); // Hardware WDT OFF
         #endif
-        if (!telegramClient->connect(TELEGRAM_HOST, TELEGRAM_PORT))
+        if (!connectToTelegramServer())
         {
             Serial.println("\n\nUnable to connect to Telegram server");
             reset();
@@ -36,9 +114,18 @@ bool AsyncTelegram2::checkConnection()
         else
         {
 	    static uint32_t lastCTime;
-            log_debug("Connected using Telegram hostname\n"
-                      "Last connection was %d seconds ago\n",
-                      (int)(millis() - lastCTime) / 1000);
+            if (m_insecureMode)
+            {
+                log_debug("Connected to Telegram using insecure TLS fallback\n"
+                          "Last connection was %d seconds ago\n",
+                          (int)(millis() - lastCTime) / 1000);
+            }
+            else
+            {
+                log_debug("Connected using Telegram hostname\n"
+                          "Last connection was %d seconds ago\n",
+                          (int)(millis() - lastCTime) / 1000);
+            }
             lastCTime = millis();
         }
 #endif
@@ -501,7 +588,6 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
     m_waitSent = true;
     m_lastSentTime = millis();
 
-    // DynamicJsonDocument root(m_JsonBufferSize);
     JSON_DOC(m_JsonBufferSize);
     root["chat_id"] = msg.chatId;
     root["text"] = message;
@@ -554,7 +640,6 @@ bool AsyncTelegram2::sendMessage(const TBMessage &msg, const char *message, char
 
 bool AsyncTelegram2::forwardMessage(const TBMessage &msg, const int64_t to_chatid)
 {
-    // DynamicJsonDocument root(BUFFER_SMALL);
     JSON_DOC(BUFFER_SMALL);
     root["chat_id"] = to_chatid;
     root["from_chat_id"] = msg.chatId;
@@ -570,7 +655,6 @@ bool AsyncTelegram2::sendPhotoByUrl(const int64_t &chat_id, const char *url, con
     if (!strlen(url))
         return false;
 
-    // DynamicJsonDocument root(BUFFER_SMALL);
     JSON_DOC(BUFFER_SMALL);
     root["chat_id"] = chat_id;
     root["photo"] = url;
@@ -586,7 +670,6 @@ bool AsyncTelegram2::sendAnimationByUrl(const int64_t &chat_id, const char *url,
     if (!strlen(url))
         return false;
 
-    // DynamicJsonDocument root(BUFFER_SMALL);
     JSON_DOC(BUFFER_SMALL);
     root["chat_id"] = chat_id;
     root["video"] = url;
@@ -602,7 +685,6 @@ bool AsyncTelegram2::sendToChannel(const char *channel, const char *message, boo
     if (!strlen(message))
         return false;
 
-    // DynamicJsonDocument root(BUFFER_BIG);
     JSON_DOC(BUFFER_BIG);
     root["chat_id"] = channel;
     root["text"] = message;
@@ -629,7 +711,6 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool al
     if (!msg.callbackQueryID)
         return false;
 
-    // DynamicJsonDocument root(m_JsonBufferSize);
     JSON_DOC(m_JsonBufferSize);
     root["callback_query_id"] = msg.callbackQueryID;
     root["text"] = message;
@@ -643,7 +724,6 @@ bool AsyncTelegram2::endQuery(const TBMessage &msg, const char *message, bool al
 
 bool AsyncTelegram2::removeReplyKeyboard(const TBMessage &msg, const char *message, bool selective)
 {
-    // DynamicJsonDocument root(BUFFER_SMALL);
     JSON_DOC(BUFFER_SMALL);
     root["remove_keyboard"] = true;
     root["selective"] = selective ? true : false;
@@ -831,7 +911,6 @@ void AsyncTelegram2::getMyCommands(String &cmdList)
         log_error("getMyCommands error ");
         return;
     }
-    // StaticJsonDocument<BUFFER_MEDIUM> root;
     JSON_DOC(BUFFER_MEDIUM);
     DeserializationError err = deserializeJson(root, m_rxbuffer);
     if (err)
@@ -861,7 +940,6 @@ bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc)
         log_error("getMyCommands error ");
         return "";
     }
-    // DynamicJsonDocument root(BUFFER_MEDIUM);
     JSON_DOC(BUFFER_MEDIUM);
 
     DeserializationError err = deserializeJson(root, m_rxbuffer);
@@ -903,7 +981,6 @@ bool AsyncTelegram2::setMyCommands(const String &cmd, const String &desc)
 
 bool AsyncTelegram2::editMessage(int64_t chat_id, int32_t message_id, const String &txt, const String &keyboard)
 {
-    // DynamicJsonDocument root(m_JsonBufferSize);
     JSON_DOC(m_JsonBufferSize);
     root["chat_id"] = chat_id;
     root["message_id"] = message_id;
@@ -919,7 +996,7 @@ bool AsyncTelegram2::editMessage(int64_t chat_id, int32_t message_id, const Stri
 
 bool AsyncTelegram2::deleteMessage(int64_t chat_id, int32_t message_id)
 {
-  DynamicJsonDocument root(m_JsonBufferSize);
+  JSON_DOC(m_JsonBufferSize);
   root["chat_id"] = chat_id;
   root["message_id"] = message_id;
   root.shrinkToFit();

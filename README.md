@@ -48,7 +48,16 @@ The library works virtually with any kind of board capable of SSL connection.
 Take a look at the examples provided in the [examples folder](https://github.com/cotestatnt/AsyncTelegram2/tree/master/examples).
 
 ### Reference
-[Here how to use the library](https://github.com/cotestatnt/AsyncTelegram2/blob/master/REFERENCE.md). 
+Start with the Markdown documentation in [docs/README.md](docs/README.md).
+
+Useful entry points:
+
+- [docs/getting-started.md](docs/getting-started.md)
+- [docs/connection-options.md](docs/connection-options.md)
+- [docs/api-reference.md](docs/api-reference.md)
+- [docs/faq-and-troubleshooting.md](docs/faq-and-troubleshooting.md)
+
+The older [REFERENCE.md](REFERENCE.md) file is still available, but the `docs/` Markdown guides should be considered the current documentation set.
 
 + 2.0.0   Initial version, most of functionality of AsyncTelegram
 + 2.0.1   Added more overload functions to cover a lot of possible usage and mantain a little backward compatibility

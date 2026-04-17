@@ -60,42 +60,34 @@
 #define TELEGRAM_IP "149.154.167.220"
 #define TELEGRAM_PORT 443
 
-static const char telegram_cert[] PROGMEM = R"EOF(
------BEGIN CERTIFICATE-----
-MIIDxTCCAq2gAwIBAgIBADANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMx
-EDAOBgNVBAgTB0FyaXpvbmExEzARBgNVBAcTClNjb3R0c2RhbGUxGjAYBgNVBAoT
-EUdvRGFkZHkuY29tLCBJbmMuMTEwLwYDVQQDEyhHbyBEYWRkeSBSb290IENlcnRp
-ZmljYXRlIEF1dGhvcml0eSAtIEcyMB4XDTA5MDkwMTAwMDAwMFoXDTM3MTIzMTIz
-NTk1OVowgYMxCzAJBgNVBAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQH
-EwpTY290dHNkYWxlMRowGAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjExMC8GA1UE
-AxMoR28gRGFkZHkgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkgLSBHMjCCASIw
-DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL9xYgjx+lk09xvJGKP3gElY6SKD
-E6bFIEMBO4Tx5oVJnyfq9oQbTqC023CYxzIBsQU+B07u9PpPL1kwIuerGVZr4oAH
-/PMWdYA5UXvl+TW2dE6pjYIT5LY/qQOD+qK+ihVqf94Lw7YZFAXK6sOoBJQ7Rnwy
-DfMAZiLIjWltNowRGLfTshxgtDj6AozO091GB94KPutdfMh8+7ArU6SSYmlRJQVh
-GkSBjCypQ5Yj36w6gZoOKcUcqeldHraenjAKOc7xiID7S13MMuyFYkMlNAJWJwGR
-tDtwKj9useiciAF9n9T521NtYJ2/LOdYq7hfRvzOxBsDPAnrSTFcaUaz4EcCAwEA
-AaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAQYwHQYDVR0OBBYE
-FDqahQcQZyi27/a9BUFuIMGU2g/eMA0GCSqGSIb3DQEBCwUAA4IBAQCZ21151fmX
-WWcDYfF+OwYxdS2hII5PZYe096acvNjpL9DbWu7PdIxztDhC2gV7+AJ1uP2lsdeu
-9tfeE8tTEH6KRtGX+rcuKxGrkLAngPnon1rpN5+r5N9ss4UXnT3ZJE95kTXWXwTr
-gIOrmgIttRD02JDHBHNA7XIloKmf7J6raBKZV8aPEjoJpL1E/QYVN8Gb5DKj7Tjo
-2GTzLH4U/ALqn83/B2gX2yKQOC16jdFU8WnjXzPKej17CuPKf1855eJ1usV2GDPO
-LPAvTK33sefOT6jEm0pUBsV/fdUID+Ic/n4XuKxe9tQWskMJDE32p2u0mYRlynqI
-4uJEvlz36hz1
------END CERTIFICATE-----
-)EOF";
+#include "tg_certificate.h"
 
+#if defined(ESP32)
+using TelegramSecureClient = WiFiClientSecure;
+#elif defined(ESP8266)
+using TelegramSecureClient = BearSSL::WiFiClientSecure;
+#endif
+ 
 
 class AsyncTelegram2
 {
 
-    // using SentCallback = std::function<void(bool sent)>;
     typedef void(*SentCallback)(bool sent);
+    typedef bool(*ConnectionRecoveryCallback)(Client &client, const char *host, uint16_t port);
 
 public:
+    enum ConnectionMode
+    {
+        ConnectionModeCertificateValidation,
+        ConnectionModeInsecureFallback,
+        ConnectionModeCustomRecovery
+    };
+
     // default constructor
     AsyncTelegram2(Client &client, uint32_t bufferSize = BUFFER_BIG);
+#if defined(ESP32) || defined(ESP8266)
+    AsyncTelegram2(TelegramSecureClient &client, uint32_t bufferSize = BUFFER_BIG);
+#endif
     // default destructor
     ~AsyncTelegram2();
 
@@ -119,6 +111,55 @@ public:
     // params:
     //    pollingTime: interval time in milliseconds
     void setUpdateTime(uint32_t pollingTime) { m_minUpdateTime = pollingTime; }
+
+    // Enable a one-way fallback to insecure TLS for supported secure clients.
+    // When enabled, if the first TLS handshake fails, the client switches to
+    // setInsecure() and retries the Telegram connection.
+    inline void enableInsecureFallback(bool enable = true)
+    {
+        m_insecureFallbackEnabled = enable;
+    }
+
+    inline bool isInsecureFallbackEnabled() const
+    {
+        return m_insecureFallbackEnabled;
+    }
+
+    inline bool isUsingInsecureConnection() const
+    {
+        return m_insecureMode;
+    }
+
+    inline bool isUsingCustomConnectionRecovery() const
+    {
+        return m_customRecoveryMode;
+    }
+
+    inline ConnectionMode getConnectionMode() const
+    {
+        return m_connectionMode;
+    }
+
+    inline const char *getConnectionModeName() const
+    {
+        switch (m_connectionMode)
+        {
+            case ConnectionModeInsecureFallback:
+                return "TLS insecure fallback";
+            case ConnectionModeCustomRecovery:
+                return "TLS custom recovery";
+            default:
+                return "TLS certificate validation";
+        }
+    }
+
+    // Register a generic recovery callback invoked after a failed
+    // connection attempt and before the built-in insecure fallback.
+    // Return true to ask the library to retry the Telegram connection.
+    inline void setConnectionRecoveryCallback(ConnectionRecoveryCallback callback)
+    {
+        m_connectionRecoveryCallback = callback;
+    }
 
     // Get file link and size by unique document ID
     // params
@@ -438,6 +479,9 @@ public:
 
 private:
     Client *telegramClient;
+#if defined(ESP32) || defined(ESP8266)
+    TelegramSecureClient *secureTelegramClient = nullptr;
+#endif
     const char *m_token;
     String m_rxbuffer;
     String m_botusername; // Store only botname, instead TBUser struct
@@ -468,6 +512,17 @@ private:
 
     uint8_t m_formatType = HTML;
     uint32_t m_JsonBufferSize = BUFFER_BIG;
+    bool m_insecureFallbackEnabled = false;
+    bool m_insecureMode = false;
+    bool m_customRecoveryMode = false;
+    ConnectionMode m_connectionMode = ConnectionModeCertificateValidation;
+    ConnectionRecoveryCallback m_connectionRecoveryCallback = nullptr;
+
+    void initClient(Client &client, uint32_t bufferSize);
+    bool connectToTelegramServer();
+#if defined(ESP32) || defined(ESP8266)
+    bool enableInsecureMode();
+#endif
 
 protected:
     // send commands to the telegram server. For info about commands, check the telegram api https://core.telegram.org/bots/api
